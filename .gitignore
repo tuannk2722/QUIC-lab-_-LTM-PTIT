@@ -1,0 +1,13 @@
+/bin/
+/certs/*
+!/certs/.gitkeep
+/results/*
+!/results/.gitkeep
+*.key
+*.keylog
+*.pcap
+*.pcapng
+*.sqlog
+__pycache__/
+.venv/
+.coverage

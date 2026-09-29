@@ -1,0 +1,517 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "QUIC lab typed records v1; CSV empty nullable cells map to null",
+  "$defs": {
+    "run": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "experiment_id",
+        "run_id",
+        "phase",
+        "repeat_index",
+        "pair_id",
+        "order_index",
+        "timestamp_utc",
+        "scenario",
+        "transport",
+        "mode",
+        "trace_mode",
+        "network_profile",
+        "resource_count",
+        "resource_size_bytes",
+        "chunk_bytes",
+        "delay_each_way_ms",
+        "loss_downstream_pct",
+        "loss_upstream_pct",
+        "rate_mbps",
+        "netem_seed",
+        "bytes_expected",
+        "bytes_received",
+        "tcp_connect_ms",
+        "tls_handshake_ms",
+        "handshake_ms",
+        "connect_ms",
+        "early_ready_ms",
+        "ttfa_ms",
+        "transfer_ms",
+        "total_ms",
+        "elapsed_ms",
+        "goodput_mbps",
+        "e2e_goodput_mbps",
+        "tls_resumed",
+        "attempted_0rtt",
+        "used_0rtt",
+        "early_rejected",
+        "fallback_count",
+        "success",
+        "error_code",
+        "error_message"
+      ],
+      "properties": {
+        "schema_version": {
+          "type": "integer",
+          "minimum": 0,
+          "const": 1
+        },
+        "experiment_id": {
+          "type": "string"
+        },
+        "run_id": {
+          "type": "string"
+        },
+        "phase": {
+          "type": "string",
+          "enum": [
+            "warmup",
+            "measured",
+            "evidence"
+          ]
+        },
+        "repeat_index": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "pair_id": {
+          "type": "string"
+        },
+        "order_index": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "timestamp_utc": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "scenario": {
+          "type": "string"
+        },
+        "transport": {
+          "type": "string",
+          "enum": [
+            "tcp",
+            "quic"
+          ]
+        },
+        "mode": {
+          "type": "string",
+          "enum": [
+            "cold",
+            "resumed",
+            "early"
+          ]
+        },
+        "trace_mode": {
+          "type": "string",
+          "enum": [
+            "performance",
+            "evidence"
+          ]
+        },
+        "network_profile": {
+          "type": "string",
+          "enum": [
+            "ingress-ifb",
+            "egress-demo",
+            "loopback-test"
+          ]
+        },
+        "resource_count": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "resource_size_bytes": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "chunk_bytes": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "delay_each_way_ms": {
+          "type": "number",
+          "minimum": 0
+        },
+        "loss_downstream_pct": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "loss_upstream_pct": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "rate_mbps": {
+          "type": "number",
+          "minimum": 0
+        },
+        "netem_seed": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "bytes_expected": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "bytes_received": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "tcp_connect_ms": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "tls_handshake_ms": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "handshake_ms": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "connect_ms": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "early_ready_ms": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "ttfa_ms": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "transfer_ms": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "total_ms": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "elapsed_ms": {
+          "type": "number",
+          "minimum": 0
+        },
+        "goodput_mbps": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "e2e_goodput_mbps": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "tls_resumed": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "attempted_0rtt": {
+          "type": "boolean"
+        },
+        "used_0rtt": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "early_rejected": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "fallback_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "success": {
+          "type": "boolean"
+        },
+        "error_code": {
+          "type": "string"
+        },
+        "error_message": {
+          "type": "string"
+        }
+      },
+      "x-csv-columns": [
+        "schema_version",
+        "experiment_id",
+        "run_id",
+        "phase",
+        "repeat_index",
+        "pair_id",
+        "order_index",
+        "timestamp_utc",
+        "scenario",
+        "transport",
+        "mode",
+        "trace_mode",
+        "network_profile",
+        "resource_count",
+        "resource_size_bytes",
+        "chunk_bytes",
+        "delay_each_way_ms",
+        "loss_downstream_pct",
+        "loss_upstream_pct",
+        "rate_mbps",
+        "netem_seed",
+        "bytes_expected",
+        "bytes_received",
+        "tcp_connect_ms",
+        "tls_handshake_ms",
+        "handshake_ms",
+        "connect_ms",
+        "early_ready_ms",
+        "ttfa_ms",
+        "transfer_ms",
+        "total_ms",
+        "elapsed_ms",
+        "goodput_mbps",
+        "e2e_goodput_mbps",
+        "tls_resumed",
+        "attempted_0rtt",
+        "used_0rtt",
+        "early_rejected",
+        "fallback_count",
+        "success",
+        "error_code",
+        "error_message"
+      ]
+    },
+    "stream": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "experiment_id",
+        "run_id",
+        "resource_id",
+        "transport_stream_id",
+        "attempt_index",
+        "request_start_ms",
+        "request_end_ms",
+        "first_byte_ms",
+        "ttfb_request_ms",
+        "payload_done_ms",
+        "complete_ms",
+        "completion_request_ms",
+        "bytes_expected",
+        "bytes_received",
+        "checksum_ok",
+        "success",
+        "error_code",
+        "error_message"
+      ],
+      "properties": {
+        "schema_version": {
+          "type": "integer",
+          "minimum": 0,
+          "const": 1
+        },
+        "experiment_id": {
+          "type": "string"
+        },
+        "run_id": {
+          "type": "string"
+        },
+        "resource_id": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "transport_stream_id": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "attempt_index": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "request_start_ms": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "request_end_ms": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "first_byte_ms": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "ttfb_request_ms": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "payload_done_ms": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "complete_ms": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "completion_request_ms": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "bytes_expected": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "bytes_received": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "checksum_ok": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "success": {
+          "type": "boolean"
+        },
+        "error_code": {
+          "type": "string"
+        },
+        "error_message": {
+          "type": "string"
+        }
+      },
+      "x-csv-columns": [
+        "schema_version",
+        "experiment_id",
+        "run_id",
+        "resource_id",
+        "transport_stream_id",
+        "attempt_index",
+        "request_start_ms",
+        "request_end_ms",
+        "first_byte_ms",
+        "ttfb_request_ms",
+        "payload_done_ms",
+        "complete_ms",
+        "completion_request_ms",
+        "bytes_expected",
+        "bytes_received",
+        "checksum_ok",
+        "success",
+        "error_code",
+        "error_message"
+      ]
+    },
+    "progress": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "experiment_id",
+        "run_id",
+        "resource_id",
+        "attempt_index",
+        "elapsed_ms",
+        "payload_bytes_received"
+      ],
+      "properties": {
+        "schema_version": {
+          "type": "integer",
+          "minimum": 0,
+          "const": 1
+        },
+        "experiment_id": {
+          "type": "string"
+        },
+        "run_id": {
+          "type": "string"
+        },
+        "resource_id": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "attempt_index": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "elapsed_ms": {
+          "type": "number",
+          "minimum": 0
+        },
+        "payload_bytes_received": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "x-csv-columns": [
+        "schema_version",
+        "experiment_id",
+        "run_id",
+        "resource_id",
+        "attempt_index",
+        "elapsed_ms",
+        "payload_bytes_received"
+      ]
+    }
+  }
+}

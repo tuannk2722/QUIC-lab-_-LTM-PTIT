@@ -1,0 +1,67 @@
+Đặng Ngọc Hùng
+Bộ môn CNPM
+hungdn1701.github.io / hungdn@ptit.edu.vn
+----------------------
+Lập trình mạng - học kì 7 (học kì 1 - năm 04)
+roadmap.sh + skills.sh
+----------------------
+
+I. Mục tiêu: --> Xây dựng ứng dụng/hệ thống có giao tiếp gửi/nhận (giao thức) qua mạng. (OOP + Network)
+
+(1) Socket (tuần tự/song song)   
+(2) phân tán 
+(3) Chủ đề nâng cao: hiệu năng, bảo mật, tiện ích....
+
+II. Nội dung: 
+1. Tổng quan và các khái niệm cơ bản (mạng, giao thức, IP, domain, port, endpoint, socket, các lệnh cơ bản)
+2. Luồng (stream) - chuỗi dữ liệu mà chưa biết/chưa rõ khi nào kết thúc. (TCP)
+3. Đa luồng (thread) - Java
+4. TCP (Stream)(TH1)
+5. UDP (Datagram) (TH2)
+6. NIC (Network Interface Card)/ Multicast (UDP)
+7. HTTP/FTP/SMTP (gRPC/QUIC)
+8. RMI (Remote Method Invocation) - Java (TH3)
+9. Webservice (SOAP - Simple Object Access Protocol)(WSDL)
+10. Topic
+
+III. Đánh giá
+--- Chuyên cần: 10% (vắng 01 buổi trừ 01 điểm) -- không xin phép.
+
+--- TB Kiểm tra (20%) - cá nhân
+    + Thực hành phòng máy 01 (chiếm 0.3) về TCP (05 bài)
+    + Thực hành phòng máy 02 (chiếm 0.3) về UDP (05 bài)
+    + Thực hành phòng máy 03 (chiếm 0.4) về RMI, WS (05 bài)   
+      
+--- Báo cáo cuối kì (20%) - nhóm - là nhóm bài tập lớn
+    + Báo cáo topic (tự chọn hoặc theo danh sách gợi ý - sẽ cung cấp sau)
+    + Đánh giá giảng viên (0.7) + sinh viên (0.3)
+    
+--- Bảo vệ dự án cuối kì - nhóm (50%)
+    + github classroom - mỗi nhóm -- tương ứng repo
+    + đánh giá nhóm(base) và cá nhân dựa trên kết quả và vấn đáp
+    
+--- Thi KTHP (để nhận các điểm đã có):
+    + Đối với các bạn đạt --> trắc nghiệm (10') - có căn chỉnh điểm + ký danh sách
+    + Đối với các bạn không đạt --> thi kỹ năng lập trình (05-06 bài về nội dung TCP, UDP, RMI, WS)
+    
+    
+IV. Kế hoạch thực hiện
+--- 05 tuần đầu: GV trình bày (10 nội dung)
+--- 05 tuần giữa: SV trình bày topic (04-05 nhóm/tuần - tùy số tiết)
+--- 05 tuần cuối:
+    + 03 tuần đầu: Báo cáo lần 01
+    + Tuần thứ 04: Báo cáo lần 02 (cho các nhóm đủ điều kiện/cần) (tối đa 30%)
+    + Tuần thứ 05: Tổng kết/báo điểm/trao đổi/thắc mắc/nếu có.
+    
+--- Về lịch thực hành: Nguyên tắc mỗi nhóm 55' -- Chi tiết ca/phòng xem trên db.ptit.edu.vn [bài thi thực hành]
+    + Thực hành phòng máy 01: Chủ nhật ngày 13/09/2026 
+    + Thực hành phòng máy 02: Chủ nhật ngày 27/09/2026
+    + Thực hành phòng máy 03: Chủ nhật ngày 11/10/2026
+ 
+V. Cách thức làm việc:
+--- Tất cả trao đổi, tạo bài viết/bình luận trong group fb
+            + https://fb.com/groups/jnp2026
+            
+--- Nếu có việc/trao đổi riêng
+            + hungdn@ptit.edu.vn
+--- Tham gia cùng về phát triển (dev) hoặc nghiên cứu (research) liên hệ email.  

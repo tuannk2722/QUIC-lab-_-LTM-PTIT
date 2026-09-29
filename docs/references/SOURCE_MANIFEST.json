@@ -1,0 +1,24 @@
+{
+  "created_local_date": "2026-09-28",
+  "source": "three user-supplied attachments, unmodified",
+  "files": [
+    {
+      "file": "INT1433_HKI_2026_2027.txt",
+      "bytes": 3114,
+      "newline_count": 66,
+      "sha256": "36afd9f6b983b2009b6c97ea3f7335095b95d1cdd270e4b4c65c1f6f7438a65e"
+    },
+    {
+      "file": "T03_QUIC_Protocol_Implementation_and_Performance.md",
+      "bytes": 37145,
+      "newline_count": 1707,
+      "sha256": "4f4d7a28f97102f1736c011ca5c6399ba9479220cd75b14f230f0d3a08dd603d"
+    },
+    {
+      "file": "network-programing-topic.md",
+      "bytes": 27121,
+      "newline_count": 571,
+      "sha256": "49321253a1218c54235b9eef74befafdebd4ff2914c4d0c57ba103cd508e2ed7"
+    }
+  ]
+}

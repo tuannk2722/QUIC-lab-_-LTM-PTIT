@@ -1,0 +1,258 @@
+{
+  "package": "quic-performance-lab",
+  "version": "1.0",
+  "created_local_date": "2026-09-28",
+  "status": "handoff-only; implementation not started",
+  "files": [
+    {
+      "path": ".codex/TASK.md",
+      "bytes": 1596,
+      "sha256": "730c56dab90194b5e744067c2649ec7ac726d9d417200d9180c81d302ccf0c76"
+    },
+    {
+      "path": ".gitignore",
+      "bytes": 131,
+      "sha256": "5fb503deee57d1ddf6f2cc6d8707a74260c80d0878dead748799aa6492c3b93b"
+    },
+    {
+      "path": "AGENTS.md",
+      "bytes": 3364,
+      "sha256": "7a7bc6b115eead5ccf8c3e100df726efbd8c880c7657e21ecf3a9b6e27665c47"
+    },
+    {
+      "path": "CODEX_START_PROMPT.md",
+      "bytes": 2166,
+      "sha256": "fe18a80ea344cfdd1b410a6ef8f2279434c13c821270aa7a4551f85ea9142b75"
+    },
+    {
+      "path": "README.md",
+      "bytes": 1713,
+      "sha256": "6f763b312c53d7618b62ce2b81d4da906678ea889b24ff1ba75ab536a6f986f7"
+    },
+    {
+      "path": "START_HERE.md",
+      "bytes": 3185,
+      "sha256": "61be39706e7af7409cdddec732cbdc1d4df14c1fd47e4ddc34784e888b78a941"
+    },
+    {
+      "path": "analysis/.gitkeep",
+      "bytes": 1,
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "path": "certs/.gitkeep",
+      "bytes": 1,
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "path": "cmd/bench/.gitkeep",
+      "bytes": 1,
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "path": "cmd/client/.gitkeep",
+      "bytes": 1,
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "path": "cmd/server/.gitkeep",
+      "bytes": 1,
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "path": "configs/scenarios.json",
+      "bytes": 1138,
+      "sha256": "72ad7e70a4a18fa2699235c91eacfb3d96b47077c6f448c0e8325572eb275ca0"
+    },
+    {
+      "path": "configs/workloads.json",
+      "bytes": 658,
+      "sha256": "748a551a8e7c1a641dc77605119ea3e8c7fa18de24c734e1b6e89697fb4dc002"
+    },
+    {
+      "path": "docs/00-INDEX.md",
+      "bytes": 2885,
+      "sha256": "271e3c081feeca7548fed805dd1bf0c8be5c512acc7de45cbfe66d5c5c41f03a"
+    },
+    {
+      "path": "docs/ACCEPTANCE.md",
+      "bytes": 5286,
+      "sha256": "e8dcdfd15f3f3fe71a743b031e05c5d8c07173a7650b0889467835a9304ab740"
+    },
+    {
+      "path": "docs/AI_USAGE.md",
+      "bytes": 1333,
+      "sha256": "99341924d77a3b84ad6eb79a0f5008a2279902d6e872b7624c74b888e7a1dfeb"
+    },
+    {
+      "path": "docs/CLI_CONTRACT.md",
+      "bytes": 6218,
+      "sha256": "343eaf07d418dfdae493e362b95961bbccd162f8f12909277c621659df98f524"
+    },
+    {
+      "path": "docs/CONTEXT_AND_DECISIONS.md",
+      "bytes": 6636,
+      "sha256": "1358562df78daf3ada33fc39b2763742e27c7c3aab9c7c798275345d443d9c14"
+    },
+    {
+      "path": "docs/DEMO_SCRIPT.md",
+      "bytes": 3959,
+      "sha256": "b462a70590ef31418cbba983922465236c821326596f9c5ace390ec79ec1e969"
+    },
+    {
+      "path": "docs/DEMO_SPEC.md",
+      "bytes": 6672,
+      "sha256": "4da8a6ace866a850c21214c7e0675f6d00e5e81abfb28875478261010469aafc"
+    },
+    {
+      "path": "docs/HANDOFF_VALIDATION.md",
+      "bytes": 1088,
+      "sha256": "5838b1aeb4b85468a861990928cd344438bd51dd3b88b3bc642638df61b311b7"
+    },
+    {
+      "path": "docs/IMPLEMENTATION_PLAN.md",
+      "bytes": 12328,
+      "sha256": "2d72e1e0a31b777fad3c2a0dc92dcdbf8ad21253fd8278205231ee7de79cc04e"
+    },
+    {
+      "path": "docs/METRICS_AND_RESULTS.md",
+      "bytes": 10923,
+      "sha256": "50990ec5c73e42fdf032c6f3a98a443854057d8aea7f33e9a17c55be0a96f591"
+    },
+    {
+      "path": "docs/NETWORK_AND_BENCHMARK.md",
+      "bytes": 10568,
+      "sha256": "7a6b0145c640fa5602deedde424812a14e65d8f13edb6d173f932e3d807dc2a5"
+    },
+    {
+      "path": "docs/PROTOCOL.md",
+      "bytes": 7936,
+      "sha256": "13cc8b160d9f43373006499337c11982f3d755f3a67335439a5c91ea4192f8f8"
+    },
+    {
+      "path": "docs/REFERENCES.md",
+      "bytes": 2468,
+      "sha256": "2618257c3ddbf933402169ad913355707b15ac3881b3627fc33e619b48e34111"
+    },
+    {
+      "path": "docs/THEORY_AND_DEFENSE.md",
+      "bytes": 7016,
+      "sha256": "e598c1e3a90892d4fd304211da0276d7c96e7fa839cd6c94b8de50dbda1184cd"
+    },
+    {
+      "path": "docs/TRACEABILITY.md",
+      "bytes": 9808,
+      "sha256": "c1fdad5b3860be851dcce630cfc3539bff562f69cd532adb251316403d140842"
+    },
+    {
+      "path": "docs/VERSIONS.md",
+      "bytes": 2248,
+      "sha256": "9e046547afaad0d104c0ee8748d198f902fb910d73d34266bcb61ba3fb2039fc"
+    },
+    {
+      "path": "docs/references/SOURCE_MANIFEST.json",
+      "bytes": 1203,
+      "sha256": "8af69aecd5e31302f5f2fe2d86b75a84c2630845ba389f081f58d353306dcd53"
+    },
+    {
+      "path": "docs/references/originals/INT1433_HKI_2026_2027.txt",
+      "bytes": 3114,
+      "sha256": "36afd9f6b983b2009b6c97ea3f7335095b95d1cdd270e4b4c65c1f6f7438a65e"
+    },
+    {
+      "path": "docs/references/originals/PHAN_1_TONG_QUAN_VE_QUIC.md",
+      "bytes": 44027,
+      "sha256": "fd95b19e67d810aa06ef158befb1cc89b0c74835a970cd8e078109aa4d392820"
+    },
+    {
+      "path": "docs/references/originals/T03_QUIC_Protocol_Implementation_and_Performance(1).md",
+      "bytes": 37145,
+      "sha256": "4f4d7a28f97102f1736c011ca5c6399ba9479220cd75b14f230f0d3a08dd603d"
+    },
+    {
+      "path": "docs/references/originals/T03_QUIC_Protocol_Implementation_and_Performance.md",
+      "bytes": 37145,
+      "sha256": "4f4d7a28f97102f1736c011ca5c6399ba9479220cd75b14f230f0d3a08dd603d"
+    },
+    {
+      "path": "docs/references/originals/network-programing-topic.md",
+      "bytes": 27121,
+      "sha256": "49321253a1218c54235b9eef74befafdebd4ff2914c4d0c57ba103cd508e2ed7"
+    },
+    {
+      "path": "internal/bench/.gitkeep",
+      "bytes": 1,
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "path": "internal/config/.gitkeep",
+      "bytes": 1,
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "path": "internal/metrics/.gitkeep",
+      "bytes": 1,
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "path": "internal/observability/.gitkeep",
+      "bytes": 1,
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "path": "internal/protocol/.gitkeep",
+      "bytes": 1,
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "path": "internal/tlsconfig/.gitkeep",
+      "bytes": 1,
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "path": "internal/transport/quic/.gitkeep",
+      "bytes": 1,
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "path": "internal/transport/tcp/.gitkeep",
+      "bytes": 1,
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "path": "internal/workload/.gitkeep",
+      "bytes": 1,
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "path": "results/.gitkeep",
+      "bytes": 1,
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "path": "schemas/README.md",
+      "bytes": 743,
+      "sha256": "467e8c9dc6d76c940c0a9275e30ba0b86830c007f6917d7134e192c1dce6178f"
+    },
+    {
+      "path": "schemas/result-records.schema.json",
+      "bytes": 11079,
+      "sha256": "e24c3b763758b62a11c867e69b4c5dac83dbeb9fc6cbe4d4e3e0f5cb36d78bdd"
+    },
+    {
+      "path": "scripts/network/.gitkeep",
+      "bytes": 1,
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "path": "tests/integration/.gitkeep",
+      "bytes": 1,
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "path": "tests/system/.gitkeep",
+      "bytes": 1,
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    }
+  ]
+}
