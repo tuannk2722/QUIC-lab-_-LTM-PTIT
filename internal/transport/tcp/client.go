@@ -54,6 +54,20 @@ func RunBatch(parent context.Context, addr string, cfg *tls.Config, expected *wo
 		out[i].Timing.Start = start
 	}
 	defer func() {
+		for i := range out {
+			if !receivers[i].Complete() {
+				continue
+			}
+			out[i].ChecksumChecked = true
+			verifyErr := receivers[i].Verify()
+			out[i].ChecksumOK = verifyErr == nil
+			if verifyErr != nil {
+				out[i].Err = verifyErr
+				if err == nil {
+					err = fmt.Errorf("resource %d: %w", i+1, verifyErr)
+				}
+			}
+		}
 		end := time.Now()
 		for i := range out {
 			out[i].Timing.End = end
@@ -65,6 +79,9 @@ func RunBatch(parent context.Context, addr string, cfg *tls.Config, expected *wo
 		return out, err
 	}
 	tcpConnected := time.Now()
+	for i := range out {
+		out[i].Timing.TCPConnected = tcpConnected
+	}
 	conn := tls.Client(raw, cfg)
 	defer conn.Close()
 	stop := make(chan struct{})
@@ -86,7 +103,6 @@ func RunBatch(parent context.Context, addr string, cfg *tls.Config, expected *wo
 		return out, fmt.Errorf("unexpected ALPN")
 	}
 	for i := range out {
-		out[i].Timing.TCPConnected = tcpConnected
 		out[i].Timing.Handshake = handshake
 	}
 	for i := range out {
@@ -119,6 +135,7 @@ func RunBatch(parent context.Context, addr string, cfg *tls.Config, expected *wo
 		}
 		i := f.ResourceID - 1
 		if err := receivers[i].Accept(f); err != nil {
+			out[i].Err = err
 			return out, err
 		}
 		if receivers[i].BytesReceived() == out[i].BytesExpected && out[i].Timing.PayloadDone.IsZero() {
@@ -132,13 +149,18 @@ func RunBatch(parent context.Context, addr string, cfg *tls.Config, expected *wo
 	var extra [1]byte
 	n, readErr := conn.Read(extra[:])
 	if n != 0 || !errors.Is(readErr, io.EOF) {
-		return out, fmt.Errorf("trailing response or missing EOF: n=%d err=%v", n, readErr)
-	}
-	for i := range out {
-		if err := receivers[i].Verify(); err != nil {
-			return out, fmt.Errorf("resource %d: %w", i+1, err)
+		cleanupErr := fmt.Errorf("trailing response or missing EOF: n=%d", n)
+		if readErr != nil && !errors.Is(readErr, io.EOF) {
+			if ctx.Err() != nil {
+				readErr = errors.Join(readErr, ctx.Err())
+			}
+			cleanupErr = fmt.Errorf("response EOF: %w", readErr)
 		}
-		out[i].ChecksumOK = true
+		for i := range out {
+			out[i].Err = cleanupErr
+		}
+		return out, cleanupErr
 	}
-	return out, nil
+
+	return out, err
 }

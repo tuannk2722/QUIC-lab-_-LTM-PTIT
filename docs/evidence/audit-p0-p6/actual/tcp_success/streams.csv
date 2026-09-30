@@ -1,0 +1,7 @@
+schema_version,experiment_id,run_id,resource_id,transport_stream_id,attempt_index,request_start_ms,request_end_ms,first_byte_ms,ttfb_request_ms,payload_done_ms,complete_ms,completion_request_ms,bytes_expected,bytes_received,checksum_ok,success,error_code,error_message
+1,p6_g06,tcp_success,1,,0,6.921969,7.303184,10.372194,3.450225,70.330291,70.331518,63.409549,1048576,1048576,true,true,,
+1,p6_g06,tcp_success,2,,0,7.307405,7.355685,10.47055,3.163145,70.409571,70.411078,63.103673,1048576,1048576,true,true,,
+1,p6_g06,tcp_success,3,,0,7.355852,7.403278,10.538315,3.182463,70.475465,70.476616,63.120764,1048576,1048576,true,true,,
+1,p6_g06,tcp_success,4,,0,7.403458,7.416373,10.607794,3.204336,70.510527,70.511223,63.107765,1048576,1048576,true,true,,
+1,p6_g06,tcp_success,5,,0,7.41651,7.425694,10.652387,3.235877,70.572611,70.573706,63.157196,1048576,1048576,true,true,,
+1,p6_g06,tcp_success,6,,0,7.425872,7.429337,11.469787,4.043915,70.720575,70.7303,63.304428,1048576,1048576,true,true,,

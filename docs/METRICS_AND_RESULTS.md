@@ -6,7 +6,7 @@ Tất cả mốc chính được tạo trong **cùng client process** bằng `ti
 
 | Mốc | Ý nghĩa chính xác |
 |---|---|
-| t0 | Ngay trước TCP Dial hoặc QUIC Dial/DialEarly; data/buffer/cert đã chuẩn bị |
+| t0 | Ngay trước transport setup (resolve địa chỉ/socket và TCP Dial hoặc QUIC Dial/DialEarly); data/buffer/cert đã chuẩn bị (D18) |
 | tTCP | TCP Dial trả thành công, trước gọi TLS HandshakeContext |
 | tEarlyReady | DialEarly trả về; không đồng nghĩa handshake xong |
 | tHandshake | Client quan sát secure handshake hoàn tất; failure không ghi mốc giả |
@@ -43,7 +43,7 @@ Handshake observer phải được bắt đầu ngay khi API cho phép; không c
 
 Goodput dùng payload hữu ích, không cộng header/META, retransmissions, bytes bị lặp hoặc TLS/QUIC overhead. Mbps là 10^6 bit/s; MiB là 2^20 bytes. Không gọi goodput là wire throughput. Khi duration<=0 hoặc trial fail, goodput để null, không chia 0 hoặc đẩy lên vô cực.
 
-tReqEnd có thể sau tFirst do scheduling/buffering; không tạo assert sai `first >= request_end`. Với cold yêu cầu request bắt đầu sau secure readiness, với early cho phép trước observed handshake. Hash tất cả resource **sau** tAll để CPU hashing không làm chậm resource khác còn đang nhận.
+tReqEnd có thể sau tFirst do scheduling/buffering; không tạo assert sai `first >= request_end`. Với cold yêu cầu request bắt đầu sau secure readiness, với early cho phép trước observed handshake. Hash tất cả resource **sau** tAll để CPU hashing không làm chậm resource khác còn đang nhận. Với trial fail, đợi mọi reader dừng rồi verify các resource đã FIN; lưu checksum và lỗi riêng từng resource (D18).
 
 ## 3. Bố cục kết quả
 

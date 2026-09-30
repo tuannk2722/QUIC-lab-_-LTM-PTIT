@@ -1,0 +1,6 @@
+{"attempted": 1, "evidence_trials_excluded": 0, "failed": 0, "measured_trials": 1, "status": "PASS", "success": 1, "warmup_trials_excluded": 0}
+{"attempted": 1, "evidence_trials_excluded": 0, "failed": 0, "measured_trials": 1, "status": "PASS", "success": 1, "warmup_trials_excluded": 0}
+{"attempted": 1, "evidence_trials_excluded": 0, "failed": 1, "measured_trials": 1, "status": "PASS", "success": 0, "warmup_trials_excluded": 0}
+G06 validator: 3 actual trials, failure retained, warmup excluded, duplicate ID and missing stream rejected
+G06 actual trials: success=2 failed=1; retained failure=results/p6-g06-ag6vK3/tcp_failure; results=results/p6-g06-ag6vK3
+results_dir=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p6-g06-ag6vK3

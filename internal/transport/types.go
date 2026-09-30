@@ -4,14 +4,18 @@ package transport
 import "time"
 
 type Timing struct {
-	Start, TCPConnected, Handshake, RequestStart, RequestEnd time.Time
-	FirstByte, PayloadDone, Done, End                        time.Time
+	Start, TCPConnected, EarlyReady, Handshake, RequestStart, RequestEnd time.Time
+	FirstByte, PayloadDone, Done, End                                    time.Time
 }
 
 type Result struct {
-	ResourceID    uint32
-	BytesExpected uint64
-	BytesReceived uint64
-	ChecksumOK    bool
-	Timing        Timing
+	ResourceID uint32
+	// StreamID is the native QUIC stream ID. It is nil for TCP.
+	StreamID        *int64
+	BytesExpected   uint64
+	BytesReceived   uint64
+	ChecksumChecked bool
+	Err             error
+	ChecksumOK      bool
+	Timing          Timing
 }

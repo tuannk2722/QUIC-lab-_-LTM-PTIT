@@ -1,0 +1,16 @@
+G04 CLI transfer; UTC=2026-09-30T12:00:59Z
+uid=1000
+server command: bin/server --transport=both --profile=bulk --listen=127.0.0.1:4433 --ready-file=<temporary path>
+both ready tcp=127.0.0.1:4433 udp=127.0.0.1:4433 profile=bulk resources=6
+client command: bin/client --transport=tcp --mode=cold --profile=bulk --addr=127.0.0.1:4433 --server-name=localhost --format=json
+tcp exit=0
+{"transport":"tcp","profile":"bulk","resource_count":6,"bytes":6291456,"elapsed_ms":37.515228,"resources":[{"resource_id":1,"bytes":1048576,"checksum_ok":true},{"resource_id":2,"bytes":1048576,"checksum_ok":true},{"resource_id":3,"bytes":1048576,"checksum_ok":true},{"resource_id":4,"bytes":1048576,"checksum_ok":true},{"resource_id":5,"bytes":1048576,"checksum_ok":true},{"resource_id":6,"bytes":1048576,"checksum_ok":true}]}
+client command: bin/client --transport=quic --mode=cold --profile=bulk --addr=127.0.0.1:4433 --server-name=localhost --format=json
+quic exit=0
+{"transport":"quic","profile":"bulk","resource_count":6,"bytes":6291456,"elapsed_ms":127.786429,"resources":[{"resource_id":1,"transport_stream_id":0,"bytes":1048576,"checksum_ok":true},{"resource_id":2,"transport_stream_id":4,"bytes":1048576,"checksum_ok":true},{"resource_id":3,"transport_stream_id":8,"bytes":1048576,"checksum_ok":true},{"resource_id":4,"transport_stream_id":12,"bytes":1048576,"checksum_ok":true},{"resource_id":5,"transport_stream_id":16,"bytes":1048576,"checksum_ok":true},{"resource_id":6,"transport_stream_id":20,"bytes":1048576,"checksum_ok":true}]}
+validated: TCP 6 hashes; QUIC 6 hashes, 6 distinct native stream IDs
+stream map: [(1, 0), (2, 4), (3, 8), (4, 12), (5, 16), (6, 20)]
+server SIGTERM exit=0
+ready-file removed on shutdown
+both ready tcp=127.0.0.1:4433 udp=127.0.0.1:4433 profile=bulk resources=6
+exit=0

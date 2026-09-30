@@ -1,0 +1,2 @@
+G06 validator: 3 actual trials, failure retained, warmup excluded, duplicate ID and missing stream rejected
+Audit regressions: incomplete, timeline, missing ID/milestone and raw type mutations rejected

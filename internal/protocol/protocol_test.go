@@ -73,6 +73,32 @@ func TestGoldenAndPartialIO(t *testing.T) {
 	}
 }
 
+type countingReader struct {
+	r io.Reader
+	n int
+}
+
+func (c *countingReader) Read(p []byte) (int, error) {
+	n, err := c.r.Read(p[:min(len(p), 1)])
+	c.n += n
+	return n, err
+}
+
+func TestFirstByteHookBeforeFullChunk(t *testing.T) {
+	var wire bytes.Buffer
+	if err := WriteFrame(&wire, Frame{Type: Data, ResourceID: 1, Payload: []byte{1, 2, 3, 4}}, 4); err != nil {
+		t.Fatal(err)
+	}
+	r := &countingReader{r: bytes.NewReader(wire.Bytes())}
+	observed := 0
+	if _, err := ReadFrameObserved(r, 4, func() { observed = r.n }); err != nil {
+		t.Fatal(err)
+	}
+	if observed != HeaderSize+1 || r.n != HeaderSize+4 {
+		t.Fatalf("first-byte observed after %d bytes; final=%d", observed, r.n)
+	}
+}
+
 func TestMetaAndResponseState(t *testing.T) {
 	data := []byte{1, 2, 3, 4}
 	hash := sha256.Sum256(data)

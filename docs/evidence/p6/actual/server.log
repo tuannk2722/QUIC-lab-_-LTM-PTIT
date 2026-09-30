@@ -1,0 +1,1 @@
+both ready tcp=127.0.0.1:56851 udp=127.0.0.1:56851 profile=bulk resources=6

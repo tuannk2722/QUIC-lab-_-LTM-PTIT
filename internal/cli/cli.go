@@ -3,6 +3,9 @@ package cli
 
 import (
 	"context"
+	"crypto/rand"
+	"crypto/tls"
+	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"flag"
@@ -11,6 +14,7 @@ import (
 	"net"
 	"os"
 	"os/signal"
+	"path/filepath"
 	"runtime"
 	"runtime/debug"
 	"strconv"
@@ -18,7 +22,10 @@ import (
 	"time"
 
 	"quic-performance-lab/internal/config"
+	"quic-performance-lab/internal/metrics"
 	"quic-performance-lab/internal/tlsconfig"
+	"quic-performance-lab/internal/transport"
+	quictransport "quic-performance-lab/internal/transport/quic"
 	tcptransport "quic-performance-lab/internal/transport/tcp"
 	"quic-performance-lab/internal/workload"
 
@@ -64,13 +71,13 @@ func Run(name string, args []string, out, errOut io.Writer) int {
 	fs := flag.NewFlagSet(name, flag.ContinueOnError)
 	fs.SetOutput(errOut)
 	fs.Usage = func() {
-		fmt.Fprintf(errOut, "Usage: %s [flags]\nP3: TCP/TLS batch transfer; QUIC and benchmark modes report not implemented.\n", name)
+		fmt.Fprintf(errOut, "Usage: %s [flags]\nP4: TCP/TLS and QUIC cold batch transfer; benchmark and 0-RTT modes report not implemented.\n", name)
 		fs.PrintDefaults()
 	}
 	version := fs.Bool("version", false, "print build, commit and toolchain versions")
 	profiles := fs.String("profiles", config.DefaultProfiles, "workload JSON file")
 	profile := fs.String("profile", "bulk", "workload profile")
-	var transport, addr, mode, format, ca, serverName, cert, key, scenario, suite, entry, merge string
+	var transportName, addr, mode, format, ca, serverName, cert, key, readyFile, scenario, suite, entry, merge, experimentID, runID, outDir string
 	var timeout time.Duration
 	var runs, warmups int
 	var plan bool
@@ -78,22 +85,22 @@ func Run(name string, args []string, out, errOut io.Writer) int {
 	fs.String("keylog", "", "TLS secrets file (future evidence mode)")
 	if name == "server" {
 		fs.StringVar(&addr, "listen", "0.0.0.0:4433", "listen endpoint")
-		fs.StringVar(&transport, "transport", "both", "tcp, quic or both")
+		fs.StringVar(&transportName, "transport", "both", "tcp, quic or both")
 		fs.StringVar(&cert, "cert", "certs/server.crt", "certificate PEM")
 		fs.StringVar(&key, "key", "certs/server.key", "private key PEM")
 		fs.Bool("allow-0rtt", true, "allow read-only QUIC early data (future phase)")
-		fs.String("ready-file", "", "atomic readiness path (future phase)")
+		fs.StringVar(&readyFile, "ready-file", "", "atomic readiness path")
 	} else if name == "client" || name == "bench" {
 		fs.StringVar(&addr, "addr", "10.10.0.2:4433", "server endpoint")
-		fs.StringVar(&transport, "transport", "tcp", "tcp or quic")
+		fs.StringVar(&transportName, "transport", "tcp", "tcp or quic")
 		fs.StringVar(&mode, "mode", "cold", "cold, resumed or early; non-cold requires quic")
 		fs.StringVar(&ca, "ca", "certs/server.crt", "explicit trusted certificate/CA")
 		fs.StringVar(&serverName, "server-name", "10.10.0.2", "TLS peer identity")
 		fs.DurationVar(&timeout, "timeout", 0, "trial deadline (default: timeouts.trial_seconds from profiles)")
 		fs.StringVar(&format, "format", "table", "table or json")
-		fs.String("experiment-id", "", "experiment identifier")
-		fs.String("run-id", "", "trial identifier")
-		fs.String("out", "", "result directory (canonical files arrive in P6)")
+		fs.StringVar(&experimentID, "experiment-id", "", "experiment identifier")
+		fs.StringVar(&runID, "run-id", "", "trial identifier")
+		fs.StringVar(&outDir, "out", "", "new result directory")
 		fs.Bool("progress", false, "collect progress in future evidence mode")
 	} else {
 		fmt.Fprintln(errOut, "unknown binary")
@@ -136,7 +143,7 @@ func Run(name string, args []string, out, errOut io.Writer) int {
 	if !endpoint(addr) {
 		return bad("endpoint must have host and port 1..65535")
 	}
-	if transport != "tcp" && transport != "quic" && !(name == "server" && transport == "both") {
+	if transportName != "tcp" && transportName != "quic" && !(name == "server" && transportName == "both") {
 		return bad("unsupported transport")
 	}
 	if name == "server" {
@@ -147,7 +154,7 @@ func Run(name string, args []string, out, errOut io.Writer) int {
 		if mode != "cold" && mode != "resumed" && mode != "early" {
 			return bad("unsupported mode")
 		}
-		if transport != "quic" && mode != "cold" {
+		if transportName != "quic" && mode != "cold" {
 			return bad("resumed/early require QUIC")
 		}
 		explicitTimeout := false
@@ -167,6 +174,9 @@ func Run(name string, args []string, out, errOut io.Writer) int {
 		}
 		if format != "table" && format != "json" {
 			return bad("format must be table or json")
+		}
+		if (experimentID != "" && !metrics.ValidID(experimentID)) || (runID != "" && !metrics.ValidID(runID)) {
+			return bad("experiment-id/run-id must contain 1..128 ASCII letters, digits, _ or -")
 		}
 	}
 	if name == "bench" {
@@ -211,7 +221,7 @@ func Run(name string, args []string, out, errOut io.Writer) int {
 			return bad("plan, schedule-entry and merge are mutually exclusive")
 		}
 	}
-	if name == "server" && transport == "tcp" {
+	if name == "server" {
 		store, err := workload.NewStore(w.Profiles[*profile], w.Limits)
 		if err != nil {
 			return bad(err.Error())
@@ -223,30 +233,18 @@ func Run(name string, args []string, out, errOut io.Writer) int {
 		}
 		ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 		defer stop()
-		ready := make(chan net.Addr)
-		done := make(chan error, 1)
-		go func() {
-			done <- tcptransport.Serve(ctx, addr, cfg, store, tcptransport.ServerOptions{
-				HandshakeTimeout: time.Duration(w.Timeouts.HandshakeSeconds) * time.Second,
-				BatchTimeout:     time.Duration(w.Timeouts.BatchSeconds) * time.Second,
-				TrialTimeout:     time.Duration(w.Timeouts.TrialSeconds) * time.Second,
-				MaxConnections:   int(w.Limits.MaxActiveConnections),
-			}, ready)
-		}()
-		select {
-		case actual := <-ready:
-			fmt.Fprintf(errOut, "TCP/TLS ready %s profile=%s resources=%d\n", actual, *profile, store.Count())
-		case err := <-done:
-			fmt.Fprintln(errOut, err)
-			return 1
-		}
-		if err := <-done; err != nil {
+		if err := serveCLI(ctx, addr, transportName, cfg, store, tcptransport.ServerOptions{
+			HandshakeTimeout: time.Duration(w.Timeouts.HandshakeSeconds) * time.Second,
+			BatchTimeout:     time.Duration(w.Timeouts.BatchSeconds) * time.Second,
+			TrialTimeout:     time.Duration(w.Timeouts.TrialSeconds) * time.Second,
+			MaxConnections:   int(w.Limits.MaxActiveConnections),
+		}, readyFile, *profile, errOut); err != nil {
 			fmt.Fprintln(errOut, err)
 			return 1
 		}
 		return 0
 	}
-	if name == "client" && transport == "tcp" {
+	if name == "client" && mode == "cold" {
 		expected, err := workload.NewStore(w.Profiles[*profile], w.Limits)
 		if err != nil {
 			return bad(err.Error())
@@ -256,61 +254,220 @@ func Run(name string, args []string, out, errOut io.Writer) int {
 			fmt.Fprintln(errOut, err)
 			return 1
 		}
-		results, err := tcptransport.RunBatch(context.Background(), addr, cfg, expected, timeout)
-		if err != nil {
-			fmt.Fprintln(errOut, "TCP transfer failed:", err)
-			return 1
-		}
-		if format == "json" {
-			if len(results) > 1 {
-				type resourceRow struct {
-					ResourceID uint32 `json:"resource_id"`
-					Bytes      uint64 `json:"bytes"`
-					ChecksumOK bool   `json:"checksum_ok"`
-				}
-				rows := make([]resourceRow, len(results))
-				var total uint64
-				for i, result := range results {
-					rows[i] = resourceRow{result.ResourceID, result.BytesReceived, result.ChecksumOK}
-					total += result.BytesReceived
-				}
-				payload := struct {
-					Transport     string        `json:"transport"`
-					Profile       string        `json:"profile"`
-					ResourceCount int           `json:"resource_count"`
-					Bytes         uint64        `json:"bytes"`
-					ElapsedMS     float64       `json:"elapsed_ms"`
-					Resources     []resourceRow `json:"resources"`
-				}{"tcp", *profile, len(results), total, float64(results[0].Timing.End.Sub(results[0].Timing.Start)) / float64(time.Millisecond), rows}
-				if err := json.NewEncoder(out).Encode(payload); err != nil {
-					fmt.Fprintln(errOut, err)
-					return 1
-				}
-				return 0
-			}
-			result := results[0]
-			payload := struct {
-				Transport  string  `json:"transport"`
-				Profile    string  `json:"profile"`
-				ResourceID uint32  `json:"resource_id"`
-				Bytes      uint64  `json:"bytes"`
-				ChecksumOK bool    `json:"checksum_ok"`
-				ElapsedMS  float64 `json:"elapsed_ms"`
-			}{"tcp", *profile, result.ResourceID, result.BytesReceived, result.ChecksumOK, float64(result.Timing.End.Sub(result.Timing.Start)) / float64(time.Millisecond)}
-			if err := json.NewEncoder(out).Encode(payload); err != nil {
+		if experimentID == "" {
+			experimentID, err = newID("exp")
+			if err != nil {
 				fmt.Fprintln(errOut, err)
 				return 1
 			}
-		} else {
-			for _, result := range results {
-				if _, err := fmt.Fprintf(out, "tcp %s resource=%d bytes=%d checksum_ok=%t elapsed_ms=%.3f\n", *profile, result.ResourceID, result.BytesReceived, result.ChecksumOK, float64(result.Timing.End.Sub(result.Timing.Start))/float64(time.Millisecond)); err != nil {
-					fmt.Fprintln(errOut, err)
-					return 1
-				}
+		}
+		if runID == "" {
+			runID, err = newID("run")
+			if err != nil {
+				fmt.Fprintln(errOut, err)
+				return 1
 			}
+		}
+		if outDir == "" {
+			outDir = filepath.Join("results", experimentID)
+		}
+		var results []transport.Result
+		if transportName == "tcp" {
+			results, err = tcptransport.RunBatch(context.Background(), addr, cfg, expected, timeout)
+		} else {
+			results, err = quictransport.RunBatch(context.Background(), addr, cfg, expected, timeout)
+		}
+		meta := metrics.TrialMeta{ExperimentID: experimentID, RunID: runID, Phase: "measured", Scenario: "loopback-test",
+			Transport: transportName, Mode: mode, TraceMode: "performance", NetworkProfile: "loopback-test",
+			ResourceCount: expected.Count(), ResourceSizeBytes: uint64(expected.Profile().ResourceSizeBytes), ChunkBytes: uint32(expected.Profile().ChunkBytes)}
+		if len(results) == expected.Count() {
+			record, recordErr := metrics.NewTrial(meta, results, err)
+			if recordErr != nil {
+				fmt.Fprintln(errOut, "result conversion failed:", recordErr)
+				return 1
+			}
+			if writeErr := metrics.WriteTrial(outDir, record); writeErr != nil {
+				fmt.Fprintln(errOut, "result write failed:", writeErr)
+				return 1
+			}
+			fmt.Fprintln(errOut, "results:", outDir)
+		}
+		if err != nil {
+			fmt.Fprintln(errOut, transportName, "transfer failed:", err)
+			return 1
+		}
+		if err := writeTransfer(out, transportName, *profile, format, results); err != nil {
+			fmt.Fprintln(errOut, err)
+			return 1
 		}
 		return 0
 	}
 	fmt.Fprintln(errOut, "not implemented: selected transport/mode or benchmark belongs to a later phase")
 	return 1
+}
+
+func newID(prefix string) (string, error) {
+	var b [8]byte
+	if _, err := rand.Read(b[:]); err != nil {
+		return "", err
+	}
+	return prefix + "_" + time.Now().UTC().Format("20060102T150405") + "_" + hex.EncodeToString(b[:]), nil
+}
+
+func writeTransfer(out io.Writer, transportName, profile, format string, results []transport.Result) error {
+	timings, _, err := metrics.Run(transportName, results, true)
+	if err != nil {
+		return err
+	}
+	elapsed := timings.ElapsedMS
+	if format == "json" {
+		if len(results) == 1 {
+			r := results[0]
+			return json.NewEncoder(out).Encode(struct {
+				Transport         string            `json:"transport"`
+				Profile           string            `json:"profile"`
+				ResourceID        uint32            `json:"resource_id"`
+				TransportStreamID *int64            `json:"transport_stream_id,omitempty"`
+				Bytes             uint64            `json:"bytes"`
+				ChecksumOK        bool              `json:"checksum_ok"`
+				ElapsedMS         float64           `json:"elapsed_ms"`
+				Metrics           metrics.RunTiming `json:"metrics"`
+			}{transportName, profile, r.ResourceID, r.StreamID, r.BytesReceived, r.ChecksumOK, elapsed, timings})
+		}
+		type row struct {
+			ResourceID        uint32 `json:"resource_id"`
+			TransportStreamID *int64 `json:"transport_stream_id,omitempty"`
+			Bytes             uint64 `json:"bytes"`
+			ChecksumOK        bool   `json:"checksum_ok"`
+		}
+		rows := make([]row, len(results))
+		var total uint64
+		for i, r := range results {
+			rows[i] = row{r.ResourceID, r.StreamID, r.BytesReceived, r.ChecksumOK}
+			total += r.BytesReceived
+		}
+		return json.NewEncoder(out).Encode(struct {
+			Transport     string            `json:"transport"`
+			Profile       string            `json:"profile"`
+			ResourceCount int               `json:"resource_count"`
+			Bytes         uint64            `json:"bytes"`
+			ElapsedMS     float64           `json:"elapsed_ms"`
+			Resources     []row             `json:"resources"`
+			Metrics       metrics.RunTiming `json:"metrics"`
+		}{transportName, profile, len(results), total, elapsed, rows, timings})
+	}
+	for _, r := range results {
+		if r.StreamID != nil {
+			if _, err := fmt.Fprintf(out, "%s %s resource=%d stream=%d bytes=%d checksum_ok=%t elapsed_ms=%.3f\n", transportName, profile, r.ResourceID, *r.StreamID, r.BytesReceived, r.ChecksumOK, elapsed); err != nil {
+				return err
+			}
+		} else if _, err := fmt.Fprintf(out, "%s %s resource=%d bytes=%d checksum_ok=%t elapsed_ms=%.3f\n", transportName, profile, r.ResourceID, r.BytesReceived, r.ChecksumOK, elapsed); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func serveCLI(parent context.Context, addr, transportName string, cfg *tls.Config, store *workload.Store, tcpOpts tcptransport.ServerOptions, readyFile, profile string, errOut io.Writer) error {
+	var tcpListener net.Listener
+	var packet net.PacketConn
+	var quicListener *quic.Listener
+	var err error
+	if transportName == "tcp" || transportName == "both" {
+		tcpListener, err = net.Listen("tcp", addr)
+		if err != nil {
+			return err
+		}
+		defer tcpListener.Close()
+	}
+	quicOpts := quictransport.ServerOptions{
+		HandshakeTimeout: tcpOpts.HandshakeTimeout,
+		BatchTimeout:     tcpOpts.BatchTimeout,
+		TrialTimeout:     tcpOpts.TrialTimeout,
+		MaxConnections:   tcpOpts.MaxConnections,
+	}
+	if transportName == "quic" || transportName == "both" {
+		udpAddr := addr
+		if tcpListener != nil {
+			host, _, _ := net.SplitHostPort(addr)
+			_, port, _ := net.SplitHostPort(tcpListener.Addr().String())
+			udpAddr = net.JoinHostPort(host, port)
+		}
+		packet, err = net.ListenPacket("udp", udpAddr)
+		if err != nil {
+			return err
+		}
+		defer packet.Close()
+		quicListener, err = quictransport.ListenPacket(packet, cfg, quicOpts)
+		if err != nil {
+			return err
+		}
+		defer quicListener.Close()
+	}
+	// One semaphore bounds all active trials across both listeners.
+	slots := make(chan struct{}, tcpOpts.MaxConnections)
+	tcpOpts.ConnectionSlots, quicOpts.ConnectionSlots = slots, slots
+	serverCtx, cancel := context.WithCancel(parent)
+	defer cancel()
+	done := make(chan error, 2)
+	running := 0
+	if tcpListener != nil {
+		running++
+		go func() { done <- tcptransport.ServeListener(serverCtx, tcpListener, cfg, store, tcpOpts) }()
+	}
+	if quicListener != nil {
+		running++
+		go func() { done <- quictransport.ServeListener(serverCtx, quicListener, store, quicOpts) }()
+	}
+	tcpAddress, udpAddress := "none", "none"
+	if tcpListener != nil {
+		tcpAddress = tcpListener.Addr().String()
+	}
+	if quicListener != nil {
+		udpAddress = quicListener.Addr().String()
+	}
+	readyText := fmt.Sprintf("%s ready tcp=%s udp=%s profile=%s resources=%d\n", transportName, tcpAddress, udpAddress, profile, store.Count())
+	if readyFile != "" {
+		if err := writeReadyFile(readyFile, readyText); err != nil {
+			cancel()
+			for range running {
+				<-done
+			}
+			return err
+		}
+		defer os.Remove(readyFile)
+	}
+	if _, err := io.WriteString(errOut, readyText); err != nil {
+		cancel()
+		for range running {
+			<-done
+		}
+		return err
+	}
+	var firstErr error
+	for range running {
+		if err := <-done; err != nil && firstErr == nil {
+			firstErr = err
+			cancel()
+		}
+	}
+	return firstErr
+}
+
+func writeReadyFile(path, data string) error {
+	tmp, err := os.CreateTemp(filepath.Dir(path), ".quiclab-ready-*")
+	if err != nil {
+		return err
+	}
+	defer os.Remove(tmp.Name())
+	if _, err := io.WriteString(tmp, data); err != nil {
+		tmp.Close()
+		return err
+	}
+	if err := tmp.Close(); err != nil {
+		return err
+	}
+	// A hard link publishes the complete file atomically and fails if another
+	// process already owns the readiness path.
+	return os.Link(tmp.Name(), path)
 }

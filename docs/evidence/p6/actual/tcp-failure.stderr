@@ -1,0 +1,2 @@
+results: results/p6-g06-ag6vK3/tcp_failure
+tcp transfer failed: tls: failed to verify certificate: x509: certificate is valid for localhost, not wrong.example

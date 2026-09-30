@@ -1,6 +1,6 @@
 # Version lock và kiểm chứng API
 
-Status P0 (2026-09-30): **toolchain/API/build VERIFIED; primitive probe PASS; G00 tổng thể PASS**. Chưa có transport/workload/benchmark; không coi skeleton là implementation hoàn chỉnh.
+Status P0 (2026-09-30): **toolchain/API/build VERIFIED; primitive probe PASS; G00 tổng thể PASS**. Bảng dưới ghi chứng cứ P0 lịch sử; các phase P1–P3 đã bổ sung workload/TCP và mã P4 đã thêm QUIC cold. Trạng thái G04 nằm ở ACCEPTANCE_RESULTS; chưa có benchmark.
 
 | Thành phần | Giá trị / trạng thái P0 | Evidence |
 |---|---|---|
@@ -16,6 +16,12 @@ Status P0 (2026-09-30): **toolchain/API/build VERIFIED; primitive probe PASS; G0
 | tcpdump / Wireshark / qvis | tcpdump 4.99.6; decode/viewer chưa kiểm chứng, để P11 | doctor-host.txt |
 
 Nguồn tải [Go 1.27.1](https://go.dev/dl/#go1.27.1), [quic-go v0.63.0](https://github.com/quic-go/quic-go/releases/tag/v0.63.0). SHA-256 archive Linux amd64 được đối chiếu metadata chính thức trước giải nén: `63d339f0da5ab53635a56f2490a7984dfe12dfcff22ad749f63edaf590168445`. Makefile ép đúng Go 1.27.1, GOTOOLCHAIN=local, build/test -mod=readonly; go.mod/go.sum pin dependency. Không tạo commit trong lượt P0 này. Lệnh tái lập ở README.
+
+## Cấu hình QUIC trong mã P4
+
+`internal/transport/quic/config.go` dùng quic-go v0.63.0, QUIC v1 và `quic.Listen`/`quic.Dial` cho cold path. Server có `MaxIncomingStreams=64`; client đặt `-1` để từ chối server-initiated bidirectional streams. Hai phía có `MaxIncomingUniStreams=-1`; `InitialStreamReceiveWindow=512 KiB`, `MaxStreamReceiveWindow=2 MiB`; `InitialConnectionReceiveWindow=2 MiB`, `MaxConnectionReceiveWindow=16 MiB`. Các giá trị này là flow-control credits; không đồng nghĩa 16 MiB đã cấp phát cho từng connection. quic-go cho phép tổng handshake tối đa 2× `HandshakeIdleTimeout`, nên P4 đặt idle timeout bằng một nửa giới hạn handshake cấu hình (mặc định 5s để giữ tổng tối đa 10s); client còn dùng dial context 10s và trial context 60s mặc định.
+
+Server CLI P4 bind TCP/UDP cùng số port trước readiness, dùng một certificate và một `*workload.Store`, cùng limiter tối đa 8 connections đang xử lý. Client QUIC ghi native `StreamID()` thực bên cạnh ResourceID trong output tối thiểu; không suy ID từ thứ tự resource. `--allow-0rtt` chưa dùng `ListenEarly`; resumption/early, qlog và xác minh trace thuộc P10/P11. G04 transfer/race thực đã PASS theo `docs/ACCEPTANCE_RESULTS.md`; phần này ghi cấu hình mã.
 
 ## API checklist đã kiểm chứng ở P0 (compile/source; chưa chạy QUIC)
 

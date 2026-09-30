@@ -2,13 +2,13 @@
 
 T03 — QUIC Protocol Implementation and Performance, môn Lập trình mạng, PTIT.
 
-**Trạng thái hiện tại:** P0/G00 đến P3/G03 PASS; P3 chờ human review, P1/P2 chưa có xác nhận review. Có workload deterministic, QB01 codec và TCP/TLS multiplex 6 resource trên một connection. Chưa có QUIC runtime, network testbed hoặc kết quả benchmark. Đọc [START_HERE.md](START_HERE.md) để dùng trong IDE.
+**Trạng thái hiện tại:** P0/G00 đến P6/G06 PASS; P5/P6 dừng chờ human review. Đã có đường truyền cold qua TCP/TLS và raw QUIC cùng metrics/JSON/CSV cho mỗi trial. Network testbed và kết quả benchmark chưa có. Xem [ACCEPTANCE_RESULTS](docs/ACCEPTANCE_RESULTS.md) và [START_HERE.md](START_HERE.md).
 
-Thiết kế: cùng bộ resource trong RAM được phục vụ bởi TCP/TLS multiplex và raw QUIC trên TCP/UDP 4433. Client chạy trong Ubuntu dưới WSL2 trên Windows 11 qua hai namespace có network impairment. Số liệu từ client được lưu theo run và resource; qlog và packet capture phục vụ giải thích cơ chế.
+Thiết kế: cùng bộ resource trong RAM được phục vụ bởi TCP/TLS trên TCP và raw QUIC trên UDP cùng số port 4433. Giai đoạn sau sẽ chạy client trong Ubuntu dưới WSL2 qua hai namespace có network impairment, lưu số liệu theo run/resource và thu qlog/packet capture để giải thích cơ chế.
 
 [Đặc tả](docs/DEMO_SPEC.md) · [Kế hoạch triển khai](docs/IMPLEMENTATION_PLAN.md) · [Nghiệm thu](docs/ACCEPTANCE.md) · [Kịch bản demo](docs/DEMO_SCRIPT.md)
 
-Repo phải nằm trong filesystem Linux native, ưu tiên `/home/<user>/...`, không `/mnt/c/...` hoặc `/mnt/d/...`. Mở Windows VS Code bằng Remote WSL, workspace `WSL: Ubuntu`. Implementation mặc định human-gated: chỉ phase được người dùng cho phép, chạy gate rồi cập nhật TASK và dừng review. P3/G03 đã được cho phép và chạy xong; dừng để review trước P4. Xem [bằng chứng acceptance](docs/ACCEPTANCE_RESULTS.md).
+Repo phải nằm trong filesystem Linux native, ưu tiên `/home/<user>/...`, không `/mnt/c/...` hoặc `/mnt/d/...`. Mở Windows VS Code bằng Remote WSL, workspace `WSL: Ubuntu`. Implementation mặc định human-gated: chỉ phase được người dùng cho phép, chạy gate rồi cập nhật TASK và dừng review. Người dùng đã approve P4/G04 và cho phép P5/P6 với gates riêng; xem [bằng chứng acceptance](docs/ACCEPTANCE_RESULTS.md) để biết trạng thái mới nhất.
 
 ## Tái lập P0 (chạy bên trong Ubuntu WSL2)
 
@@ -36,7 +36,7 @@ Makefile tự chọn Go local nếu có, nếu không dùng PATH và kiểm đú
 
 `make certs` tạo cert local hạn 30 ngày, SAN localhost/127.0.0.1/10.10.0.2, key 0600; từ chối ghi đè. Chỉ khi chủ động thay identity và đã dừng mọi server, dùng `make certs CERT_FORCE=--force`. Test tạo identity riêng trong thư mục tạm, không sửa cert đang dùng.
 
-Các lệnh ngoài phạm vi P3 (`bin/bench`, QUIC) còn trả **exit 1 / not implemented**. Input/config không hợp lệ trả **2**. `--help`/`--version` trả 0. Defaults workload/scenario/timeouts được đọc từ configs; `--profiles` và `--scenarios` cho phép chọn tệp rõ ràng.
+`bin/bench` và client `--mode=resumed|early` còn trả **exit 1 / not implemented**; cold TCP/QUIC được hỗ trợ. Input/config không hợp lệ trả **2**. `--help`/`--version` trả 0. Defaults workload/scenario/timeouts được đọc từ configs; `--profiles` và `--scenarios` cho phép chọn tệp rõ ràng.
 
 `make doctor` chỉ inventory, không tạo namespace hoặc cấp quyền cho Go. Nếu sandbox chặn netlink, chạy lệnh ở terminal Ubuntu WSL bình thường. Để tái lập primitive preflight (đã PASS trong hồ sơ P0), chạy:
 
@@ -61,7 +61,7 @@ bin/server --transport=tcp --profile=handshake --listen=127.0.0.1:14433
 bin/client --transport=tcp --profile=handshake --addr=127.0.0.1:14433 --server-name=localhost --format=json
 ```
 
-Client thành công chỉ khi nhận đủ 1.024 byte, FIN và hash đúng. Dừng server bằng Ctrl+C. Test G02 cũng kiểm CA sai, frame lỗi và timeout qua localhost thực. JSON trên stdout là kết quả P2 tối thiểu; canonical result files/metrics và benchmark thuộc phase sau. Bằng chứng ở `docs/evidence/p1/`, `docs/evidence/p2/` và [ACCEPTANCE_RESULTS](docs/ACCEPTANCE_RESULTS.md). Không suy ra hiệu năng từ localhost.
+Client thành công chỉ khi nhận đủ 1.024 byte, FIN và hash đúng. Dừng server bằng Ctrl+C. Test G02 cũng kiểm CA sai, frame lỗi và timeout qua localhost thực. Output P2 lúc đó là tối thiểu; P5/P6 hiện đã thêm metrics và result files. Bằng chứng ở `docs/evidence/p1/`, `docs/evidence/p2/` và [ACCEPTANCE_RESULTS](docs/ACCEPTANCE_RESULTS.md). Không suy ra hiệu năng từ localhost.
 
 ## P3: TCP/TLS multiplex 6 resource
 
@@ -74,7 +74,41 @@ bin/server --transport=tcp --profile=bulk --listen=127.0.0.1:14435
 bin/client --transport=tcp --profile=bulk --addr=127.0.0.1:14435 --server-name=localhost --format=json
 ```
 
-Client gửi đủ 6 REQUEST trước khi nhận response; server chờ batch đủ rồi phát META 1..6 và DATA round-robin trên một TLS connection. Kết quả JSON tối thiểu có 6 resource, tổng 6.291.456 bytes và `checksum_ok=true` cho từng resource. `make test`/`make test-race` kiểm batch timeout, cancel, transcript frame và connection count. Bằng chứng ở [G03](docs/ACCEPTANCE_RESULTS.md). Đây là localhost correctness; metric/CSV chuẩn và so sánh network thuộc các phase sau.
+Client gửi đủ 6 REQUEST trước khi nhận response; server chờ batch đủ rồi phát META 1..6 và DATA round-robin trên một TLS connection. Kết quả JSON có 6 resource, tổng 6.291.456 bytes và `checksum_ok=true` cho từng resource. `make test`/`make test-race` kiểm batch timeout, cancel, transcript frame và connection count. Bằng chứng ở [G03](docs/ACCEPTANCE_RESULTS.md). Đây là localhost correctness; P5/P6 đã thêm metric/CSV, so sánh network thuộc các phase sau.
+
+## P4: TCP/TLS và raw QUIC cold trên cùng port
+
+Từ repo root trong Ubuntu WSL2, sau `make build` và `make certs` nếu chưa có cert, chạy hai terminal:
+
+```bash
+# Terminal 1: một process, TCP và UDP cùng số port 4433
+mkdir -p results
+bin/server --transport=both --profile=bulk --listen=127.0.0.1:4433 --ready-file=results/p4-ready.txt
+# Terminal 2: hai trial cold riêng trên hai transport
+bin/client --transport=tcp --mode=cold --profile=bulk --addr=127.0.0.1:4433 --server-name=localhost --format=json
+bin/client --transport=quic --mode=cold --profile=bulk --addr=127.0.0.1:4433 --server-name=localhost --format=json
+```
+
+Server công bố ready file atomically sau khi cả hai listeners đã bind; từ chối ghi đè marker đã có và xóa marker của mình khi dừng bình thường. Cả hai listeners dùng chung certificate và một RAM workload store, với tối đa 8 connections đang xử lý tổng cộng. Mỗi QUIC resource dùng một bidirectional stream; JSON tối thiểu ghi `transport_stream_id` thực bên cạnh `resource_id`, bytes và checksum. Client QUIC gửi các REQUEST trên nhiều stream rồi nhận response độc lập, dùng cùng QB01 và kiểm đủ FIN/EOF/hash. QUIC v1 cho phép server nhận 64 bidirectional streams, client từ chối stream do server tự mở; hai phía tắt incoming unidirectional streams. Receive credits ban đầu/tối đa là 512 KiB/2 MiB mỗi stream và 2 MiB/16 MiB mỗi connection.
+
+Đây là đường truyền cold và kiểm chức năng trên localhost, chưa phải benchmark. `--allow-0rtt`, các mode resumed/early, namespace/IFB và network benchmark thuộc các phase sau. Không suy ra performance hoặc G07/G08 từ output localhost; trạng thái G04 được ghi tại [ACCEPTANCE_RESULTS](docs/ACCEPTANCE_RESULTS.md).
+
+## P5/P6: metrics và canonical result files
+
+Cold client tự tạo thư mục mới `results/<experiment_id>/` sau mỗi lần chạy; `--out=DIR`, `--experiment-id=ID`, `--run-id=ID` cho phép đặt rõ. Trong đó có `raw/<run_id>.json`, `runs.csv`, `streams.csv`. Trial thất bại sau khi bắt đầu vẫn ghi run/resource rows và trả exit 1; nếu ghi file lỗi, command cũng trả exit 1. Mốc chưa xảy ra là `null` trong JSON và ô rỗng trong CSV. Kết quả G06 thật, gồm TCP/QUIC thành công và TLS trust failure, nằm ở [evidence P6](docs/evidence/p6/actual/); chỉ là correctness trên localhost.
+
+```bash
+make build
+make test
+make test-race
+bash docs/evidence/p6/run-g06.sh
+# Script in ra results_dir mới; ví dụ:
+python3 analysis/validate.py results/<p6-g06-dir>/tcp_success
+python3 analysis/validate.py results/<p6-g06-dir>/quic_success
+python3 analysis/validate.py results/<p6-g06-dir>/tcp_failure
+```
+
+`docs/REPORT.md` hiện là template, chưa có manifest thí nghiệm đầy đủ, schedule, summary/plots hay benchmark. `bin/bench`, resumption/0-RTT và network namespace vẫn thuộc phase sau.
 
 ## Hợp đồng README sau triển khai đầy đủ
 

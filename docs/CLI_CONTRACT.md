@@ -1,6 +1,6 @@
 # CLI và Make contract
 
-Các lệnh dưới đây là **hợp đồng cuối cùng**. P0 đã có help/version, parse/validate flags/config, build/test/certs/doctor. P2 có TCP/TLS một resource với `--profile=handshake`; P3 có bulk multiplex 6 resource với `--profile=bulk` trên server/client. QUIC, plan/merge/benchmark chưa triển khai và phải trả nonzero. JSON stdout hiện chỉ là kết quả tối thiểu; canonical result files thuộc P6. Defaults phải dùng chung config loader. Không dùng command string eval từ input; subprocess dùng argument list.
+Các lệnh dưới đây là **hợp đồng cuối cùng**. P0 đã có help/version, parse/validate flags/config, build/test/certs/doctor. P2 có TCP/TLS một resource với `--profile=handshake`; P3 có bulk multiplex 6 resource với `--profile=bulk`; P4 hỗ trợ cold batch qua TCP/TLS hoặc raw QUIC. P5/P6 đã thêm metrics client và canonical raw JSON/runs.csv/streams.csv cho mỗi cold client trial. `bin/bench`, client resumed/early, plan/merge/benchmark vẫn chưa triển khai và phải trả nonzero. Defaults phải dùng chung config loader. Không dùng command string eval từ input; subprocess dùng argument list.
 
 ## 1. Binaries
 
@@ -9,8 +9,8 @@ Các lệnh dưới đây là **hợp đồng cuối cùng**. P0 đã có help/v
 | Binary | Flags cốt lõi | Semantics |
 |---|---|---|
 | server | `--listen=0.0.0.0:4433 --transport=both --profile=bulk --profiles=configs/workloads.json` | tcp/quic/both; store theo profile |
-| server | `--cert=certs/server.crt --key=certs/server.key --allow-0rtt=true` | QUIC early listener, TCP vẫn full TLS1.3 |
-| server | `--ready-file=PATH --qlog-dir=PATH --keylog=PATH` | ready file atomic sau cả listeners; trace flags mặc định rỗng |
+| server | `--cert=certs/server.crt --key=certs/server.key --allow-0rtt=true` | QUIC early listener thuộc P10; P4 chỉ cold, TCP vẫn full TLS1.3 |
+| server | `--ready-file=PATH --qlog-dir=PATH --keylog=PATH` | ready file atomic sau listeners được chọn; qlog/keylog thuộc P11 |
 | client | `--addr=10.10.0.2:4433 --transport=tcp --mode=cold --profile=bulk` | transport tcp/quic; mode cold/resumed/early, early chỉ QUIC |
 | client | `--ca=certs/server.crt --server-name=10.10.0.2 --timeout=60s` | trust đúng cert và identity |
 | client | `--experiment-id=ID --run-id=ID --out=DIR --format=table` | ID tự sinh nếu thiếu; table/json; raw result ghi atomically |
@@ -25,6 +25,20 @@ Các flags môi trường dùng chung (addr/ca/profile/timeout) của client ph�
 
 Schedule entry tối thiểu: schema_version, experiment_id, run_id, scenario, phase, repeat_index, pair_id, order_index, transport, mode, workload_profile, netem_seed, trace_mode. File schedule không chứa lệnh shell. Validate count/enums/paths trước thực thi. Một codepath internal run trial dùng cho cả CLI và bench.
 
+### Hiện trạng P4/G04
+
+`bin/server --transport=both --listen=HOST:PORT` bind TCP và UDP cùng số port trước khi in readiness hoặc tạo `--ready-file`. Một process dùng chung certificate và RAM workload store. Ready file được công bố atomically trong cùng thư mục, từ chối ghi đè marker có sẵn và xóa khi server dừng bình thường. `--transport=tcp` hoặc `quic` chỉ mở listener tương ứng. Giới hạn 8 connections đang xử lý được chia sẻ giữa hai listeners.
+
+`bin/client --mode=cold --transport=quic` dùng một QUIC v1 connection, một bidirectional stream/resource và cùng QB01; `--transport=tcp` giữ một TLS connection và scheduler round-robin. Client QUIC gửi các REQUEST mà không chờ response của resource trước; mỗi stream gửi request rồi đóng send-half. Output JSON trên stdout vẫn có `resource_id`, `transport_stream_id` thực cho QUIC, `bytes`, `checksum_ok`, `elapsed_ms`, thêm object `metrics` P5; TCP bỏ `transport_stream_id`. Với profile bulk, 6 resource nằm trong mảng `resources`. Canonical typed record/CSV P6 nằm trong thư mục kết quả mới; stdout localhost chỉ là correctness output.
+
+QUIC P4 cho phép server nhận 64 incoming bidirectional streams, còn client từ chối stream do server tự mở; hai phía tắt incoming unidirectional streams. Receive credits ban đầu/tối đa: 512 KiB/2 MiB mỗi stream và 2 MiB/16 MiB mỗi connection; đây là flow-control credits của quic-go, không phải kích thước resource buffer. `--allow-0rtt` vẫn là flag cho P10 và chưa kích hoạt early path; client `--mode=resumed|early` và `bin/bench` trả exit 1 / not implemented. `--qlog-dir`, `--keylog`, `--progress`, network topology/benchmark thuộc phase sau.
+
+### Hiện trạng P5/P6
+
+Cold client tính các mốc client monotonic theo METRICS: first DATA byte khi Read trả n>0, total_ms đến FIN cuối, elapsed_ms đến kết thúc trial và goodput chỉ khi success. Không ép request_end trước first_byte. TCP dial thành công vẫn ghi tcp_connect_ms khi TLS handshake fail; các mốc chưa có là null/ô CSV rỗng. Chưa có 0-RTT actual state nên tls_resumed/used_0rtt/early_rejected nullable, attempted_0rtt=false cho cold.
+
+Mỗi invocation client tạo thư mục mới `results/<experiment_id>/` hoặc `--out=DIR`; ID tự sinh khi thiếu, ID chỉ gồm 1..128 ASCII chữ/số/`_`/`-`. Trong đó có `raw/<run_id>.json`, `runs.csv`, `streams.csv`; validator: `python3 analysis/validate.py DIR`. Failure sau khi trial bắt đầu vẫn ghi run và N resource rows trước khi trả exit 1. Directory đã tồn tại bị từ chối để không append/overwrite. Result write failure trả exit 1; raw đã ghi giữ lại nếu lỗi CSV và file `INCOMPLETE` còn hiện diện cho đến khi ghi đủ. Metadata network chưa được verify bởi P7/P8 được label `loopback-test` cho correctness/exploratory, không dùng làm benchmark. Full manifest và schedule/merge thuộc P9.
+
 ## 2. Exit codes và output
 
 - 0: thao tác yêu cầu thành công; client full data + hash pass. Early demo yêu cầu “prove accepted early” thêm gate riêng, không coi fallback success là proof.
@@ -34,6 +48,8 @@ Schedule entry tối thiểu: schema_version, experiment_id, run_id, scenario, p
 - Signal interrupt: 130 (INT), 143 (TERM) ở wrapper khi phù hợp; trap giữ nguyên status.
 
 Server in readiness, endpoints và workload; client in transport/mode, scenario thực/không xác minh, bytes, timings, resource table, checksum, used0rtt và output directory. Không log secrets. Khi early rejected phải hiện rõ rejected + fallback_count, không in “0-RTT successful” chỉ vì tải thành công.
+
+P4 hiện in readiness và kết quả transfer tối thiểu theo phần trên; các trường timing đầy đủ, `used0rtt`, scenario được xác minh và output directory là hợp đồng cho các phase metrics/results/0-RTT sau.
 
 Bench summary có attempted/success/failed; có failures thì CSV vẫn giữ đầy đủ. Infra failure như netem apply sai → dừng cohort, không tiếp tục dưới điều kiện mạng giả.
 
