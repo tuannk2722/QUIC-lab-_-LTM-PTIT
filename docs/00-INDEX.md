@@ -32,4 +32,4 @@ Nếu chuẩn tắc mâu thuẫn nhau: sửa đồng bộ và ghi quyết địn
 
 ## Artifact có sẵn / cần tạo
 
-Có sẵn: docs, config, schema, nguồn gốc và checkpoint. Cần tạo qua P0–P12: Go code, tests, shell wrappers, Makefile, analysis scripts và **tất cả dữ liệu thực nghiệm**. Không có số liệu benchmark mẫu giả trong gói này.
+Có sẵn từ handoff: docs, config, schema, nguồn gốc và checkpoint. P0 đã thêm module, ba CLI skeleton, config/TLS, tests, Makefile và cert/preflight scripts; trạng thái gate ở ACCEPTANCE_RESULTS. Các phase còn lại cần workload, transport, network orchestration, analysis và **tất cả dữ liệu thực nghiệm**. Không có số liệu benchmark mẫu giả trong gói này.

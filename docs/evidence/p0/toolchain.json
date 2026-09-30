@@ -1,0 +1,20 @@
+{
+  "recorded_utc": "2026-09-30T04:33:24.774045+00:00",
+  "go_source": "https://go.dev/dl/?mode=json",
+  "archive_url": "https://go.dev/dl/go1.27.1.linux-amd64.tar.gz",
+  "archive": {
+    "filename": "go1.27.1.linux-amd64.tar.gz",
+    "os": "linux",
+    "arch": "amd64",
+    "version": "go1.27.1",
+    "sha256": "63d339f0da5ab53635a56f2490a7984dfe12dfcff22ad749f63edaf590168445",
+    "size": 70553950,
+    "kind": "archive"
+  },
+  "verified_sha256": "63d339f0da5ab53635a56f2490a7984dfe12dfcff22ad749f63edaf590168445",
+  "installed_path": ".tools/go1.27.1",
+  "quic_go_tag": "v0.63.0",
+  "quic_go_source": "https://github.com/quic-go/quic-go/releases/tag/v0.63.0",
+  "quic_go_minimum_go": "1.26.0",
+  "go_mod_source": "https://raw.githubusercontent.com/quic-go/quic-go/v0.63.0/go.mod"
+}

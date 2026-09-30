@@ -1,0 +1,26 @@
+func NewSentPacketHandler(
+	initialPN protocol.PacketNumber,
+	initialMaxDatagramSize protocol.ByteCount,
+	rttStats *utils.RTTStats,
+	connStats *utils.ConnectionStats,
+	clientAddressValidated bool,
+	enableECN bool,
+	ignorePacketsBelow func(protocol.PacketNumber),
+	pers protocol.Perspective,
+	qlogger qlogwriter.Recorder,
+	logger utils.Logger,
+) SentPacketHandler {
+	congestion := congestion.NewCubicSender(
+		congestion.DefaultClock{},
+		rttStats,
+		connStats,
+		initialMaxDatagramSize,
+		true, // use Reno
+		qlogger,
+	)
+
+	h := &sentPacketHandler{
+		peerCompletedAddressValidation: pers == protocol.PerspectiveServer,
+		peerAddressValidated:           pers == protocol.PerspectiveClient || clientAddressValidated,
+		initialPackets:                 newPacketNumberSpace(initialPN, false),
+		handshakePackets:               newPacketNumberSpace(0, false),

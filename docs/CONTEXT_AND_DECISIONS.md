@@ -68,3 +68,12 @@ Chỉ thay execution layer/testbed: giữ Go/quic-go raw QUIC CLI, TCP/TLS một
 Thay workflow tự chạy P0→P12 bằng chỉ phase/milestone được user cho phép rõ ràng. Chạy gate đầy đủ, cập nhật TASK, dừng review; chỉ tự nhiều phase/end-to-end khi user yêu cầu rõ ràng. Phiên mới đọc AGENTS/INDEX/TASK và normative docs liên quan phase; originals dùng khi ambiguity/conflict/provenance/final traceability. Giữ source-of-truth discipline và mục tiêu cuối P0–P12; build riêng lẻ không phải gate pass.
 
 D13/D14 được đồng bộ trong AGENTS, start prompt/README/START_HERE, TASK, INDEX, NETWORK, VERSIONS, PLAN, ACCEPTANCE, METRICS, DEMO_SCRIPT, TRACEABILITY và AI_USAGE. Migration chỉ tài liệu; implementation và toolchain pin chưa bắt đầu.
+
+### D15 — 2026-09-30: refinement trong P0 được cho phép
+
+- Pin Go 1.27.1 và quic-go v0.63.0 (minimum Go 1.26.0); cài Go local trong `.tools/`, không sudo build/download, không commit tự động. Đã đối chiếu official metadata, checksum, source đúng tag và compile smoke; xem VERSIONS và evidence/p0.
+- Module local `quic-performance-lab` theo PLAN: remote repository không được coi là đã xuất bản Go module. Make giới hạn build parallelism 2 cho tài nguyên hiện có, không phải thông số kiến trúc benchmark.
+- Ba mains dùng internal/cli chung; TLS config chung nằm trong internal/tlsconfig/config.go. Không sinh data/hash workload trước P1, không mở socket/transfer hoặc tạo schedule. Thao tác chưa có trả 1, input lỗi trả 2.
+- Input bounds bổ sung ở CLI§5 bảo vệ config parser và tránh duration overflow; giữ nguyên workload/scenario chính và schema results. Unknown/duplicate JSON keys bị từ chối. Đây là refinement validation, không đổi thí nghiệm.
+- Doctor inventory không root tách khỏi scripts/preflight-network.sh đặc quyền chỉ dùng namespace tạm riêng. Probe không thực hiện G07/G08; lượt agent ban đầu bị chặn ở xác thực sudo. Sau đó người dùng chạy probe thành công lúc 2026-09-30T04:48:25Z; agent đối chiếu log/script và lưu evidence/p0/network-probe.log cùng provenance/hash, đóng G00 PASS. Lịch sử lỗi quyền được giữ nguyên. Các phần độc lập có PASS riêng trong ACCEPTANCE_RESULTS.
+- Certificate EC P-256 tự ký dùng làm trust anchor local, SAN cố định theo SPEC, hạn 30 ngày, quyền 0600; tạo lại cần --force rõ ràng. Không commit cert/private key. API qlog và congestion implementation ghi VERSIONS để tránh dùng nhầm API cũ.

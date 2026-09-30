@@ -14,7 +14,9 @@ Mỗi phase: đọc hợp đồng → inspect code → implement → chạy gate
 | cmd/server/main.go | Parse flags, dependencies, lifecycle | P0/P2/P4 |
 | cmd/client/main.go | CLI trial, formatting, exit codes | P0/P2/P5 |
 | cmd/bench/main.go | Schedule/entry/merge CLI | P0/P9 |
-| internal/config/config.go | Profiles/scenarios/limits/defaults, validation | P0 |
+| internal/cli/cli.go | CLI skeleton/flags/exit/version dùng chung ba mains | P0 |
+| tests/api/quic_test.go | Compile smoke của API đúng tag; không chạy QUIC | P0 |
+| internal/config/config.go, json.go | Profiles/scenarios/limits/defaults, validation | P0 |
 | internal/workload/resource.go, generator.go | Store immutable + deterministic data/hash | P1 |
 | internal/protocol/frame.go, request.go, codec.go, errors.go | QB01 wire contract | P2 |
 | internal/protocol/batch.go | Batch validation/barrier, transport-independent | P3/P4 |
@@ -22,14 +24,14 @@ Mỗi phase: đọc hợp đồng → inspect code → implement → chạy gate
 | internal/transport/tcp/client.go, server.go, scheduler.go | TLS multiplex transfer | P2/P3 |
 | internal/transport/quic/client.go, server.go, streams.go | Native stream transfer | P4 |
 | internal/transport/quic/early.go | Ticket warm-up, early/reject/retry coordinator | P10 |
-| internal/tlsconfig/client.go, server.go | Trust/SAN/ALPN/TLS1.3 | P0/P2 |
+| internal/tlsconfig/config.go | Trust/SAN/ALPN/TLS1.3 chung; không mở socket ở P0 | P0/P2 |
 | internal/tlsconfig/sessioncache.go | Thread-safe cache + ticket signal | P10 |
 | internal/metrics/timer.go, result.go, csv.go, json.go | Monotonic record, export, null/errors | P5/P6 |
 | internal/metrics/progress.go | Evidence in-memory event collection | P11 |
 | internal/bench/runner.go, schedule.go, merge.go | Fresh trials, seeds/order, failure rows | P9 |
 | internal/observability/qlog.go, keylog.go | Optional traces và mapping, flush | P11 |
 | scripts/gen-cert.sh | Local cert/key SAN, secure file permissions | P0 |
-| scripts/doctor.sh | Read-only preflight + scoped disposable probe nếu cần | P0/P7/P8 |
+| scripts/doctor.sh, preflight-network.sh | Inventory không root; primitive probe đặc quyền tách riêng, namespace tạm | P0/P7/P8 |
 | scripts/run-in-netns.sh | Privileged entry → user UID/GID | P7 |
 | scripts/network/setup.sh, teardown.sh | Owned topology, rollback partial setup | P7 |
 | scripts/network/netem.sh, clear-netem.sh, inspect.sh | Apply profiles, verify actual state | P8 |

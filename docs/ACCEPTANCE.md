@@ -18,7 +18,7 @@ Chỉ ghi PASS khi đã chạy/kiểm chứng, kèm command, exit status, môi t
 | G11 | PCAP/qlog/progress usable; chứng minh UDP/early; HOL được giải thích đúng | Capture/trace and annotated evidence notes |
 | G12 | Fresh reproduction, Make demo, rehearsal 5–7 phút, docs/disclosure đầy đủ | ACCEPTANCE_RESULTS + README + report/rehearsal |
 
-Capability preflight netns/veth/netem/IFB/mirred do người dùng báo PASS ngày 2026-09-30 chỉ xác nhận primitives có sẵn. G00–G12 vẫn NOT_RUN; G07/G08 cần toàn bộ bằng chứng thực theo bảng, không được suy ra từ preflight hoặc build.
+Capability preflight netns/veth/netem/IFB/mirred do người dùng báo PASS ngày 2026-09-30 chỉ xác nhận primitives có sẵn. Tại migration, G00–G12 đều NOT_RUN; trạng thái thực thi P0 mới nhất ở [ACCEPTANCE_RESULTS.md](ACCEPTANCE_RESULTS.md). G07/G08 cần toàn bộ bằng chứng thực theo bảng, không được suy ra từ preflight hoặc build.
 
 ## Các điều kiện chi tiết không được bỏ qua
 

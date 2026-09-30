@@ -1,0 +1,209 @@
+UTC 2026-09-30T04:32:32.577003+00:00
+
+$ make build
+/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/.tools/go1.27.1/bin/go build -mod=readonly -trimpath -ldflags '-X quic-performance-lab/internal/cli.Build=7e54ad6' -o bin/server ./cmd/server
+/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/.tools/go1.27.1/bin/go build -mod=readonly -trimpath -ldflags '-X quic-performance-lab/internal/cli.Build=7e54ad6' -o bin/client ./cmd/client
+/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/.tools/go1.27.1/bin/go build -mod=readonly -trimpath -ldflags '-X quic-performance-lab/internal/cli.Build=7e54ad6' -o bin/bench ./cmd/bench
+EXIT=0 EXPECTED=0
+
+$ .tools/go1.27.1/bin/go version
+go version go1.27.1 linux/amd64
+EXIT=0 EXPECTED=0
+
+$ openssl verify -CAfile certs/server.crt -verify_hostname localhost certs/server.crt
+certs/server.crt: OK
+EXIT=0 EXPECTED=0
+
+$ openssl verify -CAfile certs/server.crt -verify_ip 127.0.0.1 certs/server.crt
+certs/server.crt: OK
+EXIT=0 EXPECTED=0
+
+$ openssl verify -CAfile certs/server.crt -verify_ip 10.10.0.2 certs/server.crt
+certs/server.crt: OK
+EXIT=0 EXPECTED=0
+
+$ openssl verify -CAfile certs/server.crt -verify_hostname wrong.example certs/server.crt
+CN=QUIC Performance Lab local demo
+error 62 at 0 depth lookup: hostname mismatch
+error certs/server.crt: verification failed
+EXIT=2 EXPECTED=2
+
+$ openssl x509 -in certs/server.crt -noout -dates -ext subjectAltName
+notBefore=Sep 30 04:31:24 2026 GMT
+notAfter=Oct 30 04:31:24 2026 GMT
+X509v3 Subject Alternative Name:
+    DNS:localhost, IP Address:127.0.0.1, IP Address:10.10.0.2
+EXIT=0 EXPECTED=0
+
+$ stat -c %a %n certs/server.key
+600 certs/server.key
+EXIT=0 EXPECTED=0
+
+$ bin/server --help
+Usage: server [flags]
+P0 skeleton: help/version only; transfer/plan/merge are not implemented.
+  -allow-0rtt
+        allow read-only QUIC early data (not active in P0) (default true)
+  -cert string
+        certificate PEM (default "certs/server.crt")
+  -key string
+        private key PEM (default "certs/server.key")
+  -keylog string
+        TLS secrets file (future evidence mode)
+  -listen string
+        listen endpoint (default "0.0.0.0:4433")
+  -profile string
+        workload profile (default "bulk")
+  -profiles string
+        workload JSON file (default "configs/workloads.json")
+  -qlog-dir string
+        qlog directory (future evidence mode)
+  -ready-file string
+        atomic readiness path (not created in P0)
+  -transport string
+        tcp, quic or both (default "both")
+  -version
+        print build, commit and toolchain versions
+EXIT=0 EXPECTED=0
+
+$ bin/server --version
+server build=7e54ad6 commit=7e54ad654b14b8eb38b0db369203df4d34f003d7 dirty=true Go=go1.27.1 quic-go=v0.63.0 QUIC=v1
+EXIT=0 EXPECTED=0
+
+$ bin/server
+not implemented: P0 skeleton; no listener, transfer, schedule, merge or benchmark was started
+EXIT=1 EXPECTED=1
+
+$ bin/server --transport=http3
+invalid input: unsupported transport
+EXIT=2 EXPECTED=2
+
+$ bin/server --profiles=/nonexistent
+invalid input: open /nonexistent: no such file or directory
+EXIT=2 EXPECTED=2
+
+$ bin/client --help
+Usage: client [flags]
+P0 skeleton: help/version only; transfer/plan/merge are not implemented.
+  -addr string
+        server endpoint (default "10.10.0.2:4433")
+  -ca string
+        explicit trusted certificate/CA (default "certs/server.crt")
+  -experiment-id string
+        experiment identifier
+  -format string
+        table or json (default "table")
+  -keylog string
+        TLS secrets file (future evidence mode)
+  -mode string
+        cold, resumed or early; non-cold requires quic (default "cold")
+  -out string
+        result directory (no output artifacts in P0)
+  -profile string
+        workload profile (default "bulk")
+  -profiles string
+        workload JSON file (default "configs/workloads.json")
+  -progress
+        collect progress in future evidence mode
+  -qlog-dir string
+        qlog directory (future evidence mode)
+  -run-id string
+        trial identifier
+  -server-name string
+        TLS peer identity (default "10.10.0.2")
+  -timeout duration
+        trial deadline (default: timeouts.trial_seconds from profiles)
+  -transport string
+        tcp or quic (default "tcp")
+  -version
+        print build, commit and toolchain versions
+EXIT=0 EXPECTED=0
+
+$ bin/client --version
+client build=7e54ad6 commit=7e54ad654b14b8eb38b0db369203df4d34f003d7 dirty=true Go=go1.27.1 quic-go=v0.63.0 QUIC=v1
+EXIT=0 EXPECTED=0
+
+$ bin/client
+not implemented: P0 skeleton; no listener, transfer, schedule, merge or benchmark was started
+EXIT=1 EXPECTED=1
+
+$ bin/client --transport=http3
+invalid input: unsupported transport
+EXIT=2 EXPECTED=2
+
+$ bin/client --profiles=/nonexistent
+invalid input: open /nonexistent: no such file or directory
+EXIT=2 EXPECTED=2
+
+$ bin/bench --help
+Usage: bench [flags]
+P0 skeleton: help/version only; transfer/plan/merge are not implemented.
+  -addr string
+        server endpoint (default "10.10.0.2:4433")
+  -ca string
+        explicit trusted certificate/CA (default "certs/server.crt")
+  -experiment-id string
+        experiment identifier
+  -format string
+        table or json (default "table")
+  -keylog string
+        TLS secrets file (future evidence mode)
+  -merge string
+        shard directory (not implemented in P0)
+  -mode string
+        cold, resumed or early; non-cold requires quic (default "cold")
+  -network-state string
+        verified network metadata path
+  -out string
+        result directory (no output artifacts in P0)
+  -plan
+        schedule planning (not implemented in P0)
+  -profile string
+        workload profile (default "bulk")
+  -profiles string
+        workload JSON file (default "configs/workloads.json")
+  -progress
+        collect progress in future evidence mode
+  -qlog-dir string
+        qlog directory (future evidence mode)
+  -run-id string
+        trial identifier
+  -runs int
+        measured repeats (default: scenario config)
+  -scenario string
+        scenario name (default "rtt50-loss3")
+  -scenarios string
+        scenario JSON file (default "configs/scenarios.json")
+  -schedule-entry string
+        entry JSON path (not implemented in P0)
+  -seed uint
+        schedule seed (default: scenario config; planning not implemented)
+  -server-name string
+        TLS peer identity (default "10.10.0.2")
+  -suite string
+        bulk or handshake (default "bulk")
+  -timeout duration
+        trial deadline (default: timeouts.trial_seconds from profiles)
+  -transport string
+        tcp or quic (default "tcp")
+  -version
+        print build, commit and toolchain versions
+  -warmups int
+        warmups (default: scenario config)
+EXIT=0 EXPECTED=0
+
+$ bin/bench --version
+bench build=7e54ad6 commit=7e54ad654b14b8eb38b0db369203df4d34f003d7 dirty=true Go=go1.27.1 quic-go=v0.63.0 QUIC=v1
+EXIT=0 EXPECTED=0
+
+$ bin/bench
+not implemented: P0 skeleton; no listener, transfer, schedule, merge or benchmark was started
+EXIT=1 EXPECTED=1
+
+$ bin/bench --transport=http3
+invalid input: unsupported transport
+EXIT=2 EXPECTED=2
+
+$ bin/bench --profiles=/nonexistent
+invalid input: open /nonexistent: no such file or directory
+EXIT=2 EXPECTED=2

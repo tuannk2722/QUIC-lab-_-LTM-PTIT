@@ -1,22 +1,23 @@
 # Version lock và kiểm chứng API
 
-Status: **UNRESOLVED — phải hoàn thành ở P0 trên Ubuntu WSL2**. Không có Go module/source application trong gói handoff ban đầu; không bịa pin hoặc tuyên bố build được.
+Status P0 (2026-09-30): **toolchain/API/build VERIFIED; primitive probe PASS; G00 tổng thể PASS**. Chưa có transport/workload/benchmark; không coi skeleton là implementation hoàn chỉnh.
 
-| Thành phần | Giá trị cần điền | Evidence |
+| Thành phần | Giá trị / trạng thái P0 | Evidence |
 |---|---|---|
-| Host OS / execution environment / WSL hoặc VM version (nếu áp dụng) | P0 revalidate | actual environment; observations below |
-| Linux distribution/release / kernel | P0 revalidate; Ubuntu release UNRESOLVED | os-release, uname |
-| Allocated logical CPU / RAM / swap | P0 revalidate | actual limits and observed resources |
-| Go exact version | UNRESOLVED | go version |
-| quic-go exact module tag | UNRESOLVED | go.mod/go.sum + go list -m |
-| quic-go minimum Go | UNRESOLVED | go.mod của đúng tag |
-| iproute2/netem/IFB/ethtool | UNRESOLVED | tool versions + scoped capabilities |
-| Python/plot libs | UNRESOLVED | pinned requirements + version report |
-| Wireshark/tcpdump/qvis/schema | UNRESOLVED | actual parse/open evidence |
+| Host OS / WSL version | Windows 11 / 3.0.1.0: user-reported, chưa xác minh lại qua Windows CLI | Quan sát lịch sử bên dưới |
+| Linux distribution / kernel | Ubuntu 26.04.1 LTS / 6.18.40.1-microsoft-standard-WSL2 | evidence/p0/doctor-host.txt |
+| Logical CPU / RAM / swap | 2 / 3053154304 bytes / 2147483648 bytes | doctor-host.txt; tài nguyên quan sát, không bảo đảm độc quyền |
+| Go exact version | **1.27.1**, linux/amd64; cài local .tools/go1.27.1, không root | toolchain.json, g00-commands.log |
+| quic-go exact module tag | **v0.63.0** | go.mod/go.sum, modules.txt, modules-verify.txt |
+| quic-go minimum Go | **1.26.0** theo go.mod đúng tag | [go.mod chính thức](https://github.com/quic-go/quic-go/blob/v0.63.0/go.mod) |
+| iproute2 / netem / IFB / mirred / ethtool | ip/tc 6.19.0; ethtool 6.19; sch_netem/ifb/act_mirred hiện diện | doctor-host.txt; network-probe.log: người dùng chạy thành công ngày 2026-09-30, kèm provenance/hash |
+| Git / make / OpenSSL | 2.53.0 / 4.4.1 / 3.5.5 | doctor-host.txt |
+| Python / plotting | 3.14.4; matplotlib/numpy/pandas chưa cài, để P9 | doctor-host.txt |
+| tcpdump / Wireshark / qvis | tcpdump 4.99.6; decode/viewer chưa kiểm chứng, để P11 | doctor-host.txt |
 
-P0 chọn stable released Go/quic-go tương thích, pin exact versions; commit go.mod/go.sum. Có thể dùng Go đang có nếu support đúng library; nếu cần install thì hướng dẫn phù hợp OS và quyền. Không hardcode “latest”. Các command tái lập sau P0 dùng version đã pin, không floating tag.
+Nguồn tải [Go 1.27.1](https://go.dev/dl/#go1.27.1), [quic-go v0.63.0](https://github.com/quic-go/quic-go/releases/tag/v0.63.0). SHA-256 archive Linux amd64 được đối chiếu metadata chính thức trước giải nén: `63d339f0da5ab53635a56f2490a7984dfe12dfcff22ad749f63edaf590168445`. Makefile ép đúng Go 1.27.1, GOTOOLCHAIN=local, build/test -mod=readonly; go.mod/go.sum pin dependency. Không tạo commit trong lượt P0 này. Lệnh tái lập ở README.
 
-## API checklist phải giải quyết trước implementation
+## API checklist đã kiểm chứng ở P0 (compile/source; chưa chạy QUIC)
 
 - QUIC Dial/Transport/DialEarly, Listen/ListenEarly, Accept signatures/context.
 - Conn/Stream concrete types; OpenStream/OpenStreamSync; AcceptStream; StreamID; Close/CancelRead/CancelWrite và deadlines.
@@ -28,9 +29,18 @@ P0 chọn stable released Go/quic-go tương thích, pin exact versions; commit 
 
 Lưu source tag/link và `go doc` output ngắn chứng minh. Nếu official web snippets mâu thuẫn với installed source, installed pinned API quyết định code, update docs/decision; không đổi ngầm behavior yêu cầu. Chạy compile smoke trước triển khai QUIC đầy đủ.
 
-## Quan sát máy hiện tại — 2026-09-30
+### Kết quả API đúng tag v0.63.0
 
-Nguồn: thông tin/preflight đã kiểm chứng do người dùng cung cấp cho migration tài liệu; agent không chạy lại ở lượt này. Đây là observations, không phải architectural pins; P0 phải revalidate và lưu command/output thực. Go/quic-go chưa pin hoặc test; G00 chưa chạy.
+- Dial/DialEarly trả `*quic.Conn`; Listen/ListenEarly trả `*Listener`/`*EarlyListener`; Accept(ctx) trả `*Conn`. Streams là `*quic.Stream`. Compile signature checks ở `tests/api/quic_test.go` (không mở socket).
+- `Conn.HandshakeComplete() <-chan struct{}`, `ConnectionState().Used0RTT`, `.TLS.DidResume`; `Err0RTTRejected` và `NextConnection(ctx) (*Conn,error)` tồn tại. Sau rejection phải gửi lại request ở phase P10; API có thể trả lỗi handshake/cancellation. Xem `evidence/p0/api-next-connection.txt`.
+- `Config.Tracer func(context.Context, bool, ConnectionID) qlogwriter.Trace`; qlog.DefaultConnectionTracer dùng QLOGDIR, file `<odcid>_<perspective>.sqlog`; nil nếu biến môi trường rỗng. Format sequential JSON, event schema `urn:ietf:params:qlog:events:quic-12`. Viewer/flush/capture thực vẫn thuộc P11, không được coi là đã pass.
+- Các field flow-control/stream limits, Versions/Version1 và timeout được compile-check. `HandshakeIdleTimeout` không phải tổng deadline: thư viện dùng tối đa 2× giá trị này cho handshake; phase transport phải giữ deadline của lab.
+- [Nguồn congestion đúng tag](https://github.com/quic-go/quic-go/blob/v0.63.0/internal/ackhandler/sent_packet_handler.go) gọi NewCubicSender với `true // use Reno`; không gán nhãn CUBIC chỉ từ tên constructor. Trích source ở api-congestion.txt; CC của TCP chưa đo.
+- TLS cache interface và trust/SAN/TLS1.3/ALPN policy được kiểm tra; ticket delivery/0-RTT thực chưa triển khai. P0 không tạo manifest benchmark hay kết quả Used0RTT giả.
+
+## Quan sát trước P0 do người dùng cung cấp — 2026-09-30
+
+Nguồn: thông tin/preflight đã kiểm chứng do người dùng cung cấp cho migration tài liệu; agent không chạy lại ở lượt này. Đây là observations, không phải architectural pins; P0 phải revalidate và lưu command/output thực. Tại thời điểm migration, Go/quic-go chưa pin hoặc test; trạng thái P0 hiện tại ở đầu tài liệu.
 
 | Hạng mục | Quan sát |
 |---|---|

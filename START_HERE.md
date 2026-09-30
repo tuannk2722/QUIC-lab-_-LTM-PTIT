@@ -1,12 +1,12 @@
 # Bắt đầu — QUIC Performance Lab / T03
 
 Bộ bàn giao dành cho Codex trong IDE, phiên bản 1.0, ngày 28/09/2026 (Asia/Ho_Chi_Minh).
-Đây là **đặc tả + cấu trúc khởi đầu để triển khai**, chưa phải chương trình QUIC đã viết hoặc benchmark đã chạy.
+Bản gốc là **đặc tả + cấu trúc khởi đầu**. Cập nhật P0 ngày 2026-09-30: đã có skeleton/config/TLS/build/tests; G00 PASS, log probe thực đã được đối chiếu và lưu trong hồ sơ P0. Chưa có chương trình truyền QUIC hoặc benchmark. Xem README và ACCEPTANCE_RESULTS.
 
 ## Bạn cần làm gì?
 
 1. Môi trường hiện hành từ 2026-09-30: **Ubuntu dưới WSL2 trên Windows 11**. Windows VS Code là UI, mở bằng Remote WSL với workspace `WSL: Ubuntu`; terminal/build/test/network chạy trong Ubuntu WSL2. Repo phải nằm trên filesystem Linux native, ưu tiên `/home/<user>/...`, không `/mnt/c/...` hoặc `/mnt/d/...`.
-2. Cho phép rõ ràng từng phase/milestone. Mặc định HUMAN-GATED: agent chỉ làm phase được phép, chạy gate, cập nhật TASK rồi dừng review; build thành công riêng lẻ không đủ. Chỉ tự tiếp tục nhiều phase khi người dùng yêu cầu rõ ràng. Khi bị chặn, agent ghi BLOCKED/lệnh thủ công và làm phần độc lập trong phạm vi được phép. Sau migration tài liệu này, P0 chỉ bắt đầu khi được cho phép sau human review.
+2. Cho phép rõ ràng từng phase/milestone. Mặc định HUMAN-GATED: agent chỉ làm phase được phép, chạy gate, cập nhật TASK rồi dừng review; build thành công riêng lẻ không đủ. Chỉ tự tiếp tục nhiều phase khi người dùng yêu cầu rõ ràng. Khi bị chặn, agent ghi BLOCKED/lệnh thủ công và làm phần độc lập trong phạm vi được phép. P0 đã được cho phép và thực hiện; hiện dừng review, P1 chưa được cho phép.
 
 Không cần dán lại toàn bộ cuộc trò chuyện. `AGENTS.md` chỉ cách đọc; `docs/00-INDEX.md` chỉ nguồn sự thật; `.codex/TASK.md` giữ tiến độ qua phiên. Context quan trọng phải nằm trong file, không phụ thuộc trí nhớ phiên chat.
 

@@ -1,6 +1,6 @@
 # CLI và Make contract
 
-Các lệnh dưới đây là **đầu ra agent phải implement**, chưa chạy được trong bộ handoff ban đầu. Defaults phải dùng chung config loader. Không dùng command string eval từ input; subprocess dùng argument list.
+Các lệnh dưới đây là **hợp đồng cuối cùng**. P0 đã có help/version, parse/validate flags/config, build/test/certs/doctor; transfer/listener/plan/merge/benchmark chưa triển khai và phải trả nonzero. Defaults phải dùng chung config loader. Không dùng command string eval từ input; subprocess dùng argument list.
 
 ## 1. Binaries
 
@@ -80,3 +80,11 @@ make clean-network
 ```
 
 Góc nhìn ngày demo chỉ cần demo-*; build/tests và full benchmark thực hiện trước buổi trình bày. Không cài dependency/download module trong live demo.
+
+## 5. Bổ sung P0 — giới hạn cấu hình và preflight
+
+Config JSON tối đa 1 MiB, độ sâu 32; từ chối unknown/duplicate keys, trailing JSON, version/generator/checksum không hỗ trợ và giá trị vượt DEMO_SPEC. Timeouts 1..3600 giây; CLI --timeout >0 và <=1h. Scenario config giới hạn repeats 1..100000, warmups 0..100000, queue 1..1000000 packets, delay 0..3600000 ms, loss 0..100%, rate >0 và <=1000000 Mbit/s, MTU1500 và main profile ingress-ifb. Đây là input bounds, không thay giá trị benchmark chính trong configs.
+
+Bench thêm `--scenarios=configs/scenarios.json`; --plan/--schedule-entry/--merge loại trừ nhau. Chưa đọc entry/shard hay sinh schedule ở P0. Schema của entry thuộc P9; không báo input file đó đã được validate ở P0.
+
+`make doctor REPORT=path` chỉ inventory không root; 0 chỉ nghĩa inventory đủ, không xác nhận probe đặc quyền. Script trả 3 nếu thiếu tool/môi trường hoặc không ghi được report (Make có thể trả 2 khi recipe lỗi). `sudo bash scripts/preflight-network.sh` là probe P0 độc lập, chỉ tạo/xóa tài nguyên tạm của nó; lỗi capability trả 3, signals 130/143. Không gọi sudo từ Go và không coi primitive probe là G07/G08.

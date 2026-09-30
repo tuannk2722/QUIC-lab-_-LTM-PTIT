@@ -1,0 +1,16 @@
+P0 permission attempts — 2026-09-30 UTC
+Transcript copied from actual tool results; this is not output of a successful network probe.
+
+$ sudo -n true
+Context: sandbox
+sudo: The "no new privileges" flag is set, which prevents sudo from running as root.
+sudo: If sudo is running in a container, you may need to adjust the container configuration to disable the flag.
+exit=1
+
+$ sudo -n bash scripts/preflight-network.sh
+Context: require_escalated, outside sandbox, normal invoking user
+sudo: interactive authentication is required
+exit=1
+
+The scoped script did not run. No namespace/veth/IFB/qdisc was created by these attempts.
+Read-only doctor subsequently succeeded outside sandbox; see doctor-host.txt.

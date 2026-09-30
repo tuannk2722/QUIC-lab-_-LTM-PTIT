@@ -1,0 +1,15 @@
+{
+  "source_path": "results/p0-review/network-probe.log",
+  "source_sha256": "85628522253497d3e6fee9542a1a4a3796e671b36d5478ddae2b6b755ab2958e",
+  "archived_path": "docs/evidence/p0/network-probe.log",
+  "archived_sha256": "db2a038297102d4e5351a6854b99c1cb60e6b63cf709654d4b23707632d2f5ae",
+  "normalization": "tabs expanded to 8 spaces; trailing whitespace/blank EOF removed; content unchanged",
+  "probe_utc": "2026-09-30T04:48:25Z",
+  "namespace": "qp0-27755-17396",
+  "executor": "User in Ubuntu WSL2 terminal with sudo; not rerun by agent",
+  "command": "sudo bash scripts/preflight-network.sh 2>&1 | tee results/p0-review/network-probe.log",
+  "script_sha256": "4ca04de5ffbf48fbd6372b1f38270519b99914e67d5b9bbc8e4d6944de76d6cf",
+  "result": "PASS",
+  "exit_status": "No numeric exit status captured in supplied log; success confirmed by user and final PASS after explicit namespace deletion under set -euo pipefail",
+  "scope": "primitive capability only; G07/G08 NOT_RUN"
+}

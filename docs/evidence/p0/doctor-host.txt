@@ -1,0 +1,61 @@
+P0 doctor UTC=2026-09-30T04:36:18Z
+repo=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT uid=1000
+Linux LAPTOP-MS2KV5BU 6.18.40.1-microsoft-standard-WSL2 #1 SMP PREEMPT_DYNAMIC Fri Jul 31 22:12:15 UTC 2026 x86_64 GNU/Linux
+PRETTY_NAME="Ubuntu 26.04.1 LTS"
+NAME="Ubuntu"
+VERSION_ID="26.04"
+VERSION="26.04.1 LTS (Resolute Raccoon)"
+VERSION_CODENAME=resolute
+ID=ubuntu
+ID_LIKE=debian
+HOME_URL="https://www.ubuntu.com/"
+SUPPORT_URL="https://help.ubuntu.com/"
+BUG_REPORT_URL="https://bugs.launchpad.net/ubuntu/"
+PRIVACY_POLICY_URL="https://www.ubuntu.com/legal/terms-and-policies/privacy-policy"
+UBUNTU_CODENAME=resolute
+LOGO=ubuntu-logo
+Resources observed (not a promise of dedicated capacity):
+2
+               total        used        free      shared  buff/cache   available
+Mem:      3053154304  1668009984   217296896    74993664  1335336960  1385144320
+Swap:     2147483648    11100160  2136383488
+Host OS/WSL version: see VERSIONS observations; not inferred from the Linux kernel. Revalidate with wsl.exe --version on host.
+/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/.tools/go1.27.1/bin/go
+go version go1.27.1 linux/amd64
+/usr/bin/git
+git version 2.53.0
+/usr/bin/make
+GNU Make 4.4.1
+Built for x86_64-pc-linux-gnu
+Copyright (C) 1988-2023 Free Software Foundation, Inc.
+License GPLv3+: GNU GPL version 3 or later <https://gnu.org/licenses/gpl.html>
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.
+/usr/bin/openssl
+OpenSSL 3.5.5 27 Jan 2026 (Library: OpenSSL 3.5.5 27 Jan 2026)
+/usr/sbin/ip
+ip utility, iproute2-6.19.0, libbpf 1.6.3
+/usr/sbin/tc
+tc utility, iproute2-6.19.0, libbpf 1.6.3
+/usr/bin/tcpdump
+tcpdump version 4.99.6
+libpcap version 1.10.6 (64-bit time_t, with TPACKET_V3)
+OpenSSL 3.5.5 27 Jan 2026
+64-bit build, 64-bit time_t
+/usr/sbin/ethtool
+ethtool version 6.19
+/usr/bin/python3
+Python 3.14.4
+Kernel modules (loaded or built in does not prove packet path):
+sch_netem present
+ifb present
+act_mirred present
+UNVERIFIED: veth not visible in sysfs
+Namespaces currently visible:
+Python plotting libraries (P9; absence does not fail P0):
+matplotlib not installed; deferred to P9
+numpy not installed; deferred to P9
+pandas not installed; deferred to P9
+Capability probe: NOT_RUN by read-only doctor; use sudo bash scripts/preflight-network.sh separately.
+Neither inventory nor primitive probe passes G07/G08; no topology/impairment benchmark was run.
+doctor_exit=0 report=docs/evidence/p0/doctor-host.txt

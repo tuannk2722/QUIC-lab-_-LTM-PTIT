@@ -2,15 +2,55 @@
 
 T03 — QUIC Protocol Implementation and Performance, môn Lập trình mạng, PTIT.
 
-**Trạng thái ban đầu:** bộ handoff để coding; chưa có binary, source Go hoàn chỉnh hoặc kết quả thực nghiệm. Đọc [START_HERE.md](START_HERE.md) để dùng trong IDE.
+**Trạng thái P0:** có ba CLI skeleton, config loader, TLS assets/scripts và tests. Build/input/TLS/API checks đạt; G00 PASS sau khi đối chiếu log probe người dùng chạy thành công trong WSL2. Chưa có transfer, workload P1 hoặc kết quả benchmark. Đọc [START_HERE.md](START_HERE.md) để dùng trong IDE.
 
 Thiết kế: cùng bộ resource trong RAM được phục vụ bởi TCP/TLS multiplex và raw QUIC trên TCP/UDP 4433. Client chạy trong Ubuntu dưới WSL2 trên Windows 11 qua hai namespace có network impairment. Số liệu từ client được lưu theo run và resource; qlog và packet capture phục vụ giải thích cơ chế.
 
 [Đặc tả](docs/DEMO_SPEC.md) · [Kế hoạch triển khai](docs/IMPLEMENTATION_PLAN.md) · [Nghiệm thu](docs/ACCEPTANCE.md) · [Kịch bản demo](docs/DEMO_SCRIPT.md)
 
-Repo phải nằm trong filesystem Linux native, ưu tiên `/home/<user>/...`, không `/mnt/c/...` hoặc `/mnt/d/...`. Mở Windows VS Code bằng Remote WSL, workspace `WSL: Ubuntu`. Implementation mặc định human-gated: chỉ phase được người dùng cho phép, chạy gate rồi cập nhật TASK và dừng review. Migration tài liệu đã hoàn thành; P0/G00 chưa chạy.
+Repo phải nằm trong filesystem Linux native, ưu tiên `/home/<user>/...`, không `/mnt/c/...` hoặc `/mnt/d/...`. Mở Windows VS Code bằng Remote WSL, workspace `WSL: Ubuntu`. Implementation mặc định human-gated: chỉ phase được người dùng cho phép, chạy gate rồi cập nhật TASK và dừng review. P0 đã triển khai trong phạm vi được phép; dừng review, không tự bắt đầu P1. Xem [bằng chứng G00](docs/ACCEPTANCE_RESULTS.md).
 
-## Hợp đồng README sau triển khai
+## Tái lập P0 (chạy bên trong Ubuntu WSL2)
+
+Cần bash, curl, tar, sha256sum, make, OpenSSL, Python 3; preflight dùng iproute2, tcpdump, ethtool. Máy hiện tại đã có các công cụ này. Tải Go exact version và kiểm checksum (fresh checkout chưa có `.tools/go1.27.1`):
+
+```bash
+curl -fL https://go.dev/dl/go1.27.1.linux-amd64.tar.gz -o /tmp/quic-lab-go1.27.1.tar.gz
+echo '63d339f0da5ab53635a56f2490a7984dfe12dfcff22ad749f63edaf590168445  /tmp/quic-lab-go1.27.1.tar.gz' | sha256sum -c -
+mkdir -p .tools/go1.27.1
+tar -xzf /tmp/quic-lab-go1.27.1.tar.gz -C .tools/go1.27.1 --strip-components=1
+export PATH="$PWD/.tools/go1.27.1/bin:$PATH"
+export GOTOOLCHAIN=local GOPATH="$PWD/.tools/gopath" GOCACHE="$PWD/.tools/gocache"
+go mod download
+go mod verify
+make build
+make test
+make certs
+make doctor
+bin/server --help
+bin/client --version
+bin/bench --help
+```
+
+Makefile tự chọn Go local nếu có, nếu không dùng PATH và kiểm đúng version. `make test-race` có sẵn (cần C compiler); không phải bằng chứng transport race trước khi transport tồn tại. `.tools/`, `bin/`, private keys/certs và results được gitignore. P0 compile tests import raw quic-go, không dùng HTTP/3.
+
+`make certs` tạo cert local hạn 30 ngày, SAN localhost/127.0.0.1/10.10.0.2, key 0600; từ chối ghi đè. Chỉ khi chủ động thay identity và đã dừng mọi server, dùng `make certs CERT_FORCE=--force`. Test tạo identity riêng trong thư mục tạm, không sửa cert đang dùng.
+
+Chạy `bin/client`, `bin/server` hoặc `bin/bench --plan` với input hợp lệ hiện trả **exit 1 / not implemented**. Input/config không hợp lệ trả **2**. Không có listener/readiness/result files. `--help`/`--version` trả 0. Defaults workload/scenario/timeouts được đọc từ configs; `--profiles` và `--scenarios` cho phép chọn tệp rõ ràng.
+
+`make doctor` chỉ inventory, không tạo namespace hoặc cấp quyền cho Go. Nếu sandbox chặn netlink, chạy lệnh ở terminal Ubuntu WSL bình thường. Để tái lập primitive preflight (đã PASS trong hồ sơ P0), chạy:
+
+```bash
+mkdir -p results/p0-review
+set -o pipefail
+sudo bash scripts/preflight-network.sh 2>&1 | tee results/p0-review/network-probe.log
+```
+
+Probe dùng một namespace tạm có tên riêng, veth + IFB/mirred/netem 50 ms bên trong và tự cleanup; không dùng qclient/qserver chính, không đo traffic/RTT và không thay G07/G08. Nếu cleanup báo lỗi, chỉ xử lý tên namespace được log; không xóa namespace không rõ chủ sở hữu. Log lần chạy thành công đã lưu tại `docs/evidence/p0/network-probe.log`. P0 đã đóng; vẫn dừng trước P1 để chờ cho phép.
+
+Bằng chứng hiện tại lưu tại `docs/evidence/p0/`; đây là build/preflight/test logs, không phải benchmark results.
+
+## Hợp đồng README sau triển khai đầy đủ
 
 Agent phải thay mục này bằng các bước **đã kiểm tra thực tế**, giữ lại lịch sử trạng thái nếu hữu ích:
 
@@ -23,4 +63,4 @@ Agent phải thay mục này bằng các bước **đã kiểm tra thực tế**
 7. Chỉ rõ lệnh chạy ở host Windows hay bên trong Ubuntu WSL2; mọi build/test/network/benchmark chạy trong Ubuntu WSL2.
 8. Liên kết provenance, disclosure AI và giới hạn kết luận.
 
-Các Make targets trong docs là hợp đồng cần implement, chưa tồn tại trong gói ban đầu này.
+P0 đã có targets build/test/test-race/certs/doctor. Các targets setup-network, demo, benchmark, analyze và cleanup trong CLI contract vẫn để các phase sau; không gọi chúng ở P0.

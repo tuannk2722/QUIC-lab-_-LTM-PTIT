@@ -1,49 +1,63 @@
-# Task checkpoint
+# Tiến độ công việc
 
-Updated: 2026-09-30 UTC
-Status: ENVIRONMENT_MIGRATION_COMPLETE / IMPLEMENTATION_NOT_STARTED / AWAITING_HUMAN_REVIEW
-Current phase: P0 NOT_STARTED / G00 NOT_RUN
-Next exact action: human review of this documentation migration; only after explicit user authorization, begin P0 alone using AGENTS/INDEX/TASK and the P0 read set in IMPLEMENTATION_PLAN. Do not install/pin Go/quic-go or run later phases before authorization.
+Cập nhật: 2026-09-30 UTC
+Phạm vi người dùng cho phép: **chỉ P0 và G00**, không bắt đầu P1, không commit tự động.
+Trạng thái: **P0 hoàn tất / G00 PASS / dừng chờ review và cho phép phase tiếp theo**.
+Bước tiếp theo chính xác: người dùng review hồ sơ/diff P0; chỉ bắt đầu P1 khi có yêu cầu rõ ràng. Không còn blocker của G00.
 
-## Original handoff — 2026-09-28
+## Đã đọc và inspect trước khi sửa code
 
-- Read 3 attachments.
-- Reconciled 31 visible conversation items; user originally chose Ubuntu VM and reported no missing decisions. D13 supersedes only the runtime decision on 2026-09-30.
-- Created contracts/config/schema/plan/acceptance/start prompt; no implementation or benchmark.
+- AGENTS.md, docs/00-INDEX.md, TASK; CONTEXT_AND_DECISIONS, IMPLEMENTATION_PLAN (quy tắc/bản đồ/P0), CLI_CONTRACT, DEMO_SPEC, VERSIONS, ACCEPTANCE, PROTOCOL, METRICS_AND_RESULTS, NETWORK_AND_BENCHMARK (đặc biệt môi trường/đặc quyền), AI_USAGE. Đọc lại phần liên quan khi output kết hợp bị cắt; cuối lượt đối chiếu ACCEPTANCE và TRACEABILITY.
+- Repo sạch tại commit `7e54ad654b14b8eb38b0db369203df4d34f003d7`, chỉ có handoff/config/schema; không có code/tests/Go module. Bảo toàn baseline người dùng đã chỉnh sau migration, không khôi phục file đã xóa.
+- Go ban đầu không có trong PATH. Ubuntu 26.04.1 LTS / kernel 6.18.40.1-microsoft-standard-WSL2, UID 1000, 2 CPU logic, RAM 3053154304 bytes, swap 2147483648 bytes. Repo ở filesystem Linux native. Host Windows 11 và WSL app 3.0.1.0 vẫn là thông tin người dùng cung cấp; chưa truy vấn lại Windows CLI.
+- Có Git 2.53.0, make 4.4.1, OpenSSL 3.5.5, ip/tc 6.19.0, tcpdump 4.99.6, ethtool 6.19, Python 3.14.4. sch_netem/ifb/act_mirred hiện diện; không suy ra primitive probe hoặc G07/G08 đã đạt.
 
-## Documentation migration — 2026-09-30
+## Đã triển khai trong P0
 
-- Current environment: Ubuntu under WSL2 on Windows 11; Windows VS Code Remote WSL UI, Linux commands inside WSL2. Machine observations and current repo path are in docs/VERSIONS.md; revalidate during authorized P0.
-- User-provided verified capability preflight: netns PASS (qclient/qserver create/remove), veth PASS (create/remove), netem PASS (50 ms qdisc attached), IFB PASS (device created/UP), act_mirred PASS (module loaded); tcpdump available. Agent did not rerun these probes. This is NOT G07/G08 acceptance or a benchmark result.
-- D13/D14 permanently record preserved experiment/ingress IFB/mirred and human-gated phases. Run authorized phase gate, update TASK, stop review. Explicit user request is required for automatic multi-phase work.
-- No Go/quic-go installation, pin, build or API testing. No application code, schema/config changes, network mutation, benchmark or commit.
+- Go 1.27.1 cài local `.tools/go1.27.1` sau khi kiểm SHA-256 official archive; quic-go v0.63.0 pin trong go.mod/go.sum, minimum Go 1.26.0 được xác minh từ tag. Không root build/download, không sửa Go hệ thống.
+- Ba mains server/client/bench dùng internal/cli; help/version hoạt động, input lỗi trả 2, thao tác chưa có trả 1/not implemented. Không listener/readiness/trial/schedule/merge/result success giả.
+- internal/config đọc workload/scenario chung, giới hạn JSON/memory/numeric và kiểm input; chưa sinh workload/hash P1.
+- internal/tlsconfig dùng trust explicit, TLS1.3 và ALPN quicbench/1. Script cert tạo local EC P-256, SAN theo SPEC, key 0600, hạn 30 ngày, chống ghi đè khi chưa --force.
+- Make build/test/test-race/certs/doctor. Doctor chỉ đọc không root; probe mạng tách script đặc quyền, chỉ tài nguyên tạm riêng và cleanup. Lượt agent bị chặn sudo; người dùng sau đó chạy thành công probe trong WSL2, đã đối chiếu log để đóng G00.
+- Tests config/CLI/TLS và compile-only API đúng tag; ghi qlogwriter.Trace, NextConnection và Reno default từ source vào VERSIONS. Không thực thi QUIC/0-RTT.
+- Quyết định refinement D15 ghi CONTEXT; đồng bộ CLI/PLAN/VERSIONS/README/INDEX/START_HERE/AI_USAGE/ACCEPTANCE và bảng evidence mới.
 
-## Read set and initial occurrence classification
+## Lệnh và kết quả thực
 
-Fully read AGENTS.md, docs/00-INDEX.md, this TASK, CODEX_START_PROMPT.md, README.md, START_HERE.md, docs/CONTEXT_AND_DECISIONS.md, docs/NETWORK_AND_BENCHMARK.md, docs/VERSIONS.md, docs/IMPLEMENTATION_PLAN.md, docs/ACCEPTANCE.md, docs/METRICS_AND_RESULTS.md, docs/DEMO_SCRIPT.md, docs/TRACEABILITY.md and docs/AI_USAGE.md. Truncated combined output was reread in bounded calls. Also read docs/HANDOFF_VALIDATION.md and schemas/README.md; searched schema environment/manifest fields (no manifest schema in current result-record schema).
+| Lệnh / kiểm tra | Kết quả | Bằng chứng |
+|---|---|---|
+| sha256sum archive; go version; go mod verify; go list -m all | PASS, exit 0; module checksums hợp lệ | docs/evidence/p0/toolchain.json, modules*.txt |
+| make build | PASS, exit 0; đủ ba binaries | docs/evidence/p0/g00-commands.log |
+| make test | PASS, exit 0; CLI/config/TLS/API tests | docs/evidence/p0/tests.log |
+| --help / --version cả ba binaries | PASS, exit 0; commit/dirty/Go/quic-go hiện đúng | g00-commands.log |
+| Input mặc định hợp lệ chưa triển khai / input lỗi | PASS: exit 1 / 2 đúng hợp đồng | g00-commands.log và tests.log |
+| make certs; openssl verify cả 3 SAN; stat key | PASS; SAN đúng, key 0600; sai hostname bị reject như mong đợi | g00-commands.log; tests.log có negative trust/overwrite |
+| make doctor trong sandbox | BLOCKED: netlink permission, doctor 3 / Make 2 | docs/evidence/p0/doctor.txt |
+| make doctor ngoài sandbox, UID thường | PASS inventory, exit 0 | docs/evidence/p0/doctor-host.txt |
+| sudo -n bash scripts/preflight-network.sh ngoài sandbox | BLOCKED: sudo cần xác thực tương tác, exit 1 trước khi script chạy | docs/evidence/p0/permission-attempts.txt |
+| bash -n scripts/*.sh; git diff --check | PASS, exit 0 | Kiểm trực tiếp trong phiên; diff/status review |
 
-Before editing, initial environment hits were classified by semantic location:
+G00-toolchain/build/help/input/cert/API/inventory và network-primitives PASS; **G00 tổng thể PASS**. Các lần BLOCKED trong bảng là lịch sử thử trong môi trường agent, không còn là blocker nghiệm thu. Không có gate FAIL ngoài các negative test có exit lỗi đúng kỳ vọng. G01–G12 NOT_RUN. Chưa chạy test-race vì P0 chưa có app concurrency; target sẵn cho phase phù hợp. Không có benchmark result paths: evidence/p0 chỉ là logs kiểm tra P0.
 
-- Current normative, update: AGENTS execution; NETWORK§1 (old VM and rejected WSL2 statements); VERSIONS status/environment row; PLAN P0; ACCEPTANCE network state; METRICS manifest hypervisor requirement.
-- Current operational, update: START_HERE step 1; TASK next action; README design/reproduction item 7; CODEX_START_PROMPT environment; DEMO prerequisites. Broader VM/workflow search also found NETWORK shared resources/idle threshold, METRICS artifact description, DEMO topology/fallback, PLAN/start prompt automatic continuation.
-- Historical/provenance, retain with superseding notes: START_HERE context; TASK original handoff; CONTEXT original request/environment/unknowns/D03; TRACEABILITY opening/row 3 including discussed WSL2 alternative; AI_USAGE initial handoff. HANDOFF_VALIDATION remains unchanged dated 2026-09-28 evidence. Originals/source manifests untouched.
+## Đóng hồ sơ P0 sau probe của người dùng
 
-## Files changed
+- Đã đọc lại AGENTS/INDEX/TASK, G00 trong PLAN/ACCEPTANCE/ACCEPTANCE_RESULTS, NETWORK§1, script probe, docs hiện hành và evidence trước khi sửa trạng thái. Không sửa code hay chạy lại các gate đã đạt.
+- Log nguồn: results/p0-review/network-probe.log, UTC 2026-09-30T04:48:25Z, namespace qp0-27755-17396. Có netem 50ms, mirred redirect đến ifb0 và PASS sau bước xóa namespace. Người dùng xác nhận đã chạy thành công.
+- Đã lưu bản chuẩn hóa tại docs/evidence/p0/network-probe.log; provenance/hash log gốc/bản lưu/script ở network-probe-provenance.json. Numeric exit code không được capture riêng; không gán exit 0 giả. Control flow set -e và PASS sau cleanup corroborate kết quả thành công.
+- G00-network-primitives PASS; không suy ra traffic/RTT/rate hoặc cleanup khi interrupt đã được kiểm chứng. G07/G08 vẫn NOT_RUN.
+- Giữ nguyên permission-attempts.txt, doctor.txt và các log build/test trước đó. Agent không tự nhận đã chạy probe có sudo, không ghi rằng người dùng đã review toàn bộ code.
+- Đồng bộ ACCEPTANCE_RESULTS, VERSIONS, README, START_HERE, CONTEXT D15, AI_USAGE và evidence index. Kiểm hash/đối chiếu log, git diff --check và review diff hồ sơ; không có application code thay đổi trong lượt đóng hồ sơ.
+- Lệnh tái lập: make build; make test; make doctor; sudo bash scripts/preflight-network.sh. Chi tiết lưu log và cài toolchain ở README/ACCEPTANCE_RESULTS. Không cần chạy lại để đóng hồ sơ lần này.
 
-AGENTS.md, CODEX_START_PROMPT.md, README.md, START_HERE.md, .codex/TASK.md; docs/00-INDEX.md, CONTEXT_AND_DECISIONS.md, NETWORK_AND_BENCHMARK.md, VERSIONS.md, IMPLEMENTATION_PLAN.md, ACCEPTANCE.md, METRICS_AND_RESULTS.md, DEMO_SCRIPT.md, TRACEABILITY.md, AI_USAGE.md.
+## Tệp thay đổi và review
 
-## Validation and limitations
+- Mới: go.mod/go.sum, Makefile, cmd/{server,client,bench}/main.go; internal/{cli,config,tlsconfig}; tests/api/quic_test.go; scripts/{gen-cert,doctor,preflight-network}.sh; docs/ACCEPTANCE_RESULTS.md và docs/evidence/p0/.
+- Sửa: .gitignore, README, START_HERE, TASK; docs/00-INDEX, ACCEPTANCE, AI_USAGE, CLI_CONTRACT, CONTEXT_AND_DECISIONS, IMPLEMENTATION_PLAN, VERSIONS.
+- Không đổi configs, schemas, originals hoặc provenance/source manifests. .tools/bin/certs/results local được gitignore; không đưa key hoặc benchmark giả vào diff. Không tạo commit.
+- Self-review và điểm cần duyệt ở docs/ACCEPTANCE_RESULTS.md. Bản diff bàn giao gồm cả file mới (git diff mặc định chưa gồm untracked); chưa có human review.
 
-- Initial git status --short: clean (exit 0). Documentation edits completed; initial TASK write hit read-only sandbox and required scoped escalation.
-- Post-edit search covers Ubuntu VM, VMware, WSL2, WSL 2, VM state, hypervisor; actual diff reviewed. Remaining old environment names occur only in historical/provenance text: START_HERE original context, CONTEXT original observations/D03/D13 supersession, TRACEABILITY opening/row 3, AI_USAGE initial handoff, and this original handoff/search audit. None is an obsolete current instruction. Manifest now distinguishes execution layer and optional hypervisor.
-- git diff --check PASS (exit 0); git status and git diff --stat reviewed. Only the 15 docs/instruction files listed above changed; config/schema/originals/source manifests unchanged.
-- No measured result paths exist; supplied capability observations are recorded in VERSIONS, not locally collected logs. G00–G12 NOT_RUN; no execution gate PASS/FAIL/BLOCKED claimed.
-- P0/P5/P6 follow-up: revalidate environment/tool versions and implement manifest metadata per METRICS§5. If a schema change becomes necessary, document/version it then; CSV semantics unchanged here.
+## Lịch sử và phạm vi còn lại
 
-## Phase status
+Handoff 2026-09-28 chọn Ubuntu VM; D13 ngày 2026-09-30 thay bằng Ubuntu WSL2 sau preflight người dùng cung cấp. D14 đổi mặc định thành human-gated. Migration tài liệu đã hoàn thành; lượt này chỉ triển khai P0 được cấp quyền.
 
-P0 NOT_STARTED; P1 NOT_STARTED; P2 NOT_STARTED; P3 NOT_STARTED; P4 NOT_STARTED; P5 NOT_STARTED; P6 NOT_STARTED; P7 NOT_STARTED; P8 NOT_STARTED; P9 NOT_STARTED; P10 NOT_STARTED; P11 NOT_STARTED; P12 NOT_STARTED.
-
-## Each checkpoint
-
-Record authorized phase/gate, files read/changed, commands/exit/results and real evidence paths; unresolved/blocked/inconclusive issues, permanent decisions, next exact action and remaining gates. Never mark intent as completion.
+P0: hoàn tất, G00 PASS, dừng review. P1–P12: NOT_STARTED. Không tự mở rộng scope để giải quyết phase sau.

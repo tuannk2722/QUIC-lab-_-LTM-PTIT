@@ -1,0 +1,13 @@
+P0 capability probe UTC=2026-09-30T04:48:25Z namespace=qp0-27755-17396
+qdisc netem 8002: root refcnt 2 limit 1000 delay 50ms seed 9400655667481601223
+ Sent 0 bytes 0 pkt (dropped 0, overlimits 0 requeues 0)
+ backlog 0b 0p requeues 0
+filter protocol ip pref 49152 u32 chain 0
+filter protocol ip pref 49152 u32 chain 0 fh 800: ht divisor 1
+filter protocol ip pref 49152 u32 chain 0 fh 800::800 order 2048 key ht 800 bkt 0 terminal flowid not_in_hw
+  match 00000000/00000000 at 0
+        action order 1: mirred (Egress Redirect to device ifb0) stolen
+        index 1 ref 1 bind 1
+
+PASS: netns create/delete, veth, IFB up, ingress mirred filter and 50ms netem attach.
+No traffic/RTT/rate/counter methodology verified; G07/G08 NOT_RUN.
