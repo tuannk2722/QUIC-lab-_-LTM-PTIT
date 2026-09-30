@@ -1,18 +1,26 @@
-// Package cli is the P0 command skeleton. No command starts a network trial yet.
+// Package cli dispatches phase-supported commands; later-phase modes stay nonzero.
 package cli
 
 import (
+	"context"
+	"encoding/json"
 	"errors"
 	"flag"
 	"fmt"
 	"io"
 	"net"
+	"os"
+	"os/signal"
 	"runtime"
 	"runtime/debug"
 	"strconv"
+	"syscall"
 	"time"
 
 	"quic-performance-lab/internal/config"
+	"quic-performance-lab/internal/tlsconfig"
+	tcptransport "quic-performance-lab/internal/transport/tcp"
+	"quic-performance-lab/internal/workload"
 
 	quic "github.com/quic-go/quic-go"
 )
@@ -56,7 +64,7 @@ func Run(name string, args []string, out, errOut io.Writer) int {
 	fs := flag.NewFlagSet(name, flag.ContinueOnError)
 	fs.SetOutput(errOut)
 	fs.Usage = func() {
-		fmt.Fprintf(errOut, "Usage: %s [flags]\nP0 skeleton: help/version only; transfer/plan/merge are not implemented.\n", name)
+		fmt.Fprintf(errOut, "Usage: %s [flags]\nP2: TCP/TLS one-resource transfer; later phase modes report not implemented.\n", name)
 		fs.PrintDefaults()
 	}
 	version := fs.Bool("version", false, "print build, commit and toolchain versions")
@@ -73,8 +81,8 @@ func Run(name string, args []string, out, errOut io.Writer) int {
 		fs.StringVar(&transport, "transport", "both", "tcp, quic or both")
 		fs.StringVar(&cert, "cert", "certs/server.crt", "certificate PEM")
 		fs.StringVar(&key, "key", "certs/server.key", "private key PEM")
-		fs.Bool("allow-0rtt", true, "allow read-only QUIC early data (not active in P0)")
-		fs.String("ready-file", "", "atomic readiness path (not created in P0)")
+		fs.Bool("allow-0rtt", true, "allow read-only QUIC early data (future phase)")
+		fs.String("ready-file", "", "atomic readiness path (future phase)")
 	} else if name == "client" || name == "bench" {
 		fs.StringVar(&addr, "addr", "10.10.0.2:4433", "server endpoint")
 		fs.StringVar(&transport, "transport", "tcp", "tcp or quic")
@@ -85,7 +93,7 @@ func Run(name string, args []string, out, errOut io.Writer) int {
 		fs.StringVar(&format, "format", "table", "table or json")
 		fs.String("experiment-id", "", "experiment identifier")
 		fs.String("run-id", "", "trial identifier")
-		fs.String("out", "", "result directory (no output artifacts in P0)")
+		fs.String("out", "", "result directory (canonical files arrive in P6)")
 		fs.Bool("progress", false, "collect progress in future evidence mode")
 	} else {
 		fmt.Fprintln(errOut, "unknown binary")
@@ -97,11 +105,11 @@ func Run(name string, args []string, out, errOut io.Writer) int {
 		fs.StringVar(&scenario, "scenario", "rtt50-loss3", "scenario name")
 		fs.IntVar(&runs, "runs", 0, "measured repeats (default: scenario config)")
 		fs.IntVar(&warmups, "warmups", 0, "warmups (default: scenario config)")
-		fs.BoolVar(&plan, "plan", false, "schedule planning (not implemented in P0)")
+		fs.BoolVar(&plan, "plan", false, "schedule planning (future phase)")
 		fs.StringVar(&suite, "suite", "bulk", "bulk or handshake")
-		fs.Uint64("seed", 0, "schedule seed (default: scenario config; planning not implemented)")
-		fs.StringVar(&entry, "schedule-entry", "", "entry JSON path (not implemented in P0)")
-		fs.StringVar(&merge, "merge", "", "shard directory (not implemented in P0)")
+		fs.Uint64("seed", 0, "schedule seed (default: scenario config; planning in future phase)")
+		fs.StringVar(&entry, "schedule-entry", "", "entry JSON path (future phase)")
+		fs.StringVar(&merge, "merge", "", "shard directory (future phase)")
 		fs.String("network-state", "", "verified network metadata path")
 	}
 	if err := fs.Parse(args); err != nil {
@@ -203,6 +211,84 @@ func Run(name string, args []string, out, errOut io.Writer) int {
 			return bad("plan, schedule-entry and merge are mutually exclusive")
 		}
 	}
-	fmt.Fprintln(errOut, "not implemented: P0 skeleton; no listener, transfer, schedule, merge or benchmark was started")
+	if name == "server" && transport == "tcp" {
+		if w.Profiles[*profile].ResourceCount != 1 {
+			fmt.Fprintln(errOut, "not implemented: TCP batches of multiple resources belong to P3")
+			return 1
+		}
+		store, err := workload.NewStore(w.Profiles[*profile], w.Limits)
+		if err != nil {
+			return bad(err.Error())
+		}
+		cfg, err := tlsconfig.Server(cert, key)
+		if err != nil {
+			fmt.Fprintln(errOut, err)
+			return 1
+		}
+		ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+		defer stop()
+		ready := make(chan net.Addr)
+		done := make(chan error, 1)
+		go func() {
+			done <- tcptransport.Serve(ctx, addr, cfg, store, tcptransport.ServerOptions{
+				HandshakeTimeout: time.Duration(w.Timeouts.HandshakeSeconds) * time.Second,
+				TrialTimeout:     time.Duration(w.Timeouts.TrialSeconds) * time.Second,
+				MaxConnections:   int(w.Limits.MaxActiveConnections),
+			}, ready)
+		}()
+		select {
+		case actual := <-ready:
+			fmt.Fprintf(errOut, "TCP/TLS ready %s profile=%s resources=1\n", actual, *profile)
+		case err := <-done:
+			fmt.Fprintln(errOut, err)
+			return 1
+		}
+		if err := <-done; err != nil {
+			fmt.Fprintln(errOut, err)
+			return 1
+		}
+		return 0
+	}
+	if name == "client" && transport == "tcp" {
+		if w.Profiles[*profile].ResourceCount != 1 {
+			fmt.Fprintln(errOut, "not implemented: TCP batches of multiple resources belong to P3")
+			return 1
+		}
+		expected, err := workload.NewStore(w.Profiles[*profile], w.Limits)
+		if err != nil {
+			return bad(err.Error())
+		}
+		cfg, err := tlsconfig.Client(ca, serverName)
+		if err != nil {
+			fmt.Fprintln(errOut, err)
+			return 1
+		}
+		result, err := tcptransport.Run(context.Background(), addr, cfg, expected, timeout)
+		if err != nil {
+			fmt.Fprintln(errOut, "TCP transfer failed:", err)
+			return 1
+		}
+		if format == "json" {
+			payload := struct {
+				Transport  string  `json:"transport"`
+				Profile    string  `json:"profile"`
+				ResourceID uint32  `json:"resource_id"`
+				Bytes      uint64  `json:"bytes"`
+				ChecksumOK bool    `json:"checksum_ok"`
+				ElapsedMS  float64 `json:"elapsed_ms"`
+			}{"tcp", *profile, result.ResourceID, result.BytesReceived, result.ChecksumOK, float64(result.Timing.End.Sub(result.Timing.Start)) / float64(time.Millisecond)}
+			if err := json.NewEncoder(out).Encode(payload); err != nil {
+				fmt.Fprintln(errOut, err)
+				return 1
+			}
+		} else {
+			if _, err := fmt.Fprintf(out, "tcp %s resource=%d bytes=%d checksum_ok=%t elapsed_ms=%.3f\n", *profile, result.ResourceID, result.BytesReceived, result.ChecksumOK, float64(result.Timing.End.Sub(result.Timing.Start))/float64(time.Millisecond)); err != nil {
+				fmt.Fprintln(errOut, err)
+				return 1
+			}
+		}
+		return 0
+	}
+	fmt.Fprintln(errOut, "not implemented: selected transport/mode or benchmark belongs to a later phase")
 	return 1
 }

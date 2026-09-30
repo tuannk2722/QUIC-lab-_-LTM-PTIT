@@ -1,7 +1,20 @@
 # Tiến độ công việc
 
+## Phiên 2026-09-30 — P1 rồi P2 theo yêu cầu mới
+
+- Người dùng xác nhận P0/G00 đã human-review/approved; cho phép P1 và P2 tuần tự, giữ G01/G02. Trạng thái hiện tại: **P1/G01 PASS; P2/G02 PASS; dừng chờ human review, P3 NOT_STARTED**.
+- Read set trước thay đổi P1: AGENTS.md, docs/00-INDEX.md, .codex/TASK.md, docs/IMPLEMENTATION_PLAN.md, docs/DEMO_SPEC.md, docs/PROTOCOL.md, docs/CLI_CONTRACT.md, docs/METRICS_AND_RESULTS.md, docs/NETWORK_AND_BENCHMARK.md, docs/ACCEPTANCE.md, docs/CONTEXT_AND_DECISIONS.md, docs/ACCEPTANCE_RESULTS.md, docs/AI_USAGE.md, configs/workloads.json; code internal/config/{config,json}.go và config_test.go, internal/cli/cli.go, internal/tlsconfig/config.go, Makefile; inventory internal/cmd/tests và git status (sạch).
+- P1 PASS / G01 PASS. Đã thêm internal/workload/{resource,generator,workload_test}.go và docs/evidence/p1/{g01-workload-tests.log,g01-suite.log,g01-race.log,workload-manifest.json}. Store giữ backing bytes private, Resource trả bằng value, ReadAt copy; cả TCP/QUIC sẽ nhận cùng Store pointer khi các listener được xây. G01 kiểm hai reader đồng thời cùng Store; cross-transport runtime còn thuộc G04.
+- G01: `go test -v ./internal/workload` exit 0 sau khi đặt env cache theo Makefile; `make test` exit 0; `go test -race ./internal/workload` exit 0. Lần gọi gofmt/go test đầu thất bại do PATH/cache mặc định read-only, đã sửa bằng toolchain/cache local và rerun. Manifest sinh từ log test thực, không phải benchmark.
+- Bước tiếp theo: inspect mã/tests CLI/TLS và hợp đồng P2 trước sửa; implement đúng một resource QB01 + TCP/TLS và chạy G02. Không mở batch/multiplex P3.
+- Read set P2 trước sửa: docs/PROTOCOL.md (toàn bộ), docs/DEMO_SPEC.md, docs/CLI_CONTRACT.md, docs/IMPLEMENTATION_PLAN.md §P2/G02, docs/ACCEPTANCE.md và docs/METRICS_AND_RESULTS.md; cmd/{server,client}/main.go, internal/cli/{cli,cli_test}.go, internal/tlsconfig/{config,config_test}.go, internal/workload code/tests, Makefile. P2 IN_PROGRESS. Bước kế tiếp: codec/state QB01 bounded, TCP/TLS single-resource client/server/CLI, parser/fuzz/integration tests, chạy G02 localhost thực.
+- P2/G02 PASS: thêm internal/protocol/{frame,codec,request,response,errors,protocol_test}.go, internal/transport/types.go, internal/transport/tcp/{client,server}.go, tests/integration/tcp_test.go; sửa internal/cli/cli.go để chỉ TCP/TLS một resource hoạt động, mode/transport tương lai vẫn nonzero. Không có P3 scheduler/batch multiplex. Codecs giới hạn payload trước allocate, xử lý short read/write/EOF/cancel/timeouts; client đối chiếu META, bytes, FIN, SHA-256; TLS trust/ALPN/TLS1.3 từ P0.
+- G02 commands/results: `make build` exit 0; `make test` exit 0 ngoài sandbox cho localhost (sau lần chạy trong sandbox bị chặn bind); `go test -v -count=1 ./internal/protocol ./tests/integration` exit 0 gồm fuzz seeds; `make test-race` exit 0; CLI localhost thật client 1024 bytes/checksum true exit 0, CA khác exit 1, server SIGTERM exit 0. Evidence: docs/evidence/p2/{g02-build.log,g02-suite.log,g02-detailed-tests.log,g02-race.log,g02-cli-transfer.log}. Sandbox socket bị EPERM; test readiness đã sửa báo lỗi hữu hạn thay vì treo, run hợp lệ dùng quyền localhost UID thường. Không có số liệu benchmark.
+- Read set tài liệu trước cập nhật hướng dẫn: README.md, START_HERE.md, docs/00-INDEX.md và docs/CLI_CONTRACT.md; đã đồng bộ trạng thái P1/P2, lệnh chạy một resource và giới hạn output hiện tại. Tệp hồ sơ/hướng dẫn thay đổi: docs/ACCEPTANCE_RESULTS.md, docs/AI_USAGE.md, docs/00-INDEX.md, docs/CLI_CONTRACT.md, README.md, START_HERE.md, .codex/TASK.md; giữ evidence P0. `git diff --check` và gofmt check PASS. Bước tiếp theo chính xác: người dùng human-review P1/P2 và G01/G02; chỉ bắt đầu P3 khi được cho phép rõ ràng.
+- Final G02 rerun sau sửa tên/semantics `elapsed_ms`: `make build` exit 0, `make test` exit 0, CLI localhost 1024 byte/hash true exit 0, CA lạ exit 1, server SIGTERM exit 0; log final đã thay bản trước. Detailed parser/integration test log có seed fuzz và negative tests; race suite exit 0 trước thay đổi chỉ liên quan định dạng output CLI. Không chạy network benchmark hoặc tự tạo results CSV.
+
 Cập nhật: 2026-09-30 UTC
-Phạm vi người dùng cho phép: **chỉ P0 và G00**, không bắt đầu P1, không commit tự động.
+Phạm vi người dùng cho phép ở checkpoint lịch sử này: **chỉ P0 và G00**, không bắt đầu P1, không commit tự động.
 Trạng thái: **P0 hoàn tất / G00 PASS / dừng chờ review và cho phép phase tiếp theo**.
 Bước tiếp theo chính xác: người dùng review hồ sơ/diff P0; chỉ bắt đầu P1 khi có yêu cầu rõ ràng. Không còn blocker của G00.
 
@@ -60,4 +73,4 @@ G00-toolchain/build/help/input/cert/API/inventory và network-primitives PASS; *
 
 Handoff 2026-09-28 chọn Ubuntu VM; D13 ngày 2026-09-30 thay bằng Ubuntu WSL2 sau preflight người dùng cung cấp. D14 đổi mặc định thành human-gated. Migration tài liệu đã hoàn thành; lượt này chỉ triển khai P0 được cấp quyền.
 
-P0: hoàn tất, G00 PASS, dừng review. P1–P12: NOT_STARTED. Không tự mở rộng scope để giải quyết phase sau.
+Checkpoint lịch sử P0: hoàn tất, G00 PASS, dừng review. Trạng thái mới nhất P1/P2 ở đầu file; không tự mở rộng sang P3.

@@ -1,8 +1,8 @@
-# Kết quả nghiệm thu — P0 / G00
+# Kết quả nghiệm thu — P0/G00, P1/G01, P2/G02
 
-Ngày: 2026-09-30 UTC. Baseline: `7e54ad654b14b8eb38b0db369203df4d34f003d7`, working tree có thay đổi P0 chưa commit. Phạm vi được người dùng cho phép: **chỉ P0**, không P1. Môi trường: Ubuntu 26.04.1 LTS trong WSL2, UID 1000.
+Ngày: 2026-09-30 UTC. Baseline: `7e54ad654b14b8eb38b0db369203df4d34f003d7`. Người dùng đã human-review/approve P0/G00 và cho phép P1→G01, chỉ khi PASS mới P2→G02. Môi trường: Ubuntu 26.04.1 LTS trong WSL2, UID 1000.
 
-**P0 hoàn tất; G00 tổng thể: PASS.** Các kiểm tra độc lập đã đạt; phần capability được đóng bằng log probe do người dùng chạy trong WSL2 lúc `2026-09-30T04:48:25Z`. Agent đã đối chiếu output và script, không chạy lại hoặc tự nhận là người thực thi. Không mở rộng sang P1.
+**P0/G00 PASS; P1/G01 PASS; P2/G02 PASS.** Phần capability G00 được đóng bằng log probe do người dùng chạy trong WSL2 lúc `2026-09-30T04:48:25Z`. Agent đã đối chiếu output và script, không tự nhận là người thực thi. P1/P2 chờ human review.
 
 | ID / subcase | Trạng thái | Lệnh / cách kiểm | Kỳ vọng và kết quả thực | Evidence | Còn thiếu |
 |---|---|---|---|---|---|
@@ -17,7 +17,12 @@ Ngày: 2026-09-30 UTC. Baseline: `7e54ad654b14b8eb38b0db369203df4d34f003d7`, wor
 | G00-env-inventory | PASS ngoài sandbox | make doctor REPORT=docs/evidence/p0/doctor-host.txt | Exit 0; OS/kernel/CPU/RAM/swap/tools có evidence, Go process unprivileged | [doctor-host](evidence/p0/doctor-host.txt) | Host Windows/WSL app version vẫn user-reported, chưa truy vấn Windows CLI |
 | G00-env-sandbox (lịch sử, đã có đường kiểm thay thế) | BLOCKED trong lần thử cũ | make doctor REPORT=docs/evidence/p0/doctor.txt | ip netns list bị netlink permission; doctor exit 3, Make exit 2. Đã rerun inventory ngoài sandbox đạt | [doctor-sandbox](evidence/p0/doctor.txt) | Giới hạn sandbox, không phải kernel thiếu module |
 | G00-network-primitives | PASS | Người dùng: sudo bash scripts/preflight-network.sh | Log có netem 50ms, mirred redirect→ifb0 và PASS sau xóa namespace; người dùng xác nhận chạy thành công. Không có numeric exit code ghi riêng trong log | [probe](evidence/p0/network-probe.log), [provenance/hash](evidence/p0/network-probe-provenance.json) | Không; G07/G08 vẫn NOT_RUN |
-| G01–G12 | NOT_RUN | Không chạy | Không workload P1, transfer, topology G07/G08, benchmark, 0-RTT hoặc PCAP/qlog thực | Không có dataset hiệu năng | Chờ cấp quyền theo từng phase |
+| G01-fixture/determinism | PASS | `go test -v ./internal/workload` với local Go/cache | Fixture ID1 4 byte = `01 02 03 04`, SHA-256 cố định; bulk 6×1MiB và handshake 1×1KiB có cùng bytes/hash giữa hai lần generate | [tests](evidence/p1/g01-workload-tests.log), [manifest](evidence/p1/workload-manifest.json) | Không |
+| G01-bounds/store | PASS | `make test`; `go test -race ./internal/workload` | Count/size/chunk/total overflow reject trước allocate; concurrent readers trên cùng immutable Store; toàn suite và race exit 0 | [suite](evidence/p1/g01-suite.log), [race](evidence/p1/g01-race.log) | Runtime TCP/QUIC chung store sẽ được xác minh sau khi QUIC có ở G04 |
+| G02-QB01 parser | PASS | `go test -v -count=1 ./internal/protocol` | Golden header 24 byte; REQUEST/META/ERROR roundtrip; partial read/write, coalesced frames, no-progress writer, malformed/truncated/oversize header, response state/hash; fuzz seed#0–2 đạt | [detailed tests](evidence/p2/g02-detailed-tests.log) | Không chạy long fuzz campaign; seed cases theo G02 |
+| G02-TCP/TLS localhost | PASS | `make test`; `go test -v -count=1 ./tests/integration`; `make test-race` | TLS1.3/ALPN transfer 1×1024 byte đúng SHA-256; untrusted CA fail; truncated frame, bad length, timeout và cancel kết thúc hữu hạn; toàn suite/race exit 0 | [suite](evidence/p2/g02-suite.log), [detailed tests](evidence/p2/g02-detailed-tests.log), [race](evidence/p2/g02-race.log) | Localhost chỉ kiểm correctness |
+| G02-CLI transfer | PASS | `make build`; `bin/server --transport=tcp --profile=handshake --listen=127.0.0.1:14433` + `bin/client` tương ứng; CA khác | Server ready; client exit 0 với 1024 byte/checksum true; CA khác exit 1/x509; server SIGTERM exit 0 | [build](evidence/p2/g02-build.log), [CLI](evidence/p2/g02-cli-transfer.log) | Canonical result files/metrics đầy đủ thuộc P5/P6 |
+| G03–G12 | NOT_RUN | Chưa chạy | Chưa có TCP multiplex/QUIC, topology G07/G08, benchmark, 0-RTT hoặc PCAP/qlog thực | Không có dataset hiệu năng | Dừng trước P3 theo yêu cầu |
 
 ## Lệnh tái lập P0
 
@@ -37,9 +42,22 @@ set -o pipefail
 sudo bash scripts/preflight-network.sh 2>&1 | tee results/p0-review/network-probe.log
 ```
 
-Người dùng nhập mật khẩu sudo trong terminal của mình. Agent không nhận/ghi mật khẩu. Probe tạo/xóa namespace tạm riêng, veth/IFB, ingress redirect và netem 50ms; không tạo qclient/qserver hoặc chạy app. Log lần chạy nêu trên đã được review và đóng capability G00; không pass G07/G08. Các lỗi sudo/netlink trước đây vẫn giữ trong evidence làm lịch sử, không còn là blocker hiện tại của G00. P1 chỉ bắt đầu khi được người dùng cho phép rõ ràng.
+Người dùng nhập mật khẩu sudo trong terminal của mình. Agent không nhận/ghi mật khẩu. Probe tạo/xóa namespace tạm riêng, veth/IFB, ingress redirect và netem 50ms; không tạo qclient/qserver hoặc chạy app. Log lần chạy nêu trên đã được review và đóng capability G00; không pass G07/G08. Các lỗi sudo/netlink trước đây vẫn giữ trong evidence làm lịch sử, không còn là blocker hiện tại của G00. Người dùng đã cho phép P1/P2 trong phiên hiện tại.
 
-## Review thay đổi P0
+## Tái lập P1/P2
+
+```bash
+make test
+make test-race
+make build
+bin/server --transport=tcp --profile=handshake --listen=127.0.0.1:14433
+# Terminal khác, cùng repo:
+bin/client --transport=tcp --profile=handshake --addr=127.0.0.1:14433 --server-name=localhost --format=json
+```
+
+Lệnh CLI chạy UID thường, dùng certificate local từ P0. Nếu chưa có cert, chạy `make certs` trước khi mở server. Dừng server bằng Ctrl+C. G02 chạy localhost thực ngoài sandbox vì sandbox chặn tạo socket; không có network impairment hay số liệu performance. JSON ở P2 là kết quả tối thiểu trên stdout, chưa phải canonical artifacts P6.
+
+## Review thay đổi P0 (lịch sử tại thời điểm P0)
 
 - go.mod/go.sum và Makefile: pin exact dependency, bắt đúng Go, GOTOOLCHAIN=local; cache/toolchain local gitignored. Build/test unprivileged và không tự chạy benchmark.
 - internal/config: config tối đa 1 MiB/độ sâu 32; reject duplicate/unknown/trailing, kiểm count/size/total trước workload allocation; không có resource generator P1.

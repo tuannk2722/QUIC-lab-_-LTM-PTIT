@@ -1,0 +1,9 @@
+server command: bin/server --transport=tcp --profile=handshake --listen=127.0.0.1:14433
+TCP/TLS ready 127.0.0.1:14433 profile=handshake resources=1
+client command: bin/client --transport=tcp --profile=handshake --addr=127.0.0.1:14433 --server-name=localhost --format=json
+{"transport":"tcp","profile":"handshake","resource_id":1,"bytes":1024,"checksum_ok":true,"elapsed_ms":3.973159}
+client exit=0
+untrusted CA client command: bin/client ... --ca=<new unrelated certificate>
+TCP transfer failed: tls: failed to verify certificate: x509: certificate signed by unknown authority (possibly because of "x509: ECDSA verification failure" while trying to verify candidate authority certificate "QUIC Performance Lab local demo")
+untrusted CA exit=1 (expected 1)
+server SIGTERM exit=0
