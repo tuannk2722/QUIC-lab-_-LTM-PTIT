@@ -38,11 +38,14 @@ func writeResponse(stream *quicgo.Stream, resource workload.Resource, chunk uint
 	return stream.Close() // send-half FIN after the QB01 FIN frame
 }
 
-func expectStreamEOF(stream *quicgo.Stream) error {
+func expectStreamEOF(stream io.Reader) error {
 	var extra [1]byte
 	n, err := stream.Read(extra[:])
 	if n == 0 && errors.Is(err, io.EOF) {
 		return nil
 	}
-	return fmt.Errorf("trailing stream data or missing EOF: n=%d err=%v", n, err)
+	if err != nil && !errors.Is(err, io.EOF) {
+		return fmt.Errorf("stream EOF: %w", err)
+	}
+	return fmt.Errorf("trailing stream data or missing EOF: n=%d", n)
 }

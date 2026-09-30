@@ -3,8 +3,10 @@ package quic
 import (
 	"context"
 	"crypto/tls"
+	"errors"
 	"fmt"
 	"net"
+	"strconv"
 	"sync"
 	"time"
 
@@ -22,10 +24,6 @@ func RunBatch(parent context.Context, addr string, cfg *tls.Config, expected *wo
 	if cfg == nil || expected == nil || expected.Count() < 1 || expected.Count() > maxBidiStreams || timeout <= 0 {
 		return nil, fmt.Errorf("invalid QUIC client configuration")
 	}
-	peer, err := net.ResolveUDPAddr("udp", addr)
-	if err != nil {
-		return nil, err
-	}
 	count, chunk := expected.Count(), uint32(expected.Profile().ChunkBytes)
 	receivers := make([]*protocol.Receiver, count)
 	out = make([]transport.Result, count)
@@ -40,18 +38,13 @@ func RunBatch(parent context.Context, addr string, cfg *tls.Config, expected *wo
 		}
 		out[i].ResourceID, out[i].BytesExpected = resource.ID(), uint64(resource.Size())
 	}
-	packet, err := net.ListenPacket("udp", ":0")
-	if err != nil {
-		return out, err
-	}
-	defer packet.Close()
 	handshakeTimeout := min(timeout, 10*time.Second)
 	qcfg := quicConfig(handshakeTimeout, timeout)
 	// The peer may only respond on streams that this client opened.
 	qcfg.MaxIncomingStreams = -1
 	ctx, cancel := context.WithTimeout(parent, timeout)
 	defer cancel()
-	start := time.Now() // packet socket, expectations and QUIC config are ready
+	start := time.Now() // Includes address resolution and socket setup, as TCP Dial does.
 	for i := range out {
 		out[i].Timing.Start = start
 	}
@@ -62,6 +55,15 @@ func RunBatch(parent context.Context, addr string, cfg *tls.Config, expected *wo
 			out[i].BytesReceived = receivers[i].BytesReceived()
 		}
 	}()
+	peer, err := resolveUDP(ctx, addr, net.DefaultResolver.LookupIPAddr)
+	if err != nil {
+		return out, err
+	}
+	packet, err := net.ListenPacket("udp", ":0")
+	if err != nil {
+		return out, err
+	}
+	defer packet.Close()
 	dialCtx, stopDial := context.WithTimeout(ctx, handshakeTimeout)
 	conn, err := quicgo.Dial(dialCtx, packet, peer, cfg, qcfg)
 	stopDial()
@@ -103,6 +105,10 @@ func RunBatch(parent context.Context, addr string, cfg *tls.Config, expected *wo
 		i, stream := i, stream
 		wg.Go(func() {
 			if workerErr := receiveResource(stream, uint32(i+1), uint32(count), chunk, receivers[i], &out[i]); workerErr != nil {
+				if ctx.Err() != nil {
+					workerErr = errors.Join(workerErr, ctx.Err())
+				}
+				out[i].Err = workerErr
 				errCh <- fmt.Errorf("resource %d stream %d: %w", i+1, stream.StreamID(), workerErr)
 				cancel()
 				_ = conn.CloseWithError(appProtocolError, "resource failed")
@@ -112,16 +118,22 @@ func RunBatch(parent context.Context, addr string, cfg *tls.Config, expected *wo
 	wg.Wait()
 	select {
 	case err = <-errCh:
-		return out, err
 	default:
 	}
 	for i := range out {
-		if err := receivers[i].Verify(); err != nil {
-			return out, fmt.Errorf("resource %d: %w", i+1, err)
+		if receivers[i].Complete() {
+			out[i].ChecksumChecked = true
+			verifyErr := receivers[i].Verify()
+			out[i].ChecksumOK = verifyErr == nil
+			if verifyErr != nil {
+				out[i].Err = verifyErr
+				if err == nil {
+					err = fmt.Errorf("resource %d: %w", i+1, verifyErr)
+				}
+			}
 		}
-		out[i].ChecksumOK = true
 	}
-	return out, nil
+	return out, err
 }
 
 func receiveResource(stream *quicgo.Stream, id, count, chunk uint32, receiver *protocol.Receiver, result *transport.Result) error {
@@ -168,4 +180,23 @@ func receiveResource(stream *quicgo.Stream, id, count, chunk uint32, receiver *p
 	}
 	complete = true
 	return nil
+}
+
+func resolveUDP(ctx context.Context, addr string, lookup func(context.Context, string) ([]net.IPAddr, error)) (*net.UDPAddr, error) {
+	host, port, err := net.SplitHostPort(addr)
+	if err != nil {
+		return nil, err
+	}
+	n, err := strconv.Atoi(port)
+	if err != nil || n < 1 || n > 65535 {
+		return nil, fmt.Errorf("invalid UDP port %q", port)
+	}
+	ips, err := lookup(ctx, host)
+	if err != nil {
+		return nil, err
+	}
+	if len(ips) == 0 {
+		return nil, fmt.Errorf("no addresses for %q", host)
+	}
+	return &net.UDPAddr{IP: ips[0].IP, Zone: ips[0].Zone, Port: n}, nil
 }

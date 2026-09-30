@@ -133,3 +133,7 @@ P5 đặt công thức và mốc client. P6 thêm canonical raw JSON/CSV và val
 - API pin: compile/source checks không tương đương network test. Runtime handshake/ticket/rejection/qlog/viewer còn để đúng phase sau.
 
 Đây là self-review của agent; người dùng đã chạy/xác nhận probe, chưa có xác nhận review toàn bộ code. Không phát hiện thay đổi ngoài scope P0 trong code. Không chạy test-race vì P0 không có app concurrency; target sẵn cho phase phù hợp. Originals, source manifests, configs và result schema giữ nguyên; không commit. Diff đầy đủ (kể cả file mới) được cung cấp khi bàn giao, không chỉ git diff mặc định vốn bỏ qua untracked files.
+
+## Audit fixes P0–P6 — 2026-09-30
+
+User authorized the six review fixes only. G04/G05/G06 regression checks **PASS**: build, full Go suite, full race suite, G06 actual TCP/QUIC success + TLS failure and Python mutation regressions. Evidence and reproduction: [audit-p0-p6/README.md](evidence/audit-p0-p6/README.md). Actual additional QUIC resolve/socket failures retain raw JSON plus N stream rows. Historical sandbox denial and intermediate EOF-timeout regression failure are retained separately; neither remains a final blocker. G07–G12 unchanged/NOT_RUN; localhost correctness only, patch awaits human review.

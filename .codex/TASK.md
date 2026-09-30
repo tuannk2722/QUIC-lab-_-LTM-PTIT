@@ -1,3 +1,12 @@
+## Phiên 2026-09-30 — sửa 6 findings audit P0–P6
+
+- User cho phép bugfix/refactor đúng findings; không P7. Read set: AGENTS/INDEX/TASK, PROTOCOL, METRICS, CLI, PLAN P4–P6, CONTEXT D16/D17, DEMO_SPEC, NETWORK §1; code transport TCP/QUIC, metrics, validator và tests/evidence G06.
+- Đã sửa cả 6 findings: QUIC resolve trong context/timing và setup failure giữ slots; checksum checked/OK/error từng resource, verify completed siblings sau readers dừng; EOF giữ cause và context khi cancel race; validator kiểm INCOMPLETE/raw types/timeline/QUIC IDs. D18 ghi refinement t0 và failure finalization; không thay schema v1.
+- Files: internal/transport/{types,tcp/client,quic/client,quic/streams,quic/audit_test}.go; internal/metrics/{result,result_test}.go; tests/integration/audit_test.go; analysis/{validate,test_validate}.py; docs/{CONTEXT_AND_DECISIONS,METRICS_AND_RESULTS,AI_USAGE,ACCEPTANCE_RESULTS}.md; docs/evidence/audit-p0-p6/ và TASK.
+- Verification: make build/test/test-race exit 0; Python G06/mutation regressions exit 0; bash docs/evidence/p6/run-g06.sh exit 0, real TCP+QUIC success và TLS failure ở results/p6-g06-mCkEvs/, bản lưu docs/evidence/audit-p0-p6/actual/. QUIC resolve/socket failure thật exit 1 và validator PASS, N resource rows giữ lại. Log sandbox EPERM và regression phát hiện EOF cancellation race trước fix giữ riêng. Full suite/race cuối chạy UID thường ngoài sandbox với quyền localhost.
+- G04/G05/G06 regression PASS; không gate thất bại/blocker còn lại. G07–G12 NOT_RUN. git diff --check PASS, gofmt sạch. Không network impairment/benchmark, không commit, chưa human review bản sửa.
+- Next exact action: người dùng review patch/evidence audit; chỉ mở P7 khi được cho phép riêng.
+
 # Tiến độ công việc
 
 ## Phiên 2026-09-30 — P5 rồi P6 được cho phép, giữ G05/G06

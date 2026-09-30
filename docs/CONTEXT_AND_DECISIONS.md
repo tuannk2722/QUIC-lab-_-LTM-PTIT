@@ -88,3 +88,9 @@ D13/D14 được đồng bộ trong AGENTS, start prompt/README/START_HERE, TASK
 
 - `time.Time` được giữ trong client đến khi tính Sub; first DATA byte được ghi ở callback read đầu, không sau nguyên chunk. `total_ms` dừng ở FIN cuối; `elapsed_ms` có thể gồm verify/cleanup. TCP dial success được ghi cả khi TLS handshake fail, mốc handshake thiếu giữ null. Đây là cách áp dụng METRICS§1–2, không đổi công thức.
 - Một invocation cold client tạo một thư mục kết quả mới, với raw JSON trước CSV, writer đồng bộ và lỗi flush/close trả nonzero. ID tự sinh có timestamp UTC + random suffix; ID user nhập được giới hạn ký tự path-safe. Không append vào directory có sẵn. Trường 0-RTT/TLS-resumption chưa quan sát ở P10 giữ nullable thay vì bịa false; `attempted_0rtt=false` cho cold. Dữ liệu P6 chỉ là localhost correctness, network_profile `loopback-test`, chưa có manifest full/cohort/benchmark; P9 hoàn thiện phần đó theo METRICS§3–5.
+
+### D18 — 2026-09-30: sửa audit P0–P6
+
+- QUIC resolution dùng context của trial; t0 bắt đầu trước resolve/socket setup như phạm vi TCP Dial. Buffer/config vẫn chuẩn bị trước t0. Setup failure giữ N slots và start/end để ghi failed trial. Không có phép trừ wall clocks hay reset t0.
+- Result nội bộ phân biệt checksum chưa kiểm/đúng/sai và lỗi từng resource. Sau khi mọi reader dừng (success hoặc failure), verify các resource đã FIN; tiếp tục kiểm siblings khi một hash sai. Run vẫn fail nếu bất kỳ resource/cleanup lỗi; resource đã verify và cleanup hợp lệ giữ success riêng. TCP cleanup lỗi áp dụng mọi resource trên shared connection; QUIC cleanup được ghi theo worker.
+- Validator từ chối INCOMPLETE, kiểm kiểu raw JSON chính xác, stream milestones/order/end và QUIC ID bắt buộc trên successful stream. Không ép first_byte >= request_end. Không đổi schema v1, không triển khai phase mới.

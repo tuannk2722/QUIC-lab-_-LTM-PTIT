@@ -1,0 +1,2 @@
+results: docs/evidence/audit-p0-p6/resolve_failure
+quic transfer failed: lookup bad::ip: no such host

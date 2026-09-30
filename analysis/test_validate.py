@@ -70,7 +70,41 @@ def test(source):
     print("G06 validator: 3 actual trials, failure retained, warmup excluded, duplicate ID and missing stream rejected")
 
 
+def test_audit(source):
+    for case in ("incomplete", "elapsed", "payload_order", "missing_id", "raw_bool", "raw_integer", "missing_first"):
+        with tempfile.TemporaryDirectory(prefix="audit-validator-") as tmp:
+            dest = Path(tmp) / "trial"
+            shutil.copytree(source / "quic_success", dest)
+            path = dest / "raw" / "quic_success.json"
+            raw = json.loads(path.read_text())
+            if case == "incomplete":
+                (dest / "INCOMPLETE").write_text("unfinished")
+            elif case == "elapsed":
+                raw["run"]["elapsed_ms"] = 0
+            elif case == "payload_order":
+                raw["streams"][0]["payload_done_ms"] = 0
+            elif case == "missing_id":
+                raw["streams"][0]["transport_stream_id"] = None
+            elif case == "missing_first":
+                raw["streams"][0]["first_byte_ms"] = None
+                raw["streams"][0]["ttfb_request_ms"] = None
+            if not case.startswith("raw_"):
+                for name, records in (("runs", [raw["run"]]), ("streams", raw["streams"])):
+                    header = rows(dest / (name + ".csv"))[0]
+                    values = [["" if r[k] is None else str(r[k]).lower() if type(r[k]) is bool else r[k] for k in header] for r in records]
+                    put(dest / (name + ".csv"), [header] + values)
+            elif case == "raw_bool":
+                raw["run"]["success"] = 1
+            else:
+                raw["run"]["schema_version"] = True
+            path.write_text(json.dumps(raw))
+            rejected(dest, case)
+    print("Audit regressions: incomplete, timeline, missing ID/milestone and raw type mutations rejected")
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("actual_g06_parent", type=Path)
-    test(parser.parse_args().actual_g06_parent)
+    source = parser.parse_args().actual_g06_parent
+    test(source)
+    test_audit(source)

@@ -71,3 +71,25 @@ func TestCSVFlushErrorPropagates(t *testing.T) {
 		t.Fatalf("flush error = %v", err)
 	}
 }
+
+func TestPerResourceFailurePreservesVerifiedSiblings(t *testing.T) {
+	base := time.Now()
+	timing := transport.Timing{Start: base, RequestStart: at(base, 1), FirstByte: at(base, 2), PayloadDone: at(base, 3), Done: at(base, 4), End: at(base, 5)}
+	bad := errors.New("checksum mismatch")
+	results := []transport.Result{
+		{ResourceID: 1, BytesExpected: 4, BytesReceived: 4, ChecksumChecked: true, ChecksumOK: true, Timing: timing},
+		{ResourceID: 2, BytesExpected: 4, BytesReceived: 4, ChecksumChecked: true, Err: bad, Timing: timing},
+		{ResourceID: 3, BytesExpected: 4, BytesReceived: 4, ChecksumChecked: true, ChecksumOK: true, Timing: timing},
+	}
+	record, err := NewTrial(TrialMeta{Transport: "quic", ResourceCount: 3, ResourceSizeBytes: 4}, results, bad)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if record.Run.Success || !record.Streams[0].Success || !record.Streams[2].Success || record.Streams[0].ErrorCode != "" {
+		t.Fatalf("%+v", record)
+	}
+	s := record.Streams[1]
+	if s.Success || s.ChecksumOK == nil || *s.ChecksumOK || s.ErrorCode != "checksum_mismatch" {
+		t.Fatalf("%+v", s)
+	}
+}

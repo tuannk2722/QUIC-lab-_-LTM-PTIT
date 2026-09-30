@@ -150,15 +150,18 @@ func NewTrial(meta TrialMeta, results []transport.Result, transferErr error) (Tr
 		}
 		run.BytesReceived += r.BytesReceived
 		complete := r.Timing.Done.IsZero() == false && r.BytesReceived == r.BytesExpected
-		streamSuccess := complete && r.ChecksumOK && success
+		streamSuccess := complete && r.ChecksumOK && r.Err == nil
 		var checksum *bool
-		if success || r.ChecksumOK {
+		if r.ChecksumChecked || r.ChecksumOK {
 			v := r.ChecksumOK
 			checksum = &v
 		}
 		streamCode, streamMsg := "", ""
 		if !streamSuccess {
 			streamCode, streamMsg = code, msg
+			if r.Err != nil {
+				streamCode, streamMsg = classify(r.Err)
+			}
 			if streamCode == "" {
 				streamCode = "incomplete"
 				streamMsg = "resource did not complete"

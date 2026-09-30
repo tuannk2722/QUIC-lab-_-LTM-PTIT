@@ -1,0 +1,2 @@
+schema_version,experiment_id,run_id,resource_id,transport_stream_id,attempt_index,request_start_ms,request_end_ms,first_byte_ms,ttfb_request_ms,payload_done_ms,complete_ms,completion_request_ms,bytes_expected,bytes_received,checksum_ok,success,error_code,error_message
+1,audit,resolve_failure,1,,0,,,,,,,,1024,0,,false,transfer_error,lookup bad::ip: no such host

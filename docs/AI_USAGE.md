@@ -21,3 +21,5 @@ Bộ handoff/spec/protocol/metrics/plan này được tạo với hỗ trợ c�
 | 2026-09-30 | Codex | P6: typed raw JSON/CSV, writer, validator, CLI result directory, report template/docs | Ghi thành công và failure rows, đối chiếu schema/FK/formulas và kiểm null/quoting/flush/warmup/duplicate; chạy trial thật trên localhost | Người dùng cho phép P6 nếu G05 PASS; chưa xác nhận review P6 | docs/evidence/p6/actual/, G06 PASS; không có manifest/benchmark network/0-RTT |
 
 Không điền rằng nhóm đã review hiểu code khi chưa diễn ra. Thêm phần implementation theo phase thực tế. Khi lấy library/examples, ghi nguồn/license riêng, không biến attribution thư viện thành “tự implement QUIC”.
+
+- 2026-09-30, Codex: sửa 6 findings audit theo yêu cầu người dùng (QUIC setup/deadline, per-resource checksum/error, EOF cause, Python validation); thêm regression tests và ghi evidence tại `docs/evidence/audit-p0-p6/`. Chưa có human review bản sửa; không P7 hoặc network benchmark.

@@ -11,9 +11,11 @@ type Timing struct {
 type Result struct {
 	ResourceID uint32
 	// StreamID is the native QUIC stream ID. It is nil for TCP.
-	StreamID      *int64
-	BytesExpected uint64
-	BytesReceived uint64
-	ChecksumOK    bool
-	Timing        Timing
+	StreamID        *int64
+	BytesExpected   uint64
+	BytesReceived   uint64
+	ChecksumChecked bool
+	Err             error
+	ChecksumOK      bool
+	Timing          Timing
 }

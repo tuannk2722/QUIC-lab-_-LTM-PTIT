@@ -72,7 +72,62 @@ def read_csv(path, definition):
     return rows
 
 
+def validate_raw_record(record, definition, name):
+    require(type(record) is dict, f"{name}: expected object")
+    require(set(record) == set(definition["properties"]), f"{name}: missing/extra fields")
+    for key, rule in definition["properties"].items():
+        value = record[key]
+        types = rule["type"] if isinstance(rule["type"], list) else [rule["type"]]
+        matches = {
+            "null": value is None, "boolean": type(value) is bool,
+            "integer": type(value) is int,
+            "number": type(value) in (int, float), "string": type(value) is str,
+        }
+        require(any(matches.get(t, False) for t in types), f"{name}/{key}: wrong JSON type")
+        if value is None:
+            continue
+        if type(value) in (int, float):
+            require(math.isfinite(value), f"{name}/{key}: nonfinite")
+        for bound, check in (("minimum", lambda x: value >= x), ("maximum", lambda x: value <= x)):
+            if bound in rule:
+                require(check(rule[bound]), f"{name}/{key}: {bound}")
+        if "const" in rule:
+            require(value == rule["const"], f"{name}/{key}: const")
+        if "enum" in rule:
+            require(value in rule["enum"], f"{name}/{key}: enum")
+        if rule.get("format") == "date-time":
+            require(datetime.fromisoformat(value.replace("Z", "+00:00")).tzinfo is not None,
+                    f"{name}/{key}: timestamp")
+
+
+def validate_timeline(run, stream):
+    rid = run["run_id"]
+    milestones = ("request_start_ms", "request_end_ms", "first_byte_ms", "payload_done_ms", "complete_ms")
+    for key in milestones:
+        value = stream[key]
+        if value is not None:
+            require(value <= run["elapsed_ms"], f"{rid}: {key} after trial end")
+    for before, after in (("request_start_ms", "request_end_ms"),
+                          ("request_start_ms", "first_byte_ms"),
+                          ("first_byte_ms", "payload_done_ms"),
+                          ("payload_done_ms", "complete_ms")):
+        if stream[after] is not None:
+            require(stream[before] is not None and stream[before] <= stream[after],
+                    f"{rid}: invalid {before}/{after} ordering")
+    if run["mode"] == "cold" and stream["request_start_ms"] is not None:
+        require(run["handshake_ms"] is not None and run["handshake_ms"] <= stream["request_start_ms"],
+                f"{rid}: cold request before handshake")
+    if stream["success"]:
+        require(all(stream[k] is not None for k in milestones), f"{rid}: missing stream milestones")
+        require(stream["checksum_ok"] is True and stream["bytes_received"] == stream["bytes_expected"],
+                f"{rid}: incomplete stream success")
+        require(not stream["error_code"] and not stream["error_message"], f"{rid}: successful stream error")
+        if run["transport"] == "quic":
+            require(stream["transport_stream_id"] is not None, f"{rid}: missing QUIC stream ID")
+
+
 def validate(directory):
+    require(not (directory / "INCOMPLETE").exists(), "incomplete result directory")
     schema = json.loads(SCHEMA.read_text(encoding="utf-8"))["$defs"]
     runs = read_csv(directory / "runs.csv", schema["run"])
     streams = read_csv(directory / "streams.csv", schema["stream"])
@@ -103,6 +158,7 @@ def validate(directory):
         if run["handshake_ms"] is not None:
             equal(run["connect_ms"], run["handshake_ms"], f"{rid}: connect alias")
         for s in group:
+            validate_timeline(run, s)
             if s["first_byte_ms"] is not None:
                 equal(s["ttfb_request_ms"], s["first_byte_ms"] - s["request_start_ms"], f"{rid}/{s['resource_id']}: TTFB")
             if s["complete_ms"] is not None:
@@ -133,6 +189,11 @@ def validate(directory):
                     run["goodput_mbps"] is None and run["e2e_goodput_mbps"] is None, f"{rid}: failure metrics")
         require(run["elapsed_ms"] >= 0, f"{rid}: negative elapsed")
         raw = json.loads((directory / "raw" / (rid + ".json")).read_text(encoding="utf-8"))
+        require(type(raw) is dict and set(raw) == {"run", "streams"}, f"{rid}: invalid raw envelope")
+        validate_raw_record(raw["run"], schema["run"], rid)
+        require(type(raw["streams"]) is list, f"{rid}: streams must be array")
+        for stream in raw["streams"]:
+            validate_raw_record(stream, schema["stream"], rid)
         require(raw["run"] == run, f"{rid}: raw run disagrees with CSV")
         require(raw["streams"] == sorted(group, key=lambda s: s["resource_id"]), f"{rid}: raw streams disagree with CSV")
     counts = Counter(row["phase"] for row in runs)

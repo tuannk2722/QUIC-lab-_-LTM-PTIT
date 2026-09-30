@@ -1,0 +1,2 @@
+results: docs/evidence/audit-p0-p6/socket_failure
+quic transfer failed: listen udp :0: socket: operation not permitted
