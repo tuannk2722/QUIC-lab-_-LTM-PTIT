@@ -2,7 +2,9 @@
 
 ## 1. Môi trường đã chọn
 
-Ubuntu VM trên máy người dùng. Một VM chứa cả client/server namespace. Windows/WSL2 là phương án đã thảo luận nhưng **không là đường thực thi chính đã chọn**. Không yêu cầu cloud server hoặc hai VM. Đặt repo trong filesystem Linux của VM; chốt vCPU/RAM sau khảo sát P0, không yêu cầu cấu hình vượt máy có sẵn.
+Môi trường chính hiện hành (D13, 2026-09-30): Ubuntu dưới WSL2 trên Windows 11. Một môi trường Ubuntu WSL2 chứa cả qclient/qserver namespace; không yêu cầu cloud server hoặc hai máy ảo. Repo phải nằm trong native WSL Linux filesystem, ưu tiên `/home/<user>/...`, không `/mnt/c/...` hoặc `/mnt/d/...`. Windows VS Code là UI qua Remote WSL (`WSL: Ubuntu`); build/test/network chạy trong Ubuntu WSL2. Ghi lại tài nguyên thực và giới hạn CPU/RAM/swap ở P0/manifest; không yêu cầu vượt máy có sẵn. Linux GUI không cần thiết.
+
+Capability preflight do người dùng cung cấp đã PASS netns/veth/netem/IFB/mirred; tcpdump có sẵn (quan sát trong VERSIONS). Chỉ chứng minh primitives có sẵn, không thay G07/G08, packet-path/counter/RTT/rate verification hoặc benchmark methodology. Main ingress-ifb không được hạ xuống egress-demo.
 
 P0 kiểm tra `uname`, `/etc/os-release`, `go version`, `ip -V`, `tc -V`, `make`, `openssl`, `tcpdump`, `ethtool`, Python plotting tools, namespace/capabilities, `sch_netem`, IFB và redirect. Không tự bảo đảm kernel nào cũng hỗ trợ. Thiếu capability → ghi blocked và lệnh fix phù hợp distro; không tự cài OS hoặc thay global network để né giới hạn.
 
@@ -16,7 +18,7 @@ P0 kiểm tra `uname`, `/etc/os-release`, `go version`, `ip -V`, `tc -V`, `make`
 | Receiver shaping | ifb0 trong từng namespace | Không cần IP |
 | Server listeners | TCP và UDP | :4433 |
 
-Không default route/NAT/forward host cần thiết để traffic giữa hai endpoints; cùng subnet nối trực tiếp. Loopback trong mỗi namespace phải up. Hai namespaces chỉ cô lập network stack, vẫn chung kernel/CPU/storage VM.
+Không default route/NAT/forward host cần thiết để traffic giữa hai endpoints; cùng subnet nối trực tiếp. Loopback trong mỗi namespace phải up. Hai namespaces chỉ cô lập network stack, vẫn chung kernel/CPU/storage của Ubuntu WSL2.
 
 Đề xuất setup ban đầu: `ip netns add`; tạo veth-client/veth-server; move từng đầu; rename eth0; gán IP; up lo/eth0. Bản triển khai thêm ownership marker để không xóa namespace trùng tên thuộc công việc khác. Setup/teardown lặp được trên tài nguyên của lab; nếu trùng tên không có ownership hợp lệ thì báo rõ, không delete mù.
 
@@ -60,7 +62,7 @@ netem seed được lưu nếu kernel/iproute2 hỗ trợ. Cùng seed không có
 ## 5. Kiểm tra đường mạng trước đo
 
 - Link/address/namespace đúng; readiness của cả listeners.
-- Ping trong no-loss scenario: đo median ít nhất 10 mẫu, ghi configured/measured. Với rtt50-loss0, median mục tiêu 50ms ±10ms; baseline <10ms trong VM rảnh. Ngoài range → không tiến hành main cohort trước khi chẩn đoán.
+- Ping trong no-loss scenario: đo median ít nhất 10 mẫu, ghi configured/measured. Với rtt50-loss0, median mục tiêu 50ms ±10ms; baseline <10ms khi Ubuntu WSL2 và host rảnh. Ngoài range → không tiến hành main cohort trước khi chẩn đoán.
 - Xem `tc -s`/filter redirect/IFB trước và sau traffic; counter phải tăng đúng direction; không duplicate shaping.
 - Ghi `ethtool -k` và tắt những segmentation/coalescing offload có thể trên veth/IFB cho profile measurement (GSO/GRO/TSO và UDP segmentation nếu tồn tại). Lưu điều gì fixed/không hỗ trợ. Không sửa physical NIC host. Không ép tắt option không hỗ trợ rồi báo đã tắt.
 - Với payload lớn, goodput gần 20Mbps hoặc thấp hơn là hợp lý; nếu cao hơn đáng kể (>10% trên sustained bulk), kiểm units/placement/offload/timer. Không coi 10% là định luật rate tuyệt đối cho trace ngắn.

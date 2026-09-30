@@ -51,7 +51,7 @@ Mỗi invocation có thư mục mới `results/<experiment_id>/`; không append 
 
 | Artifact | Nội dung |
 |---|---|
-| manifest.json | Toolchain/OS/VM/config/hash/seed/trace mode/commit/CLI và giới hạn |
+| manifest.json | Toolchain/host OS/execution layer/Linux/config/hash/seed/trace mode/commit/CLI và giới hạn |
 | runs.csv | Một dòng/mỗi trial, kể cả warm-up và failed |
 | streams.csv | N dòng/trial, kể cả tài nguyên chưa được request/không hoàn tất |
 | raw/<run_id>.json | Bản ghi typed canonical trước flatten CSV |
@@ -97,7 +97,7 @@ Evidence mode ghi khi vượt mốc 16KiB hoặc chunk cuối, append in-memory 
 
 ## 5. Manifest bắt buộc
 
-OS/kernel, VM hypervisor nếu xác định được, vCPU/RAM, Go/quic-go version, build flags, git commit hoặc `uncommitted`, dirty flag, ngày UTC, CLI, workload checksum/generator version, TLS/ALPN/version/cipher, TCP CC từ kernel, QUIC CC/default có bằng chứng phiên bản, QUIC flow-control/stream limits, MTU, socket buffer settings, offload state, network placement và qdisc/filter output, configured/measured RTT, seeds, timeout, trace state, config/schema hash, runner order và failure policy.
+Host OS, execution environment/virtualization layer (ví dụ WSL2), Linux distribution/release và kernel, allocated logical CPU/RAM/swap, WSL/VM version nếu áp dụng (hypervisor nếu xác định được), Go/quic-go version, build flags, git commit hoặc `uncommitted`, dirty flag, ngày UTC, CLI, workload checksum/generator version, TLS/ALPN/version/cipher, TCP CC từ kernel, QUIC CC/default có bằng chứng phiên bản, QUIC flow-control/stream limits, MTU, socket buffer settings, offload state, network placement và qdisc/filter output, configured/measured RTT, seeds, timeout, trace state, config/schema hash, runner order và failure policy.
 
 Không biết field nào ghi `unknown` kèm lý do, không bịa “CUBIC giống nhau” khi chưa xác minh. Hai CC cùng tên vẫn khác implementation. Manifest phản ánh cấu hình thực, không chỉ copy desired JSON.
 

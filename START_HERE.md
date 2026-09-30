@@ -5,8 +5,8 @@ Bộ bàn giao dành cho Codex trong IDE, phiên bản 1.0, ngày 28/09/2026 (As
 
 ## Bạn cần làm gì?
 
-1. Môi trường thực thi đã chọn: **Ubuntu VM**. Có thể mở IDE trong VM hoặc kết nối IDE vào VM. Agent chạy terminal/build/test/network ở Ubuntu; build binary Windows rồi chạy trong VM là sai môi trường.
-2. Cho agent triển khai các phase theo tài liệu. Chỉ những thao tác hệ thống bị môi trường chặn mới cần bạn thực hiện thủ công; agent phải tiếp tục phần còn làm được và ghi rõ bước đang bị chặn.
+1. Môi trường hiện hành từ 2026-09-30: **Ubuntu dưới WSL2 trên Windows 11**. Windows VS Code là UI, mở bằng Remote WSL với workspace `WSL: Ubuntu`; terminal/build/test/network chạy trong Ubuntu WSL2. Repo phải nằm trên filesystem Linux native, ưu tiên `/home/<user>/...`, không `/mnt/c/...` hoặc `/mnt/d/...`.
+2. Cho phép rõ ràng từng phase/milestone. Mặc định HUMAN-GATED: agent chỉ làm phase được phép, chạy gate, cập nhật TASK rồi dừng review; build thành công riêng lẻ không đủ. Chỉ tự tiếp tục nhiều phase khi người dùng yêu cầu rõ ràng. Khi bị chặn, agent ghi BLOCKED/lệnh thủ công và làm phần độc lập trong phạm vi được phép. Sau migration tài liệu này, P0 chỉ bắt đầu khi được cho phép sau human review.
 
 Không cần dán lại toàn bộ cuộc trò chuyện. `AGENTS.md` chỉ cách đọc; `docs/00-INDEX.md` chỉ nguồn sự thật; `.codex/TASK.md` giữ tiến độ qua phiên. Context quan trọng phải nằm trong file, không phụ thuộc trí nhớ phiên chat.
 
@@ -23,6 +23,8 @@ Không cần dán lại toàn bộ cuộc trò chuyện. `AGENTS.md` chỉ cách
 
 ## Tình trạng context
 
-Đã đọc toàn bộ nội dung 3 tệp đính kèm. Đã đối chiếu phần trao đổi 31 mục có trong ngữ cảnh hiện tại. Tìm lại được: nhóm 3 người, bạn phụ trách Tổng quan QUIC và demo. Bạn đã xác nhận **Ubuntu VM** và **không có quyết định bổ sung** trong phần hội thoại bị lược bỏ.
+Đã đọc toàn bộ nội dung 3 tệp đính kèm. Đã đối chiếu phần trao đổi 31 mục có trong ngữ cảnh hiện tại. Tìm lại được: nhóm 3 người, bạn phụ trách Tổng quan QUIC và demo. Trong handoff ngày 2026-09-28, bạn đã xác nhận **Ubuntu VM** và **không có quyết định bổ sung** trong phần hội thoại bị lược bỏ.
+
+Quyết định môi trường ban đầu được D13 (2026-09-30) thay bằng WSL2 sau capability preflight thành công; xem VERSIONS. Đây không phải G07/G08 pass.
 
 Không có bản xuất nguyên văn của phần chat bị lược bỏ; không tuyên bố đã đọc được phần không được cung cấp. Bảng truy vết và quyết định nằm tại [CONTEXT_AND_DECISIONS.md](docs/CONTEXT_AND_DECISIONS.md) và [TRACEABILITY.md](docs/TRACEABILITY.md).

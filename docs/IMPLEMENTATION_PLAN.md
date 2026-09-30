@@ -2,9 +2,9 @@
 
 ## Quy tắc thực hiện
 
-Đọc đầy đủ docs trước P0. Gói này chỉ có docs/config/schema; không có hidden implementation để giả định. Thư mục code cần tạo nằm trong bản đồ dưới. Nếu đã có repo code, inventory/diff trước, bảo toàn thay đổi người dùng, không thay root AGENTS hiện có mà chưa đối chiếu nội dung. Không tự init/force-push/merge GitHub repo ngoài phạm vi; có thể làm local code và git diff.
+Mỗi phiên đọc AGENTS/INDEX/TASK và normative docs liên quan phase được cho phép; dùng originals khi ambiguity/conflict/provenance/final traceability. Gói này chỉ có docs/config/schema; không có hidden implementation để giả định. Thư mục code cần tạo nằm trong bản đồ dưới. Nếu đã có repo code, inventory/diff trước, bảo toàn thay đổi người dùng, không thay root AGENTS hiện có mà chưa đối chiếu nội dung. Không tự init/force-push/merge GitHub repo ngoài phạm vi; có thể làm local code và git diff.
 
-Mỗi phase: đọc hợp đồng → inspect code → implement → chạy gate thực sự → sửa lỗi → cập nhật TASK. Pass thì tự tiếp tục; blocked environment thì làm phần độc lập, không hạ tiêu chí. Các phase P0–P12 đều thuộc mục tiêu cuối, không gọi P4 là hoàn tất.
+Mỗi phase: đọc hợp đồng → inspect code → implement → chạy gate thực sự → sửa lỗi → cập nhật TASK. Mặc định HUMAN-GATED: chỉ phase/milestone user cho phép rõ ràng; sau gate và TASK thì dừng review. Chỉ tự nhiều phase/end-to-end khi user yêu cầu rõ ràng. Build riêng lẻ không đủ pass gate; blocked environment thì làm phần độc lập trong phạm vi được phép, không hạ tiêu chí. Các phase P0–P12 đều thuộc mục tiêu cuối, không gọi P4 là hoàn tất.
 
 ## Bản đồ file cuối cùng
 
@@ -47,7 +47,7 @@ Unit tests cùng package: *_test.go theo chức năng cần kiểm, không một
 
 ## P0 — Toolchain, skeleton và TLS assets
 
-Đọc: tất cả docs, sau đó VERSIONS/CLI/DEMO_SPEC. Kiểm Ubuntu VM thật; record OS/kernel/Go/quic-go compatibility. Chọn một stable tag phù hợp, go mod init với module local `quic-performance-lab` nếu chưa có remote module; pin version cụ thể và checksums. Dùng source/go doc đúng tag, không copy pseudo-code cũ.
+Chỉ bắt đầu khi user cho phép P0 sau review migration. Đọc: AGENTS/INDEX/TASK, CONTEXT, VERSIONS/CLI/DEMO_SPEC, NETWORK§1, METRICS§5 và G00. Kiểm Ubuntu WSL2 thực; revalidate observations trong VERSIONS và record host OS/execution layer/distro/kernel/CPU/RAM/swap/WSL version, Go/quic-go compatibility. Capability preflight cũ không thay G07/G08. Chọn một stable tag phù hợp, go mod init với module local `quic-performance-lab` nếu chưa có remote module; pin version cụ thể và checksums. Dùng source/go doc đúng tag, không copy pseudo-code cũ.
 
 Tạo config loader, ba mains parse help/version (chưa transfer phải báo not implemented/nonzero, không fake success), Makefile build/test/certs/doctor, cert script, version report. Không dùng `@latest` trong lệnh tái lập cuối.
 

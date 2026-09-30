@@ -4,7 +4,7 @@
 
 Ba attachments: INT1433 66 dòng, network-programing-topic 571 dòng, T03 1707 dòng. Mọi đầu mục phụ/các topic khác và thông tin hành chính vẫn có nguyên văn trong originals, không biến thành requirement lab.
 
-Phần hội thoại chuyển vào bắt đầu giữa mục 1 và có cờ lược bỏ phần trước. Bảng 31 mục dưới đối chiếu **phần nhìn thấy**, không giả làm transcript nguyên văn. Personal context tìm lại nhóm3/phân công/tính cụ thể của demo; người dùng xác nhận không có thêm quyết định và chọn Ubuntu VM trong lượt này.
+Phần hội thoại chuyển vào bắt đầu giữa mục 1 và có cờ lược bỏ phần trước. Bảng 31 mục dưới đối chiếu **phần nhìn thấy**, không giả làm transcript nguyên văn. Personal context tìm lại nhóm3/phân công/tính cụ thể của demo; người dùng xác nhận không có thêm quyết định và chọn Ubuntu VM trong handoff gốc ngày 2026-09-28.
 
 ## 2. Đối chiếu 31 mục của thiết kế trao đổi
 
@@ -12,7 +12,7 @@ Phần hội thoại chuyển vào bắt đầu giữa mục 1 và có cờ lư�
 |---:|---|---|
 | 1 | Client/server cùng workload; RTT/loss/rate; connect/TTFB/resource completion/total/throughput | SPEC; METRICS; G04/G05/G09 |
 | 2 | CLI trước, terminal/Wireshark/qlog/qvis/CSV/chart; GUI optional; số output chỉ minh họa | SPEC§1, CLI, DEMO; không nhập số giả |
-| 3 | VS Code/Go/quic-go/Linux; Windows có WSL2 hoặc Ubuntu VM; netem Linux-specific | CONTEXT: user chọn VM; NETWORK§1; G00 |
+| 3 | VS Code/Go/quic-go/Linux; Windows có WSL2 hoặc Ubuntu VM; netem Linux-specific | CONTEXT D03: lựa chọn VM gốc; D13 (2026-09-30): WSL2 hiện hành sau capability preflight; NETWORK§1; G00 |
 | 4 | Localhost không đại diện; namespaces như 2 endpoints nhẹ, không 2 VMs | NETWORK§2; G07 |
 | 5 | qclient/qserver, veth move/rename, 10.10.0.1/.2, lo/eth0 up, ping | NETWORK§2; P7/G07 |
 | 6 | tc ngoài Go; delay25 mỗi hướng → RTT≈50 | NETWORK§3–5; G08; không double shape |
@@ -89,4 +89,8 @@ Các con số terminal/CSV trong chat là giả lập minh họa. Gói không gi
 
 ## 5. Kiểm soát hoàn thành
 
-Mỗi row coding map tới gate; mỗi concept lý thuyết map tới source/defense. Nội dung optional được nêu rõ chứ không biến mất. Agent trước final phải đọc lại bảng này, kiểm acceptance evidence và ghi deviations vào CONTEXT. Không coi “đã copy file nguồn” là “agent đã hiểu”; lần đầu cần đọc đủ và có explanation/code tests tương ứng.
+Mỗi row coding map tới gate; mỗi concept lý thuyết map tới source/defense. Nội dung optional được nêu rõ chứ không biến mất. Agent trước final phải đọc lại bảng này, kiểm acceptance evidence và ghi deviations vào CONTEXT. Không coi “đã copy file nguồn” là “agent đã hiểu”; cần đọc đủ nguồn liên quan khi giải quyết ambiguity/conflict/provenance hoặc final traceability và có explanation/code tests tương ứng khi triển khai; không bắt đọc lại toàn bộ originals mỗi phiên thường lệ.
+
+## 6. Superseding runtime/workflow decision — 2026-09-30
+
+D13 thay môi trường ban đầu bằng Ubuntu WSL2 trên Windows 11 sau preflight netns/veth/netem/IFB/mirred thành công do người dùng cung cấp; tcpdump available. Chi tiết quan sát ở VERSIONS. Giữ nguyên conversation/handoff provenance 2026-09-28, originals và source manifests. Không coi preflight là G07/G08; topology, ingress IFB/mirred, protocol/metrics/CSV/evidence/demo và acceptance giữ nguyên. D14 thay mặc định autonomous bằng human-gated theo phase. Lượt này chỉ migration tài liệu, không thực thi P0–P12.

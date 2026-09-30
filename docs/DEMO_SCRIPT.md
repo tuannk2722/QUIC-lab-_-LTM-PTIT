@@ -4,11 +4,11 @@ Trạng thái: runbook theo hợp đồng; agent phải thay path/command cụ t
 
 ## Trước buổi trình bày
 
-Build/cert/dependencies xong offline; Ubuntu VM được cấp resource cố định và không chạy workload nền nặng. Doctor/network preflight pass. Chuẩn bị trước raw/plots/report từ 30 repeats, PCAP/qlog xem được, một trace HOL có giải thích, trace 0-RTT accepted và rejection test. Đóng hết trial trước đổi profile. Không trình diễn cài thư viện tại lớp.
+Build/cert/dependencies xong offline; Ubuntu WSL2 có giới hạn tài nguyên được ghi và giữ ổn định; Ubuntu WSL2 và host Windows không chạy workload nền nặng. Doctor/network preflight pass. Chuẩn bị trước raw/plots/report từ 30 repeats, PCAP/qlog xem được, một trace HOL có giải thích, trace 0-RTT accepted và rejection test. Đóng hết trial trước đổi profile. Không trình diễn cài thư viện tại lớp.
 
 | Thời gian | Thao tác | Giải thích / bằng chứng |
 |---|---|---|
-| 0:00–0:40 | Hiện topology, workload, manifest phiên bản | Một VM, hai namespace, cùng resource, TCP/TLS và raw QUIC |
+| 0:00–0:40 | Hiện topology, workload, manifest phiên bản | Một môi trường Ubuntu WSL2, hai namespace, cùng resource, TCP/TLS và raw QUIC |
 | 0:40–1:30 | `make demo-quic-basic`; mở PCAP đã thu | UDP4433, Initial/Handshake/1-RTT; payload mã hóa; đây không phải HTTP/3 |
 | 1:30–3:30 | `make demo-loss`; mở progress/trace tiêu biểu | 6 logical transfers, một connection mỗi transport, loss downstream; completion không tự chứng minh causal HOL |
 | 3:30–4:45 | `make demo-0rtt` trên handshake profile | Cold không ticket; warm-up/cache; resumed vs early; actual Used0RTT, handshake timeline, packet evidence |
@@ -29,7 +29,7 @@ Build/cert/dependencies xong offline; Ubuntu VM được cấp resource cố đ�
 - Live loss không hiện pattern rõ: dùng trace thật đã lưu có run_id/time/config và nói rõ pre-recorded; không rerun liên tục chỉ đến khi QUIC thắng.
 - Live early rejected/missing ticket: hiện trạng thái đúng; giải thích fallback; dùng evidence accepted đã lưu để minh họa, không đổi false→true.
 - qvis không đọc schema hoặc mạng web không có: dùng viewer đã kiểm tra/offline screenshot có attribution. Không đổi đuôi file để giả chuyển format.
-- VM/tool permission lỗi: báo đang dùng kết quả thực nghiệm đã ghi, không nói chạy live. Cleanup nguồn lab, giữ logs.
+- WSL2/tool permission lỗi: báo đang dùng kết quả thực nghiệm đã ghi, không nói chạy live. Cleanup nguồn lab, giữ logs.
 - Chỉ có 5 phút: bỏ qlog navigation trực tiếp, giữ bốn ý chính; packet/trace screenshot đã chuẩn bị. Demo duration không bao gồm full 240-run suite.
 
 ## Gắn với thời lượng môn học

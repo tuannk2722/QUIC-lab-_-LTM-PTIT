@@ -4,7 +4,7 @@ Chỉ ghi PASS khi đã chạy/kiểm chứng, kèm command, exit status, môi t
 
 | ID | Điều kiện | Bằng chứng cần lưu |
 |---|---|---|
-| G00 | Toolchain/module pin, Ubuntu preflight, 3 binaries build, SAN đúng | VERSIONS, build log, cert inspect, doctor report |
+| G00 | Toolchain/module pin, Ubuntu WSL2 preflight, 3 binaries build, SAN đúng | VERSIONS, build log, cert inspect, doctor report |
 | G01 | Bytes/checksum workload deterministic; bounds trước allocate | Unit output + workload manifest |
 | G02 | QB01/TLS single-resource correctness, partial reads/writes, verify cert | Tests/real transfer; bad cert failure |
 | G03 | TCP 1 connection/6 logical resources, round-robin single writer | Scheduler frame order test + integration result |
@@ -18,6 +18,8 @@ Chỉ ghi PASS khi đã chạy/kiểm chứng, kèm command, exit status, môi t
 | G11 | PCAP/qlog/progress usable; chứng minh UDP/early; HOL được giải thích đúng | Capture/trace and annotated evidence notes |
 | G12 | Fresh reproduction, Make demo, rehearsal 5–7 phút, docs/disclosure đầy đủ | ACCEPTANCE_RESULTS + README + report/rehearsal |
 
+Capability preflight netns/veth/netem/IFB/mirred do người dùng báo PASS ngày 2026-09-30 chỉ xác nhận primitives có sẵn. G00–G12 vẫn NOT_RUN; G07/G08 cần toàn bộ bằng chứng thực theo bảng, không được suy ra từ preflight hoặc build.
+
 ## Các điều kiện chi tiết không được bỏ qua
 
 **Protocol:** read boundaries không đồng nhất frame boundaries; unknown length/header bị reject trước allocate; malformed offsets/size/duplicate FIN và EOF trước FIN fail; cancellation/unresponsive peers terminate bounded; stream/cert errors không panic cả server tùy ý; no goroutine leak trong integration.
@@ -28,7 +30,7 @@ Chỉ ghi PASS khi đã chạy/kiểm chứng, kèm command, exit status, môi t
 
 **0-RTT:** accepted evidence cần kết hợp actual Used0RTT sau successful handshake + request enqueue trước observed handshake + trace packet 0-RTT chứa app request. Timing alone không đủ. Lần đầu no ticket không được ghi true. Server ListenEarly/accept behavior đúng version. Rejection test thực, fallback một lần trên read-only workload, không mất/đếm đôi bytes; mode và actual state tách riêng. Không hứa first response time=0.
 
-**Network:** main profile ingress-ifb; UDP/TCP cùng conditions; no-loss median RTT tolerance theo NETWORK; direction loss ghi rõ; IFB/counter/filter working; offload/CC/VM state lưu. Nói configured loss probability, không fake empirical packet loss rate. Không downgrade silently khi IFB thiếu.
+**Network:** main profile ingress-ifb; UDP/TCP cùng conditions; no-loss median RTT tolerance theo NETWORK; direction loss ghi rõ; IFB/counter/filter working; offload/CC và trạng thái host/execution layer (WSL2), distro/kernel, CPU/RAM/swap lưu. Nói configured loss probability, không fake empirical packet loss rate. Không downgrade silently khi IFB thiếu.
 
 **Data:** success iff đủ bytes + FIN + hash; lỗi CSV write làm command fail; full failure denominator; every planned resource has row even on failure. No nan/inf/negative duration. Main goodput units/sanity check; checksums sau tAll. 6 correlated streams không thành 6 independent statistical trials.
 

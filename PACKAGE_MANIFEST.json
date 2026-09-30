@@ -20,11 +20,6 @@
       "sha256": "7a7bc6b115eead5ccf8c3e100df726efbd8c880c7657e21ecf3a9b6e27665c47"
     },
     {
-      "path": "CODEX_START_PROMPT.md",
-      "bytes": 2166,
-      "sha256": "fe18a80ea344cfdd1b410a6ef8f2279434c13c821270aa7a4551f85ea9142b75"
-    },
-    {
       "path": "README.md",
       "bytes": 1713,
       "sha256": "6f763b312c53d7618b62ce2b81d4da906678ea889b24ff1ba75ab536a6f986f7"

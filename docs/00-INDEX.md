@@ -27,9 +27,9 @@ Nếu chuẩn tắc mâu thuẫn nhau: sửa đồng bộ và ghi quyết địn
 - Sửa transport: PROTOCOL + DEMO_SPEC + acceptance liên quan.
 - Sửa đo lường/CSV: METRICS + schema + analysis + acceptance liên quan.
 - Sửa runner/network: NETWORK + CLI + config + acceptance liên quan.
-- Phiên mới: luôn đọc AGENTS + INDEX + `.codex/TASK.md`; sau đó đọc lại phần đang làm.
+- Phiên mới: luôn đọc AGENTS + INDEX + `.codex/TASK.md`; sau đó đọc normative docs liên quan phase được user cho phép. Mặc định human-gated: chạy gate, cập nhật TASK và dừng review; chỉ tự nhiều phase khi user yêu cầu rõ ràng. Originals dùng khi ambiguity/conflict/provenance/final traceability, không bắt đọc lại toàn bộ mỗi phiên.
 - Trước tuyên bố done: đối chiếu toàn bộ ACCEPTANCE và TRACEABILITY.
 
 ## Artifact có sẵn / cần tạo
 
-Có sẵn: docs, config, schema, nguồn gốc, prompt và checkpoint. Cần tạo qua P0–P12: Go code, tests, shell wrappers, Makefile, analysis scripts và **tất cả dữ liệu thực nghiệm**. Không có số liệu benchmark mẫu giả trong gói này.
+Có sẵn: docs, config, schema, nguồn gốc và checkpoint. Cần tạo qua P0–P12: Go code, tests, shell wrappers, Makefile, analysis scripts và **tất cả dữ liệu thực nghiệm**. Không có số liệu benchmark mẫu giả trong gói này.

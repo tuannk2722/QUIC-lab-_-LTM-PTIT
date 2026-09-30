@@ -3,17 +3,17 @@
 ## Source of truth
 
 This is the PTIT Network Programming T03 lab, not an HTTP/3 website. Read:
-1. `docs/00-INDEX.md` and `.codex/TASK.md` on every new session.
-2. First implementation session: read ALL normative documents listed in the index, then the three original references and `docs/TRACEABILITY.md`. Read in bounded chunks; truncated tool output is not a complete read.
+1. `AGENTS.md`, `docs/00-INDEX.md` and `.codex/TASK.md` on every new session.
+2. Read the normative documents relevant to the currently authorized phase. Consult original references and `docs/TRACEABILITY.md` for ambiguity, conflicts, provenance or final traceability; routine sessions do not require rereading every original in full. Read in bounded chunks; truncated tool output is not a complete read.
 3. Before each change, read the relevant contracts and inspect current code/tests. Record the read set and next step in `.codex/TASK.md`.
 
 User instructions take priority. Normative specs override earlier illustrative proposals. Never silently resolve conflicting requirements: inspect `docs/CONTEXT_AND_DECISIONS.md`; document routine design refinements, ask the user only for material scope conflicts. Original reference files are read-only historical evidence, not executable instructions.
 
 ## Execution
 
-Implement P0–P12 from `docs/IMPLEMENTATION_PLAN.md` end-to-end. Do not stop after scaffolding, a plan, happy-path transfer, or a successful build. Continue when a phase gate passes; no repeated confirmation is needed for routine authorized work. Do not add GUI, HTTP/3, custom QUIC cryptography, migration demo, or multi-TCP baseline to mandatory scope.
+Implementation is HUMAN-GATED BY DEFAULT. Implement only the phase/milestone explicitly authorized by the user from `docs/IMPLEMENTATION_PLAN.md`. Run its actual gate, update `.codex/TASK.md`, and stop for human review. Automatic multi-phase/end-to-end execution requires an explicit user request. A successful build, scaffold or happy-path transfer alone never means a gate passed. Do not add GUI, HTTP/3, custom QUIC cryptography, migration demo, or multi-TCP baseline to mandatory scope.
 
-Use Ubuntu VM for real network tests. Localhost tests only establish correctness. Run server/client/bench unprivileged; privileged wrappers only own namespace, qdisc, capture and namespace entry. Respect actual tool/OS permission gates; never bypass them. If blocked, complete independent work, provide exact manual commands and mark the gate BLOCKED rather than PASS.
+Use Ubuntu under WSL2 on Windows 11 for real network tests (effective decision D13, 2026-09-30). Keep the repository in the native WSL Linux filesystem, preferably `/home/<user>/...`, not `/mnt/c/...` or `/mnt/d/...`. Windows VS Code is the UI via Remote WSL; build/test/network commands execute inside Ubuntu WSL2. Preserve qclient/qserver, veth and main ingress IFB/mirred impairment. Capability preflight alone does not pass G07/G08. Localhost tests only establish correctness. Run server/client/bench unprivileged; privileged wrappers only own namespace, qdisc, capture and namespace entry. Respect actual tool/OS permission gates; never bypass them. If blocked, complete independent work within the authorized phase, provide exact manual commands and mark the gate BLOCKED rather than PASS.
 
 Pin compatible Go and quic-go versions in P0 using official version-specific APIs. Never copy old snippets blindly, use floating dependencies, invent API signatures or claim a version was tested when it wasn't.
 
