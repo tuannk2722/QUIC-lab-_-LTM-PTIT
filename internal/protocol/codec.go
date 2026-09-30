@@ -42,6 +42,16 @@ func ReadFrame(r io.Reader, maxChunk uint32) (Frame, error) {
 // onFirstDataRead runs on the first successful read of DATA payload, before its
 // remaining bytes arrive. It is intended for the client's first-byte timestamp.
 func ReadFrameObserved(r io.Reader, maxChunk uint32, onFirstDataRead func()) (Frame, error) {
+	return ReadFrameObservedID(r, maxChunk, func(uint32) {
+		if onFirstDataRead != nil {
+			onFirstDataRead()
+		}
+	})
+}
+
+// ReadFrameObservedID identifies the DATA resource when its first payload byte
+// is read; the callback runs before the rest of that frame has arrived.
+func ReadFrameObservedID(r io.Reader, maxChunk uint32, onFirstDataRead func(uint32)) (Frame, error) {
 	var h [HeaderSize]byte
 	if _, err := io.ReadFull(r, h[:]); err != nil {
 		return Frame{}, err
@@ -61,7 +71,7 @@ func ReadFrameObserved(r io.Reader, maxChunk uint32, onFirstDataRead func()) (Fr
 			return Frame{}, malformed("reader returned invalid count")
 		}
 		if read > 0 && off == 0 && onFirstDataRead != nil {
-			onFirstDataRead()
+			onFirstDataRead(f.ResourceID)
 		}
 		off += read
 		if readErr != nil {

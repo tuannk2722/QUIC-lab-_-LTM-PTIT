@@ -1,8 +1,8 @@
-# Kết quả nghiệm thu — P0/G00, P1/G01, P2/G02
+# Kết quả nghiệm thu — P0/G00 đến P3/G03
 
-Ngày: 2026-09-30 UTC. Baseline: `7e54ad654b14b8eb38b0db369203df4d34f003d7`. Người dùng đã human-review/approve P0/G00 và cho phép P1→G01, chỉ khi PASS mới P2→G02. Môi trường: Ubuntu 26.04.1 LTS trong WSL2, UID 1000.
+Ngày: 2026-09-30 UTC. Baseline: `7e54ad654b14b8eb38b0db369203df4d34f003d7`. Người dùng đã human-review/approve P0/G00, cho phép P1→G01→P2→G02 tuần tự, rồi yêu cầu riêng P3/G03. Môi trường: Ubuntu 26.04.1 LTS trong WSL2, UID 1000.
 
-**P0/G00 PASS; P1/G01 PASS; P2/G02 PASS.** Phần capability G00 được đóng bằng log probe do người dùng chạy trong WSL2 lúc `2026-09-30T04:48:25Z`. Agent đã đối chiếu output và script, không tự nhận là người thực thi. P1/P2 chờ human review.
+**P0/G00 PASS; P1/G01 PASS; P2/G02 PASS; P3/G03 PASS.** Phần capability G00 được đóng bằng log probe do người dùng chạy trong WSL2 lúc `2026-09-30T04:48:25Z`. Agent đã đối chiếu output và script, không tự nhận là người thực thi. P3 chờ human review; chưa có xác nhận review P1/P2.
 
 | ID / subcase | Trạng thái | Lệnh / cách kiểm | Kỳ vọng và kết quả thực | Evidence | Còn thiếu |
 |---|---|---|---|---|---|
@@ -22,7 +22,10 @@ Ngày: 2026-09-30 UTC. Baseline: `7e54ad654b14b8eb38b0db369203df4d34f003d7`. Ng�
 | G02-QB01 parser | PASS | `go test -v -count=1 ./internal/protocol` | Golden header 24 byte; REQUEST/META/ERROR roundtrip; partial read/write, coalesced frames, no-progress writer, malformed/truncated/oversize header, response state/hash; fuzz seed#0–2 đạt | [detailed tests](evidence/p2/g02-detailed-tests.log) | Không chạy long fuzz campaign; seed cases theo G02 |
 | G02-TCP/TLS localhost | PASS | `make test`; `go test -v -count=1 ./tests/integration`; `make test-race` | TLS1.3/ALPN transfer 1×1024 byte đúng SHA-256; untrusted CA fail; truncated frame, bad length, timeout và cancel kết thúc hữu hạn; toàn suite/race exit 0 | [suite](evidence/p2/g02-suite.log), [detailed tests](evidence/p2/g02-detailed-tests.log), [race](evidence/p2/g02-race.log) | Localhost chỉ kiểm correctness |
 | G02-CLI transfer | PASS | `make build`; `bin/server --transport=tcp --profile=handshake --listen=127.0.0.1:14433` + `bin/client` tương ứng; CA khác | Server ready; client exit 0 với 1024 byte/checksum true; CA khác exit 1/x509; server SIGTERM exit 0 | [build](evidence/p2/g02-build.log), [CLI](evidence/p2/g02-cli-transfer.log) | Canonical result files/metrics đầy đủ thuộc P5/P6 |
-| G03–G12 | NOT_RUN | Chưa chạy | Chưa có TCP multiplex/QUIC, topology G07/G08, benchmark, 0-RTT hoặc PCAP/qlog thực | Không có dataset hiệu năng | Dừng trước P3 theo yêu cầu |
+| G03-batch/scheduler | PASS | `go test -count=1 -v ./internal/protocol ./internal/transport/tcp` | Batch reject duplicate/count/chunk sai; transcript 6 resource có META 1..6, DATA xen vòng 0/2/4, FIN sau DATA cuối; không ghi trọn file theo ID | [detailed tests](evidence/p3/g03-detailed-tests.log) | Transcript là QB01 frame order, không suy ra TCP packet order |
+| G03-TCP multiplex | PASS | `make test`; `go test -count=1 -v ./tests/integration`; `make test-race` | Localhost thực: 1 accepted TLS connection/6 resources ×1 MiB, đủ 6 hash; batch thiếu timeout có ERROR 6, duplicate ERROR 3, cancel giải phóng handler; suite/race exit 0 | [suite](evidence/p3/g03-suite.log), [detailed tests](evidence/p3/g03-detailed-tests.log), [race](evidence/p3/g03-race.log) | Localhost chỉ kiểm correctness; không phải benchmark |
+| G03-CLI bulk | PASS | `make build`; `bin/server --transport=tcp --profile=bulk --listen=127.0.0.1:14435`; `bin/client --transport=tcp --profile=bulk --addr=127.0.0.1:14435 --server-name=localhost --format=json` | Ba binaries build exit 0; client/server exit 0; JSON 6 rows, 6,291,456 bytes, 6 checksum true; server SIGTERM exit 0 | [build](evidence/p3/g03-build.log), [CLI transfer](evidence/p3/g03-cli-transfer.log) | `elapsed_ms` ở stdout chỉ thông tin localhost; canonical results thuộc P5/P6 |
+| G04–G12 | NOT_RUN | Chưa chạy | Chưa có QUIC runtime, topology G07/G08, benchmark, 0-RTT hoặc PCAP/qlog thực | Không có dataset hiệu năng | Chờ phase riêng |
 
 ## Lệnh tái lập P0
 
@@ -56,6 +59,20 @@ bin/client --transport=tcp --profile=handshake --addr=127.0.0.1:14433 --server-n
 ```
 
 Lệnh CLI chạy UID thường, dùng certificate local từ P0. Nếu chưa có cert, chạy `make certs` trước khi mở server. Dừng server bằng Ctrl+C. G02 chạy localhost thực ngoài sandbox vì sandbox chặn tạo socket; không có network impairment hay số liệu performance. JSON ở P2 là kết quả tối thiểu trên stdout, chưa phải canonical artifacts P6.
+
+## Tái lập P3/G03
+
+```bash
+make build
+make test
+make test-race
+GOPATH="$PWD/.tools/gopath" GOCACHE="$PWD/.tools/gocache" GOTOOLCHAIN=local GOMAXPROCS=2 GOFLAGS=-p=2 .tools/go1.27.1/bin/go test -mod=readonly -count=1 -v ./internal/protocol ./internal/transport/tcp ./tests/integration
+bin/server --transport=tcp --profile=bulk --listen=127.0.0.1:14435
+# Terminal khác, cùng repo:
+bin/client --transport=tcp --profile=bulk --addr=127.0.0.1:14435 --server-name=localhost --format=json
+```
+
+Chạy dưới UID thường trong Ubuntu WSL2 và dừng server bằng Ctrl+C. Nếu chưa có cert thì `make certs` trước. G03 chỉ xác nhận multiplex/correctness ở localhost; chưa áp qclient/qserver, netem, IFB hoặc tạo benchmark CSV.
 
 ## Review thay đổi P0 (lịch sử tại thời điểm P0)
 

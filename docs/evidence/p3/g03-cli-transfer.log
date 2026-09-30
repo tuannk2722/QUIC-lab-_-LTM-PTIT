@@ -1,0 +1,4 @@
+TCP/TLS ready 127.0.0.1:14435 profile=bulk resources=6
+{"transport":"tcp","profile":"bulk","resource_count":6,"bytes":6291456,"elapsed_ms":35.377086,"resources":[{"resource_id":1,"bytes":1048576,"checksum_ok":true},{"resource_id":2,"bytes":1048576,"checksum_ok":true},{"resource_id":3,"bytes":1048576,"checksum_ok":true},{"resource_id":4,"bytes":1048576,"checksum_ok":true},{"resource_id":5,"bytes":1048576,"checksum_ok":true},{"resource_id":6,"bytes":1048576,"checksum_ok":true}]}
+CLI bulk JSON verified: six resources, 6291456 bytes, six hashes
+server SIGTERM exit=0; client exit=0

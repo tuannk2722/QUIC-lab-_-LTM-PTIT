@@ -9,6 +9,7 @@ import (
 	"net"
 	"os/exec"
 	"path/filepath"
+	"sync/atomic"
 	"testing"
 	"time"
 
@@ -174,5 +175,158 @@ func TestTCPCancelReleasesHandler(t *testing.T) {
 		}
 	case <-time.After(time.Second):
 		t.Fatal("cancel did not release handler")
+	}
+}
+
+func TestTCPBulkOneConnectionSixResources(t *testing.T) {
+	srv, client, _ := fixture(t)
+	w, err := config.LoadWorkloads("../../configs/workloads.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+	store, err := workload.NewStore(w.Profiles["bulk"], w.Limits)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var accepted atomic.Int32
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	ready := make(chan net.Addr)
+	done := make(chan error, 1)
+	go func() {
+		done <- tcp.Serve(ctx, "127.0.0.1:0", srv, store, tcp.ServerOptions{
+			HandshakeTimeout: time.Second, BatchTimeout: time.Second, TrialTimeout: 5 * time.Second,
+			MaxConnections: 8, OnAccepted: func() { accepted.Add(1) },
+		}, ready)
+	}()
+	var addr net.Addr
+	select {
+	case addr = <-ready:
+	case err := <-done:
+		t.Fatalf("server setup: %v", err)
+	case <-time.After(2 * time.Second):
+		t.Fatal("server readiness timeout")
+	}
+	results, err := tcp.RunBatch(context.Background(), addr.String(), client, store, 5*time.Second)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(results) != 6 || accepted.Load() != 1 {
+		t.Fatalf("resources=%d accepted TLS connections=%d", len(results), accepted.Load())
+	}
+	var total uint64
+	for i, result := range results {
+		if result.ResourceID != uint32(i+1) || !result.ChecksumOK || result.BytesReceived != 1<<20 || result.BytesExpected != 1<<20 || result.Timing.RequestEnd.IsZero() || result.Timing.FirstByte.IsZero() || result.Timing.PayloadDone.IsZero() || result.Timing.Done.IsZero() {
+			t.Fatalf("resource %d: %+v", i+1, result)
+		}
+		total += result.BytesReceived
+	}
+	t.Logf("accepted TLS connections=%d resources=%d verified bytes=%d", accepted.Load(), len(results), total)
+	cancel()
+	select {
+	case err := <-done:
+		if err != nil {
+			t.Fatal(err)
+		}
+	case <-time.After(2 * time.Second):
+		t.Fatal("server did not stop")
+	}
+}
+
+func TestTCPBatchTimeoutAndCancellation(t *testing.T) {
+	srv, client, _ := fixture(t)
+	w, err := config.LoadWorkloads("../../configs/workloads.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+	store, err := workload.NewStore(w.Profiles["bulk"], w.Limits)
+	if err != nil {
+		t.Fatal(err)
+	}
+	ctx, cancel := context.WithCancel(context.Background())
+	ready := make(chan net.Addr)
+	done := make(chan error, 1)
+	go func() {
+		done <- tcp.Serve(ctx, "127.0.0.1:0", srv, store, tcp.ServerOptions{
+			HandshakeTimeout: time.Second, BatchTimeout: 100 * time.Millisecond, TrialTimeout: time.Second, MaxConnections: 8,
+		}, ready)
+	}()
+	var addr net.Addr
+	select {
+	case addr = <-ready:
+	case err := <-done:
+		t.Fatalf("server setup: %v", err)
+	case <-time.After(2 * time.Second):
+		t.Fatal("server readiness timeout")
+	}
+	raw, err := net.Dial("tcp", addr.String())
+	if err != nil {
+		t.Fatal(err)
+	}
+	conn := tls.Client(raw, client)
+	defer conn.Close()
+	_ = conn.SetDeadline(time.Now().Add(time.Second))
+	if err := conn.Handshake(); err != nil {
+		t.Fatal(err)
+	}
+	request, _ := protocol.RequestFrame(1, 6, 16384)
+	if err := protocol.WriteFrame(conn, request, 16384); err != nil {
+		t.Fatal(err)
+	}
+	start := time.Now()
+	f, err := protocol.ReadFrame(conn, 16384)
+	if err != nil {
+		t.Fatal(err)
+	}
+	code, _, err := protocol.ParseError(f)
+	if err != nil || code != protocol.CodeBatchTimeout || time.Since(start) > time.Second {
+		t.Fatalf("batch timeout: frame=%+v code=%d err=%v", f, code, err)
+	}
+	// A duplicate request must fail registration before any META is sent.
+	raw2, err := net.Dial("tcp", addr.String())
+	if err != nil {
+		t.Fatal(err)
+	}
+	conn2 := tls.Client(raw2, client)
+	defer conn2.Close()
+	_ = conn2.SetDeadline(time.Now().Add(time.Second))
+	if err := conn2.Handshake(); err != nil {
+		t.Fatal(err)
+	}
+	for range 2 {
+		if err := protocol.WriteFrame(conn2, request, 16384); err != nil {
+			t.Fatal(err)
+		}
+	}
+	f, err = protocol.ReadFrame(conn2, 16384)
+	if err != nil {
+		t.Fatal(err)
+	}
+	code, _, err = protocol.ParseError(f)
+	if err != nil || code != protocol.CodeInvalidBatch {
+		t.Fatalf("duplicate: frame=%+v code=%d err=%v", f, code, err)
+	}
+	// Cancel while a different handler is still waiting for the other five.
+	raw3, err := net.Dial("tcp", addr.String())
+	if err != nil {
+		t.Fatal(err)
+	}
+	conn3 := tls.Client(raw3, client)
+	defer conn3.Close()
+	_ = conn3.SetDeadline(time.Now().Add(time.Second))
+	if err := conn3.Handshake(); err != nil {
+		t.Fatal(err)
+	}
+	if err := protocol.WriteFrame(conn3, request, 16384); err != nil {
+		t.Fatal(err)
+	}
+	cancel()
+	select {
+	case err := <-done:
+		if err != nil {
+			t.Fatal(err)
+		}
+	case <-time.After(2 * time.Second):
+		t.Fatal("server cancellation leaked handler")
 	}
 }
