@@ -2,13 +2,13 @@
 
 T03 — QUIC Protocol Implementation and Performance, môn Lập trình mạng, PTIT.
 
-**Trạng thái P0:** có ba CLI skeleton, config loader, TLS assets/scripts và tests. Build/input/TLS/API checks đạt; G00 PASS sau khi đối chiếu log probe người dùng chạy thành công trong WSL2. Chưa có transfer, workload P1 hoặc kết quả benchmark. Đọc [START_HERE.md](START_HERE.md) để dùng trong IDE.
+**Trạng thái hiện tại:** P0/G00, P1/G01 và P2/G02 PASS; P1/P2 chờ human review. Có workload deterministic, QB01 codec và TCP/TLS truyền một resource qua localhost. Chưa có TCP multiplex, QUIC runtime, network testbed hoặc kết quả benchmark. Đọc [START_HERE.md](START_HERE.md) để dùng trong IDE.
 
 Thiết kế: cùng bộ resource trong RAM được phục vụ bởi TCP/TLS multiplex và raw QUIC trên TCP/UDP 4433. Client chạy trong Ubuntu dưới WSL2 trên Windows 11 qua hai namespace có network impairment. Số liệu từ client được lưu theo run và resource; qlog và packet capture phục vụ giải thích cơ chế.
 
 [Đặc tả](docs/DEMO_SPEC.md) · [Kế hoạch triển khai](docs/IMPLEMENTATION_PLAN.md) · [Nghiệm thu](docs/ACCEPTANCE.md) · [Kịch bản demo](docs/DEMO_SCRIPT.md)
 
-Repo phải nằm trong filesystem Linux native, ưu tiên `/home/<user>/...`, không `/mnt/c/...` hoặc `/mnt/d/...`. Mở Windows VS Code bằng Remote WSL, workspace `WSL: Ubuntu`. Implementation mặc định human-gated: chỉ phase được người dùng cho phép, chạy gate rồi cập nhật TASK và dừng review. P0 đã triển khai trong phạm vi được phép; dừng review, không tự bắt đầu P1. Xem [bằng chứng G00](docs/ACCEPTANCE_RESULTS.md).
+Repo phải nằm trong filesystem Linux native, ưu tiên `/home/<user>/...`, không `/mnt/c/...` hoặc `/mnt/d/...`. Mở Windows VS Code bằng Remote WSL, workspace `WSL: Ubuntu`. Implementation mặc định human-gated: chỉ phase được người dùng cho phép, chạy gate rồi cập nhật TASK và dừng review. Người dùng đã cho phép P1/P2 sau P0; dừng trước P3. Xem [bằng chứng acceptance](docs/ACCEPTANCE_RESULTS.md).
 
 ## Tái lập P0 (chạy bên trong Ubuntu WSL2)
 
@@ -32,11 +32,11 @@ bin/client --version
 bin/bench --help
 ```
 
-Makefile tự chọn Go local nếu có, nếu không dùng PATH và kiểm đúng version. `make test-race` có sẵn (cần C compiler); không phải bằng chứng transport race trước khi transport tồn tại. `.tools/`, `bin/`, private keys/certs và results được gitignore. P0 compile tests import raw quic-go, không dùng HTTP/3.
+Makefile tự chọn Go local nếu có, nếu không dùng PATH và kiểm đúng version. `make test-race` cần C compiler. `.tools/`, `bin/`, private keys/certs và results được gitignore. P0 compile tests import raw quic-go, không dùng HTTP/3.
 
 `make certs` tạo cert local hạn 30 ngày, SAN localhost/127.0.0.1/10.10.0.2, key 0600; từ chối ghi đè. Chỉ khi chủ động thay identity và đã dừng mọi server, dùng `make certs CERT_FORCE=--force`. Test tạo identity riêng trong thư mục tạm, không sửa cert đang dùng.
 
-Chạy `bin/client`, `bin/server` hoặc `bin/bench --plan` với input hợp lệ hiện trả **exit 1 / not implemented**. Input/config không hợp lệ trả **2**. Không có listener/readiness/result files. `--help`/`--version` trả 0. Defaults workload/scenario/timeouts được đọc từ configs; `--profiles` và `--scenarios` cho phép chọn tệp rõ ràng.
+Các lệnh ngoài phạm vi P2 (`bin/bench`, QUIC, bulk 6-resource) còn trả **exit 1 / not implemented**. Input/config không hợp lệ trả **2**. `--help`/`--version` trả 0. Defaults workload/scenario/timeouts được đọc từ configs; `--profiles` và `--scenarios` cho phép chọn tệp rõ ràng.
 
 `make doctor` chỉ inventory, không tạo namespace hoặc cấp quyền cho Go. Nếu sandbox chặn netlink, chạy lệnh ở terminal Ubuntu WSL bình thường. Để tái lập primitive preflight (đã PASS trong hồ sơ P0), chạy:
 
@@ -46,9 +46,22 @@ set -o pipefail
 sudo bash scripts/preflight-network.sh 2>&1 | tee results/p0-review/network-probe.log
 ```
 
-Probe dùng một namespace tạm có tên riêng, veth + IFB/mirred/netem 50 ms bên trong và tự cleanup; không dùng qclient/qserver chính, không đo traffic/RTT và không thay G07/G08. Nếu cleanup báo lỗi, chỉ xử lý tên namespace được log; không xóa namespace không rõ chủ sở hữu. Log lần chạy thành công đã lưu tại `docs/evidence/p0/network-probe.log`. P0 đã đóng; vẫn dừng trước P1 để chờ cho phép.
+Probe dùng một namespace tạm có tên riêng, veth + IFB/mirred/netem 50 ms bên trong và tự cleanup; không dùng qclient/qserver chính, không đo traffic/RTT và không thay G07/G08. Nếu cleanup báo lỗi, chỉ xử lý tên namespace được log; không xóa namespace không rõ chủ sở hữu. Log lần chạy thành công đã lưu tại `docs/evidence/p0/network-probe.log`.
 
-Bằng chứng hiện tại lưu tại `docs/evidence/p0/`; đây là build/preflight/test logs, không phải benchmark results.
+Bằng chứng P0 lưu tại `docs/evidence/p0/`; đây là build/preflight/test logs, không phải benchmark results.
+
+## P1/P2: workload và TCP/TLS một resource
+
+Trong Ubuntu WSL2, sau `make build`, `make test`, `make test-race` và `make certs` nếu chưa có cert, chạy hai terminal từ repo root:
+
+```bash
+# Terminal 1
+bin/server --transport=tcp --profile=handshake --listen=127.0.0.1:14433
+# Terminal 2
+bin/client --transport=tcp --profile=handshake --addr=127.0.0.1:14433 --server-name=localhost --format=json
+```
+
+Client thành công chỉ khi nhận đủ 1.024 byte, FIN và hash đúng. Dừng server bằng Ctrl+C. Test G02 cũng kiểm CA sai, frame lỗi và timeout qua localhost thực. JSON trên stdout là kết quả P2 tối thiểu; canonical result files/metrics và benchmark thuộc phase sau. Bằng chứng ở `docs/evidence/p1/`, `docs/evidence/p2/` và [ACCEPTANCE_RESULTS](docs/ACCEPTANCE_RESULTS.md). Không suy ra hiệu năng từ localhost.
 
 ## Hợp đồng README sau triển khai đầy đủ
 
@@ -63,4 +76,4 @@ Agent phải thay mục này bằng các bước **đã kiểm tra thực tế**
 7. Chỉ rõ lệnh chạy ở host Windows hay bên trong Ubuntu WSL2; mọi build/test/network/benchmark chạy trong Ubuntu WSL2.
 8. Liên kết provenance, disclosure AI và giới hạn kết luận.
 
-P0 đã có targets build/test/test-race/certs/doctor. Các targets setup-network, demo, benchmark, analyze và cleanup trong CLI contract vẫn để các phase sau; không gọi chúng ở P0.
+Hiện có targets build/test/test-race/certs/doctor. Các targets setup-network, demo, benchmark, analyze và cleanup trong CLI contract vẫn để các phase sau.

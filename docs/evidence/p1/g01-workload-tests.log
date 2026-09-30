@@ -1,0 +1,34 @@
+=== RUN   TestKnownSmallFixture
+--- PASS: TestKnownSmallFixture (0.00s)
+=== RUN   TestConfiguredProfilesAndSharedStore
+=== RUN   TestConfiguredProfilesAndSharedStore/bulk
+    workload_test.go:118: bulk manifest: {"generator":"byte((resource_id + offset) % 256)","checksum":"sha256","resource_count":6,"total_bytes":6291456,"chunk_bytes":16384,"resources":[{"resource_id":1,"size_bytes":1048576,"sha256":"18af9b054114c04a1eb836533a3e760dfa9dc53934ecb02fc059ff27150e77fb"},{"resource_id":2,"size_bytes":1048576,"sha256":"c11788fa01aebe9ddeadf2d6fd661693d75a0ca28dc957a6042b5ff6d8a08e66"},{"resource_id":3,"size_bytes":1048576,"sha256":"0617ba41432a346a81691ec75988fd9f41939e805a3d15a6edb53eba9006a6bd"},{"resource_id":4,"size_bytes":1048576,"sha256":"0cb3cc18c426cb929543486fd600ed6df4f38bdbc3bf757d73e7b05bef85fcf7"},{"resource_id":5,"size_bytes":1048576,"sha256":"34c9c1c0f537cbec1e94d4b9b2687aca3bb17c2e3b62574abfa92523ed55f612"},{"resource_id":6,"size_bytes":1048576,"sha256":"37f0c973a6c2da513b2f7c1750c1b3d6c40f72f625748e4620411c7fd0aff256"}]}
+=== RUN   TestConfiguredProfilesAndSharedStore/handshake
+    workload_test.go:118: handshake manifest: {"generator":"byte((resource_id + offset) % 256)","checksum":"sha256","resource_count":1,"total_bytes":1024,"chunk_bytes":1024,"resources":[{"resource_id":1,"size_bytes":1024,"sha256":"d686331c14fd88bad96326446e9d75bade98f89ce1d27bd0e0ebbbf401eb6f6d"}]}
+--- PASS: TestConfiguredProfilesAndSharedStore (0.05s)
+    --- PASS: TestConfiguredProfilesAndSharedStore/bulk (0.05s)
+    --- PASS: TestConfiguredProfilesAndSharedStore/handshake (0.00s)
+=== RUN   TestRejectBeforeAllocation
+=== RUN   TestRejectBeforeAllocation/huge_count
+=== RUN   TestRejectBeforeAllocation/size_limit
+=== RUN   TestRejectBeforeAllocation/zero_chunk
+=== RUN   TestRejectBeforeAllocation/chunk_limit
+=== RUN   TestRejectBeforeAllocation/zero_count
+=== RUN   TestRejectBeforeAllocation/zero_size
+=== RUN   TestRejectBeforeAllocation/huge_size
+=== RUN   TestRejectBeforeAllocation/total_limit
+=== RUN   TestRejectBeforeAllocation/invalid_limit
+=== RUN   TestRejectBeforeAllocation/count_limit
+--- PASS: TestRejectBeforeAllocation (0.00s)
+    --- PASS: TestRejectBeforeAllocation/huge_count (0.00s)
+    --- PASS: TestRejectBeforeAllocation/size_limit (0.00s)
+    --- PASS: TestRejectBeforeAllocation/zero_chunk (0.00s)
+    --- PASS: TestRejectBeforeAllocation/chunk_limit (0.00s)
+    --- PASS: TestRejectBeforeAllocation/zero_count (0.00s)
+    --- PASS: TestRejectBeforeAllocation/zero_size (0.00s)
+    --- PASS: TestRejectBeforeAllocation/huge_size (0.00s)
+    --- PASS: TestRejectBeforeAllocation/total_limit (0.00s)
+    --- PASS: TestRejectBeforeAllocation/invalid_limit (0.00s)
+    --- PASS: TestRejectBeforeAllocation/count_limit (0.00s)
+PASS
+ok  	quic-performance-lab/internal/workload	0.059s

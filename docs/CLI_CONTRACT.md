@@ -1,6 +1,6 @@
 # CLI và Make contract
 
-Các lệnh dưới đây là **hợp đồng cuối cùng**. P0 đã có help/version, parse/validate flags/config, build/test/certs/doctor; transfer/listener/plan/merge/benchmark chưa triển khai và phải trả nonzero. Defaults phải dùng chung config loader. Không dùng command string eval từ input; subprocess dùng argument list.
+Các lệnh dưới đây là **hợp đồng cuối cùng**. P0 đã có help/version, parse/validate flags/config, build/test/certs/doctor. P2 có TCP/TLS một resource với `--profile=handshake` trên server/client; bulk multiplex, QUIC, plan/merge/benchmark chưa triển khai và phải trả nonzero. JSON stdout của P2 chỉ là kết quả tối thiểu; canonical result files thuộc P6. Defaults phải dùng chung config loader. Không dùng command string eval từ input; subprocess dùng argument list.
 
 ## 1. Binaries
 
