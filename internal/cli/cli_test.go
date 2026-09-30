@@ -23,6 +23,9 @@ func TestCommandContract(t *testing.T) {
 				}
 			}
 			base := []string{"--profiles=../../configs/workloads.json"}
+			if name == "client" {
+				base = append(base, "--transport=quic")
+			}
 			if name == "bench" {
 				base = append(base, "--scenarios=../../configs/scenarios.json")
 			}
@@ -34,7 +37,7 @@ func TestCommandContract(t *testing.T) {
 			if name == "server" {
 				cases = append(cases, []string{"--listen=localhost:0"}, []string{"--cert="})
 			} else {
-				cases = append(cases, []string{"--addr=bad"}, []string{"--mode=early"}, []string{"--mode=resumed"}, []string{"--timeout=0s"}, []string{"--timeout=-1s"}, []string{"--format=csv"}, []string{"--ca="})
+				cases = append(cases, []string{"--addr=bad"}, []string{"--transport=tcp", "--mode=early"}, []string{"--transport=tcp", "--mode=resumed"}, []string{"--timeout=0s"}, []string{"--timeout=-1s"}, []string{"--format=csv"}, []string{"--ca="})
 			}
 			if name == "bench" {
 				cases = append(cases, []string{"--runs=0"}, []string{"--warmups=-1"}, []string{"--scenario=missing"}, []string{"--plan", "--merge=x"})

@@ -3,7 +3,9 @@ package tcp
 import (
 	"context"
 	"crypto/tls"
+	"errors"
 	"fmt"
+	"io"
 	"net"
 	"sync"
 	"time"
@@ -14,14 +16,19 @@ import (
 
 type ServerOptions struct {
 	HandshakeTimeout time.Duration
+	BatchTimeout     time.Duration
 	TrialTimeout     time.Duration
 	MaxConnections   int
+	OnAccepted       func() // optional integration instrumentation
 }
 
-// Serve handles the P2 single-resource TCP/TLS profile. Batch scheduling is P3.
+// Serve handles one request batch on each accepted TCP/TLS connection.
 func Serve(ctx context.Context, addr string, cfg *tls.Config, store *workload.Store, opts ServerOptions, ready chan<- net.Addr) error {
-	if cfg == nil || store == nil || store.Count() != 1 || opts.HandshakeTimeout <= 0 || opts.TrialTimeout <= 0 || opts.MaxConnections < 1 || opts.MaxConnections > 8 {
-		return fmt.Errorf("invalid P2 server configuration")
+	if cfg == nil || store == nil || store.Count() < 1 || store.Count() > 64 || opts.HandshakeTimeout <= 0 || opts.TrialTimeout <= 0 || opts.BatchTimeout < 0 || opts.MaxConnections < 1 || opts.MaxConnections > 8 {
+		return fmt.Errorf("invalid TCP server configuration")
+	}
+	if opts.BatchTimeout == 0 {
+		opts.BatchTimeout = 5 * time.Second
 	}
 	ln, err := net.Listen("tcp", addr)
 	if err != nil {
@@ -55,6 +62,9 @@ func Serve(ctx context.Context, addr string, cfg *tls.Config, store *workload.St
 			}
 			return err
 		}
+		if opts.OnAccepted != nil {
+			opts.OnAccepted()
+		}
 		select {
 		case sem <- struct{}{}:
 			wg.Go(func() { defer func() { <-sem }(); serveConn(ctx, conn, cfg, store, opts) })
@@ -83,32 +93,55 @@ func serveConn(ctx context.Context, raw net.Conn, cfg *tls.Config, store *worklo
 	if conn.ConnectionState().NegotiatedProtocol != "quicbench/1" {
 		return
 	}
-	_ = conn.SetDeadline(time.Now().Add(opts.TrialTimeout))
-	f, err := protocol.ReadFrame(conn, 65536)
+	trialEnd := time.Now().Add(opts.TrialTimeout)
+	_ = conn.SetDeadline(trialEnd)
+	batch, err := protocol.NewBatch(uint32(store.Count()), uint32(store.Profile().ChunkBytes))
 	if err != nil {
 		return
 	}
-	count, chunk, err := protocol.ParseRequest(f)
-	if err != nil || count != 1 || f.ResourceID != 1 || int64(chunk) != store.Profile().ChunkBytes {
-		e, _ := protocol.ErrorFrame(1, protocol.CodeInvalidBatch, "expected one configured resource")
-		_ = protocol.WriteFrame(conn, e, 65536)
-		return
-	}
-	r, _ := store.Resource(1)
-	if err := protocol.WriteFrame(conn, protocol.MetaFrame(1, uint64(r.Size()), r.SHA256()), chunk); err != nil {
-		return
-	}
-	buf := make([]byte, int(chunk))
-	for off := int64(0); off < r.Size(); {
-		want := min(int64(len(buf)), r.Size()-off)
-		n, readErr := r.ReadAt(buf[:want], off)
-		if readErr != nil || n != int(want) {
+	firstRequest := true
+	for !batch.Complete() {
+		f, readErr := protocol.ReadFrame(conn, 65536)
+		if readErr != nil {
+			if timeoutErr, ok := readErr.(net.Error); ok && timeoutErr.Timeout() && !firstRequest {
+				e, _ := protocol.ErrorFrame(1, protocol.CodeBatchTimeout, "request batch timeout")
+				_ = protocol.WriteFrame(conn, e, 65536)
+			}
 			return
 		}
-		if err := protocol.WriteFrame(conn, protocol.Frame{Type: protocol.Data, ResourceID: 1, Offset: uint64(off), Payload: buf[:n]}, chunk); err != nil {
+		if err := batch.Register(f); err != nil {
+			e, _ := protocol.ErrorFrame(f.ResourceID, protocol.CodeInvalidBatch, "invalid request batch")
+			_ = protocol.WriteFrame(conn, e, 65536)
 			return
 		}
-		off += int64(n)
+		if firstRequest {
+			firstRequest = false
+			deadline := time.Now().Add(opts.BatchTimeout)
+			if deadline.After(trialEnd) {
+				deadline = trialEnd
+			}
+			_ = conn.SetReadDeadline(deadline)
+		}
 	}
-	_ = protocol.WriteFrame(conn, protocol.Frame{Type: protocol.Fin, ResourceID: 1, Offset: uint64(r.Size())}, chunk)
+	_ = conn.SetReadDeadline(trialEnd)
+	// A second reader observes extra frames while the sole writer schedules
+	// responses. A peer half-close is normal; an extra frame ends the trial.
+	monitorDone := make(chan struct{})
+	go func() {
+		defer close(monitorDone)
+		var one [1]byte
+		for {
+			n, err := conn.Read(one[:])
+			if n > 0 || (n == 0 && err == nil) || (err != nil && !errors.Is(err, io.EOF)) {
+				conn.Close()
+				return
+			}
+			if err != nil {
+				return
+			}
+		}
+	}()
+	_ = writeResponses(conn, store)
+	conn.Close()
+	<-monitorDone
 }

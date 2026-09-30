@@ -64,7 +64,7 @@ func Run(name string, args []string, out, errOut io.Writer) int {
 	fs := flag.NewFlagSet(name, flag.ContinueOnError)
 	fs.SetOutput(errOut)
 	fs.Usage = func() {
-		fmt.Fprintf(errOut, "Usage: %s [flags]\nP2: TCP/TLS one-resource transfer; later phase modes report not implemented.\n", name)
+		fmt.Fprintf(errOut, "Usage: %s [flags]\nP3: TCP/TLS batch transfer; QUIC and benchmark modes report not implemented.\n", name)
 		fs.PrintDefaults()
 	}
 	version := fs.Bool("version", false, "print build, commit and toolchain versions")
@@ -212,10 +212,6 @@ func Run(name string, args []string, out, errOut io.Writer) int {
 		}
 	}
 	if name == "server" && transport == "tcp" {
-		if w.Profiles[*profile].ResourceCount != 1 {
-			fmt.Fprintln(errOut, "not implemented: TCP batches of multiple resources belong to P3")
-			return 1
-		}
 		store, err := workload.NewStore(w.Profiles[*profile], w.Limits)
 		if err != nil {
 			return bad(err.Error())
@@ -232,13 +228,14 @@ func Run(name string, args []string, out, errOut io.Writer) int {
 		go func() {
 			done <- tcptransport.Serve(ctx, addr, cfg, store, tcptransport.ServerOptions{
 				HandshakeTimeout: time.Duration(w.Timeouts.HandshakeSeconds) * time.Second,
+				BatchTimeout:     time.Duration(w.Timeouts.BatchSeconds) * time.Second,
 				TrialTimeout:     time.Duration(w.Timeouts.TrialSeconds) * time.Second,
 				MaxConnections:   int(w.Limits.MaxActiveConnections),
 			}, ready)
 		}()
 		select {
 		case actual := <-ready:
-			fmt.Fprintf(errOut, "TCP/TLS ready %s profile=%s resources=1\n", actual, *profile)
+			fmt.Fprintf(errOut, "TCP/TLS ready %s profile=%s resources=%d\n", actual, *profile, store.Count())
 		case err := <-done:
 			fmt.Fprintln(errOut, err)
 			return 1
@@ -250,10 +247,6 @@ func Run(name string, args []string, out, errOut io.Writer) int {
 		return 0
 	}
 	if name == "client" && transport == "tcp" {
-		if w.Profiles[*profile].ResourceCount != 1 {
-			fmt.Fprintln(errOut, "not implemented: TCP batches of multiple resources belong to P3")
-			return 1
-		}
 		expected, err := workload.NewStore(w.Profiles[*profile], w.Limits)
 		if err != nil {
 			return bad(err.Error())
@@ -263,12 +256,39 @@ func Run(name string, args []string, out, errOut io.Writer) int {
 			fmt.Fprintln(errOut, err)
 			return 1
 		}
-		result, err := tcptransport.Run(context.Background(), addr, cfg, expected, timeout)
+		results, err := tcptransport.RunBatch(context.Background(), addr, cfg, expected, timeout)
 		if err != nil {
 			fmt.Fprintln(errOut, "TCP transfer failed:", err)
 			return 1
 		}
 		if format == "json" {
+			if len(results) > 1 {
+				type resourceRow struct {
+					ResourceID uint32 `json:"resource_id"`
+					Bytes      uint64 `json:"bytes"`
+					ChecksumOK bool   `json:"checksum_ok"`
+				}
+				rows := make([]resourceRow, len(results))
+				var total uint64
+				for i, result := range results {
+					rows[i] = resourceRow{result.ResourceID, result.BytesReceived, result.ChecksumOK}
+					total += result.BytesReceived
+				}
+				payload := struct {
+					Transport     string        `json:"transport"`
+					Profile       string        `json:"profile"`
+					ResourceCount int           `json:"resource_count"`
+					Bytes         uint64        `json:"bytes"`
+					ElapsedMS     float64       `json:"elapsed_ms"`
+					Resources     []resourceRow `json:"resources"`
+				}{"tcp", *profile, len(results), total, float64(results[0].Timing.End.Sub(results[0].Timing.Start)) / float64(time.Millisecond), rows}
+				if err := json.NewEncoder(out).Encode(payload); err != nil {
+					fmt.Fprintln(errOut, err)
+					return 1
+				}
+				return 0
+			}
+			result := results[0]
 			payload := struct {
 				Transport  string  `json:"transport"`
 				Profile    string  `json:"profile"`
@@ -282,9 +302,11 @@ func Run(name string, args []string, out, errOut io.Writer) int {
 				return 1
 			}
 		} else {
-			if _, err := fmt.Fprintf(out, "tcp %s resource=%d bytes=%d checksum_ok=%t elapsed_ms=%.3f\n", *profile, result.ResourceID, result.BytesReceived, result.ChecksumOK, float64(result.Timing.End.Sub(result.Timing.Start))/float64(time.Millisecond)); err != nil {
-				fmt.Fprintln(errOut, err)
-				return 1
+			for _, result := range results {
+				if _, err := fmt.Fprintf(out, "tcp %s resource=%d bytes=%d checksum_ok=%t elapsed_ms=%.3f\n", *profile, result.ResourceID, result.BytesReceived, result.ChecksumOK, float64(result.Timing.End.Sub(result.Timing.Start))/float64(time.Millisecond)); err != nil {
+					fmt.Fprintln(errOut, err)
+					return 1
+				}
 			}
 		}
 		return 0

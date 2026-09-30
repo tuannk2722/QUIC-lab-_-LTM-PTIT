@@ -14,26 +14,57 @@ import (
 	"quic-performance-lab/internal/workload"
 )
 
-// Run makes one fresh TLS connection and transfers exactly one resource.
-func Run(parent context.Context, addr string, cfg *tls.Config, expected *workload.Store, timeout time.Duration) (out transport.Result, err error) {
-	if cfg == nil || expected == nil || expected.Count() != 1 || timeout <= 0 {
-		return out, fmt.Errorf("invalid P2 client configuration")
+// Run retains the one-resource API for callers of the P2 transfer.
+func Run(parent context.Context, addr string, cfg *tls.Config, expected *workload.Store, timeout time.Duration) (transport.Result, error) {
+	if expected == nil || expected.Count() != 1 {
+		return transport.Result{}, fmt.Errorf("Run requires one resource")
 	}
-	r, _ := expected.Resource(1)
-	recv, err := protocol.NewReceiver(1, uint64(r.Size()), r.SHA256(), uint32(expected.Profile().ChunkBytes))
-	if err != nil {
-		return out, err
+	results, err := RunBatch(parent, addr, cfg, expected, timeout)
+	if len(results) == 0 {
+		return transport.Result{}, err
 	}
-	out.ResourceID, out.BytesExpected = 1, uint64(r.Size())
+	return results[0], err
+}
+
+// RunBatch transfers all resources over one fresh TLS connection. Only the
+// decoder reads from the connection; hashes run after every FIN has arrived.
+func RunBatch(parent context.Context, addr string, cfg *tls.Config, expected *workload.Store, timeout time.Duration) (out []transport.Result, err error) {
+	if cfg == nil || expected == nil || expected.Count() < 1 || expected.Count() > 64 || timeout <= 0 {
+		return nil, fmt.Errorf("invalid TCP client configuration")
+	}
+	count := expected.Count()
+	chunk := uint32(expected.Profile().ChunkBytes)
+	receivers := make([]*protocol.Receiver, count)
+	out = make([]transport.Result, count)
+	for i := range out {
+		r, resourceErr := expected.Resource(uint32(i + 1))
+		if resourceErr != nil {
+			return nil, resourceErr
+		}
+		receivers[i], err = protocol.NewReceiver(r.ID(), uint64(r.Size()), r.SHA256(), chunk)
+		if err != nil {
+			return nil, err
+		}
+		out[i].ResourceID, out[i].BytesExpected = r.ID(), uint64(r.Size())
+	}
 	ctx, cancel := context.WithTimeout(parent, timeout)
 	defer cancel()
-	out.Timing.Start = time.Now()
-	defer func() { out.Timing.End = time.Now(); out.BytesReceived = recv.BytesReceived() }()
+	start := time.Now()
+	for i := range out {
+		out[i].Timing.Start = start
+	}
+	defer func() {
+		end := time.Now()
+		for i := range out {
+			out[i].Timing.End = end
+			out[i].BytesReceived = receivers[i].BytesReceived()
+		}
+	}()
 	raw, err := (&net.Dialer{}).DialContext(ctx, "tcp", addr)
 	if err != nil {
 		return out, err
 	}
-	out.Timing.TCPConnected = time.Now()
+	tcpConnected := time.Now()
 	conn := tls.Client(raw, cfg)
 	defer conn.Close()
 	stop := make(chan struct{})
@@ -45,49 +76,69 @@ func Run(parent context.Context, addr string, cfg *tls.Config, expected *workloa
 		}
 	}()
 	defer close(stop)
-	_ = conn.SetDeadline(time.Now().Add(timeout))
+	deadline, _ := ctx.Deadline()
+	_ = conn.SetDeadline(deadline)
 	if err := conn.HandshakeContext(ctx); err != nil {
 		return out, err
 	}
-	out.Timing.Handshake = time.Now()
+	handshake := time.Now()
 	if conn.ConnectionState().NegotiatedProtocol != "quicbench/1" {
 		return out, fmt.Errorf("unexpected ALPN")
 	}
-	request, err := protocol.RequestFrame(1, 1, uint32(expected.Profile().ChunkBytes))
-	if err != nil {
+	for i := range out {
+		out[i].Timing.TCPConnected = tcpConnected
+		out[i].Timing.Handshake = handshake
+	}
+	for i := range out {
+		id := uint32(i + 1)
+		request, requestErr := protocol.RequestFrame(id, uint32(count), chunk)
+		if requestErr != nil {
+			return out, requestErr
+		}
+		out[i].Timing.RequestStart = time.Now()
+		if err := protocol.WriteFrame(conn, request, chunk); err != nil {
+			return out, err
+		}
+		out[i].Timing.RequestEnd = time.Now()
+	}
+	if err := conn.CloseWrite(); err != nil {
 		return out, err
 	}
-	out.Timing.RequestStart = time.Now()
-	if err := protocol.WriteFrame(conn, request, uint32(expected.Profile().ChunkBytes)); err != nil {
-		return out, err
-	}
-	out.Timing.RequestEnd = time.Now()
-	for !recv.Complete() {
-		f, readErr := protocol.ReadFrameObserved(conn, uint32(expected.Profile().ChunkBytes), func() {
-			if out.Timing.FirstByte.IsZero() {
-				out.Timing.FirstByte = time.Now()
+	remaining := count
+	for remaining > 0 {
+		f, readErr := protocol.ReadFrameObservedID(conn, chunk, func(id uint32) {
+			if id >= 1 && int(id) <= count && out[id-1].Timing.FirstByte.IsZero() {
+				out[id-1].Timing.FirstByte = time.Now()
 			}
 		})
 		if readErr != nil {
 			return out, readErr
 		}
-		if err := recv.Accept(f); err != nil {
+		if f.ResourceID < 1 || int(f.ResourceID) > count {
+			return out, fmt.Errorf("response resource ID %d outside batch", f.ResourceID)
+		}
+		i := f.ResourceID - 1
+		if err := receivers[i].Accept(f); err != nil {
 			return out, err
 		}
-		if recv.BytesReceived() == uint64(r.Size()) && out.Timing.PayloadDone.IsZero() {
-			out.Timing.PayloadDone = time.Now()
+		if receivers[i].BytesReceived() == out[i].BytesExpected && out[i].Timing.PayloadDone.IsZero() {
+			out[i].Timing.PayloadDone = time.Now()
+		}
+		if receivers[i].Complete() {
+			out[i].Timing.Done = time.Now()
+			remaining--
 		}
 	}
-	out.Timing.Done = time.Now()
-	// The server closes after FIN. Reject a duplicate FIN or any trailing frame.
 	var extra [1]byte
 	n, readErr := conn.Read(extra[:])
 	if n != 0 || !errors.Is(readErr, io.EOF) {
 		return out, fmt.Errorf("trailing response or missing EOF: n=%d err=%v", n, readErr)
 	}
-	if err := recv.Verify(); err != nil {
-		return out, err
+	for i := range out {
+		if err := receivers[i].Verify(); err != nil {
+			return out, fmt.Errorf("resource %d: %w", i+1, err)
+		}
+		out[i].ChecksumOK = true
 	}
-	out.ChecksumOK = true
 	return out, nil
 }
