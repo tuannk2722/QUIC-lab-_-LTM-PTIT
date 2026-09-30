@@ -1,0 +1,31 @@
+G04 detailed QUIC tests; UTC=2026-09-30T11:59:47Z
+uid=1000
+command: go test -mod=readonly -count=1 -v -run ^TestQUIC ./tests/integration
+=== RUN   TestQUICBulkOneConnectionSixNativeStreamsAndSharedPort
+    quic_test.go:223: one QUIC connection, six native streams, shared TCP/UDP port=127.0.0.1:38779, verified bytes=6291456
+--- PASS: TestQUICBulkOneConnectionSixNativeStreamsAndSharedPort (0.12s)
+=== RUN   TestQUICBarrierAndConcurrentRequests
+    quic_test.go:262: responses waited for the request batch; concurrent streams completed with FIN, EOF and SHA-256
+--- PASS: TestQUICBarrierAndConcurrentRequests (0.21s)
+=== RUN   TestQUICInvalidBatchAndEOFBounded
+=== RUN   TestQUICInvalidBatchAndEOFBounded/missing_request
+=== RUN   TestQUICInvalidBatchAndEOFBounded/duplicate_ID_on_another_stream
+=== RUN   TestQUICInvalidBatchAndEOFBounded/invalid_first_frame
+=== RUN   TestQUICInvalidBatchAndEOFBounded/truncated_request_EOF
+--- PASS: TestQUICInvalidBatchAndEOFBounded (0.31s)
+    --- PASS: TestQUICInvalidBatchAndEOFBounded/missing_request (0.26s)
+    --- PASS: TestQUICInvalidBatchAndEOFBounded/duplicate_ID_on_another_stream (0.00s)
+    --- PASS: TestQUICInvalidBatchAndEOFBounded/invalid_first_frame (0.00s)
+    --- PASS: TestQUICInvalidBatchAndEOFBounded/truncated_request_EOF (0.00s)
+=== RUN   TestQUICRequestRequiresSendHalfEOF
+--- PASS: TestQUICRequestRequiresSendHalfEOF (0.30s)
+=== RUN   TestQUICExtraStreamAfterBatchAndTrustFailure
+    quic_test.go:366: untrusted QUIC certificate rejected: CRYPTO_ERROR 0x12a (local): tls: failed to verify certificate: x509: certificate signed by unknown authority
+--- PASS: TestQUICExtraStreamAfterBatchAndTrustFailure (0.11s)
+=== RUN   TestQUICServerCancelReleasesWaitingStreams
+--- PASS: TestQUICServerCancelReleasesWaitingStreams (0.06s)
+=== RUN   TestQUICClientRejectsEOFBeforeFIN
+--- PASS: TestQUICClientRejectsEOFBeforeFIN (0.05s)
+PASS
+ok  	quic-performance-lab/tests/integration	1.167s
+exit=0

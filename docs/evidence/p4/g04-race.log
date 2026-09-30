@@ -1,0 +1,18 @@
+G04 race suite; UTC=2026-09-30T11:59:57Z
+uid=1000
+command: make test-race
+/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/.tools/go1.27.1/bin/go test -mod=readonly -race ./...
+?   	quic-performance-lab/cmd/bench	[no test files]
+?   	quic-performance-lab/cmd/client	[no test files]
+?   	quic-performance-lab/cmd/server	[no test files]
+ok  	quic-performance-lab/internal/cli	1.429s
+ok  	quic-performance-lab/internal/config	(cached)
+ok  	quic-performance-lab/internal/protocol	(cached)
+ok  	quic-performance-lab/internal/tlsconfig	1.251s
+?   	quic-performance-lab/internal/transport	[no test files]
+?   	quic-performance-lab/internal/transport/quic	[no test files]
+ok  	quic-performance-lab/internal/transport/tcp	1.020s
+ok  	quic-performance-lab/internal/workload	(cached)
+ok  	quic-performance-lab/tests/api	(cached)
+ok  	quic-performance-lab/tests/integration	6.074s
+exit=0

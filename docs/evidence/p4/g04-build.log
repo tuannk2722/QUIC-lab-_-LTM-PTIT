@@ -1,0 +1,8 @@
+G04 build; UTC=2026-09-30T11:59:08Z
+uid=1000
+kernel=6.18.40.1-microsoft-standard-WSL2
+command: make build
+/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/.tools/go1.27.1/bin/go build -mod=readonly -trimpath -ldflags '-X quic-performance-lab/internal/cli.Build=65d5a7b' -o bin/server ./cmd/server
+/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/.tools/go1.27.1/bin/go build -mod=readonly -trimpath -ldflags '-X quic-performance-lab/internal/cli.Build=65d5a7b' -o bin/client ./cmd/client
+/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/.tools/go1.27.1/bin/go build -mod=readonly -trimpath -ldflags '-X quic-performance-lab/internal/cli.Build=65d5a7b' -o bin/bench ./cmd/bench
+exit=0

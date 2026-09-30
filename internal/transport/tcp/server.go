@@ -19,7 +19,8 @@ type ServerOptions struct {
 	BatchTimeout     time.Duration
 	TrialTimeout     time.Duration
 	MaxConnections   int
-	OnAccepted       func() // optional integration instrumentation
+	ConnectionSlots  chan struct{} // optional limiter shared with the QUIC listener
+	OnAccepted       func()        // optional integration instrumentation
 }
 
 // Serve handles one request batch on each accepted TCP/TLS connection.
@@ -27,14 +28,30 @@ func Serve(ctx context.Context, addr string, cfg *tls.Config, store *workload.St
 	if cfg == nil || store == nil || store.Count() < 1 || store.Count() > 64 || opts.HandshakeTimeout <= 0 || opts.TrialTimeout <= 0 || opts.BatchTimeout < 0 || opts.MaxConnections < 1 || opts.MaxConnections > 8 {
 		return fmt.Errorf("invalid TCP server configuration")
 	}
-	if opts.BatchTimeout == 0 {
-		opts.BatchTimeout = 5 * time.Second
-	}
 	ln, err := net.Listen("tcp", addr)
 	if err != nil {
 		return err
 	}
 	defer ln.Close()
+	if ready != nil {
+		select {
+		case ready <- ln.Addr():
+		case <-ctx.Done():
+			return ctx.Err()
+		}
+	}
+	return ServeListener(ctx, ln, cfg, store, opts)
+}
+
+// ServeListener runs on an already bound socket so the CLI can bind TCP and UDP
+// before reporting that a dual-transport server is ready.
+func ServeListener(ctx context.Context, ln net.Listener, cfg *tls.Config, store *workload.Store, opts ServerOptions) error {
+	if ln == nil || cfg == nil || store == nil || store.Count() < 1 || store.Count() > 64 || opts.HandshakeTimeout <= 0 || opts.TrialTimeout <= 0 || opts.BatchTimeout < 0 || opts.MaxConnections < 1 || opts.MaxConnections > 8 {
+		return fmt.Errorf("invalid TCP server configuration")
+	}
+	if opts.BatchTimeout == 0 {
+		opts.BatchTimeout = 5 * time.Second
+	}
 	stopped := make(chan struct{})
 	go func() {
 		select {
@@ -44,14 +61,10 @@ func Serve(ctx context.Context, addr string, cfg *tls.Config, store *workload.St
 		}
 	}()
 	defer close(stopped)
-	if ready != nil {
-		select {
-		case ready <- ln.Addr():
-		case <-ctx.Done():
-			return ctx.Err()
-		}
+	sem := opts.ConnectionSlots
+	if sem == nil {
+		sem = make(chan struct{}, opts.MaxConnections)
 	}
-	sem := make(chan struct{}, opts.MaxConnections)
 	var wg sync.WaitGroup
 	defer wg.Wait()
 	for {

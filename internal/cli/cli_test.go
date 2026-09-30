@@ -2,6 +2,8 @@ package cli
 
 import (
 	"bytes"
+	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 )
@@ -23,14 +25,17 @@ func TestCommandContract(t *testing.T) {
 				}
 			}
 			base := []string{"--profiles=../../configs/workloads.json"}
+			if name == "server" {
+				base = append(base, "--cert=/nonexistent")
+			}
 			if name == "client" {
-				base = append(base, "--transport=quic")
+				base = append(base, "--transport=quic", "--ca=/nonexistent")
 			}
 			if name == "bench" {
 				base = append(base, "--scenarios=../../configs/scenarios.json")
 			}
 			var out, errs bytes.Buffer
-			if code := Run(name, base, &out, &errs); code != 1 || out.Len() != 0 || !strings.Contains(errs.String(), "not implemented") {
+			if code := Run(name, base, &out, &errs); code != 1 || out.Len() != 0 || (name == "bench" && !strings.Contains(errs.String(), "not implemented")) {
 				t.Fatalf("fake success: %d %s %s", code, &out, &errs)
 			}
 			cases := [][]string{{"--transport=http3"}, {"--profile=missing"}}
@@ -49,5 +54,27 @@ func TestCommandContract(t *testing.T) {
 				}
 			}
 		})
+	}
+}
+
+func TestReadyFileKeepsExistingOwner(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "ready")
+	if err := os.WriteFile(path, []byte("other server\n"), 0600); err != nil {
+		t.Fatal(err)
+	}
+	if err := writeReadyFile(path, "new server\n"); err == nil {
+		t.Fatal("overwrote another server's ready file")
+	}
+	data, err := os.ReadFile(path)
+	if err != nil || string(data) != "other server\n" {
+		t.Fatalf("existing ready file changed: %q %v", data, err)
+	}
+	newPath := filepath.Join(t.TempDir(), "ready")
+	if err := writeReadyFile(newPath, "new server\n"); err != nil {
+		t.Fatal(err)
+	}
+	data, err = os.ReadFile(newPath)
+	if err != nil || string(data) != "new server\n" {
+		t.Fatalf("ready file incomplete: %q %v", data, err)
 	}
 }
