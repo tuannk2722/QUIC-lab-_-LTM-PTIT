@@ -42,7 +42,7 @@ func TestCommandContract(t *testing.T) {
 			if name == "server" {
 				cases = append(cases, []string{"--listen=localhost:0"}, []string{"--cert="})
 			} else {
-				cases = append(cases, []string{"--addr=bad"}, []string{"--transport=tcp", "--mode=early"}, []string{"--transport=tcp", "--mode=resumed"}, []string{"--timeout=0s"}, []string{"--timeout=-1s"}, []string{"--format=csv"}, []string{"--ca="})
+				cases = append(cases, []string{"--addr=bad"}, []string{"--transport=tcp", "--mode=early"}, []string{"--transport=tcp", "--mode=resumed"}, []string{"--timeout=0s"}, []string{"--timeout=-1s"}, []string{"--format=csv"}, []string{"--ca="}, []string{"--experiment-id=../bad"}, []string{"--run-id=../bad"})
 			}
 			if name == "bench" {
 				cases = append(cases, []string{"--runs=0"}, []string{"--warmups=-1"}, []string{"--scenario=missing"}, []string{"--plan", "--merge=x"})

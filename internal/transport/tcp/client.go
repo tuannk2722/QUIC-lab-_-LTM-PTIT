@@ -65,6 +65,9 @@ func RunBatch(parent context.Context, addr string, cfg *tls.Config, expected *wo
 		return out, err
 	}
 	tcpConnected := time.Now()
+	for i := range out {
+		out[i].Timing.TCPConnected = tcpConnected
+	}
 	conn := tls.Client(raw, cfg)
 	defer conn.Close()
 	stop := make(chan struct{})
@@ -86,7 +89,6 @@ func RunBatch(parent context.Context, addr string, cfg *tls.Config, expected *wo
 		return out, fmt.Errorf("unexpected ALPN")
 	}
 	for i := range out {
-		out[i].Timing.TCPConnected = tcpConnected
 		out[i].Timing.Handshake = handshake
 	}
 	for i := range out {

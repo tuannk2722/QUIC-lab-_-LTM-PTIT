@@ -3,7 +3,9 @@ package cli
 
 import (
 	"context"
+	"crypto/rand"
 	"crypto/tls"
+	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"flag"
@@ -20,6 +22,7 @@ import (
 	"time"
 
 	"quic-performance-lab/internal/config"
+	"quic-performance-lab/internal/metrics"
 	"quic-performance-lab/internal/tlsconfig"
 	"quic-performance-lab/internal/transport"
 	quictransport "quic-performance-lab/internal/transport/quic"
@@ -74,7 +77,7 @@ func Run(name string, args []string, out, errOut io.Writer) int {
 	version := fs.Bool("version", false, "print build, commit and toolchain versions")
 	profiles := fs.String("profiles", config.DefaultProfiles, "workload JSON file")
 	profile := fs.String("profile", "bulk", "workload profile")
-	var transportName, addr, mode, format, ca, serverName, cert, key, readyFile, scenario, suite, entry, merge string
+	var transportName, addr, mode, format, ca, serverName, cert, key, readyFile, scenario, suite, entry, merge, experimentID, runID, outDir string
 	var timeout time.Duration
 	var runs, warmups int
 	var plan bool
@@ -95,9 +98,9 @@ func Run(name string, args []string, out, errOut io.Writer) int {
 		fs.StringVar(&serverName, "server-name", "10.10.0.2", "TLS peer identity")
 		fs.DurationVar(&timeout, "timeout", 0, "trial deadline (default: timeouts.trial_seconds from profiles)")
 		fs.StringVar(&format, "format", "table", "table or json")
-		fs.String("experiment-id", "", "experiment identifier")
-		fs.String("run-id", "", "trial identifier")
-		fs.String("out", "", "result directory (canonical files arrive in P6)")
+		fs.StringVar(&experimentID, "experiment-id", "", "experiment identifier")
+		fs.StringVar(&runID, "run-id", "", "trial identifier")
+		fs.StringVar(&outDir, "out", "", "new result directory")
 		fs.Bool("progress", false, "collect progress in future evidence mode")
 	} else {
 		fmt.Fprintln(errOut, "unknown binary")
@@ -171,6 +174,9 @@ func Run(name string, args []string, out, errOut io.Writer) int {
 		}
 		if format != "table" && format != "json" {
 			return bad("format must be table or json")
+		}
+		if (experimentID != "" && !metrics.ValidID(experimentID)) || (runID != "" && !metrics.ValidID(runID)) {
+			return bad("experiment-id/run-id must contain 1..128 ASCII letters, digits, _ or -")
 		}
 	}
 	if name == "bench" {
@@ -248,11 +254,43 @@ func Run(name string, args []string, out, errOut io.Writer) int {
 			fmt.Fprintln(errOut, err)
 			return 1
 		}
+		if experimentID == "" {
+			experimentID, err = newID("exp")
+			if err != nil {
+				fmt.Fprintln(errOut, err)
+				return 1
+			}
+		}
+		if runID == "" {
+			runID, err = newID("run")
+			if err != nil {
+				fmt.Fprintln(errOut, err)
+				return 1
+			}
+		}
+		if outDir == "" {
+			outDir = filepath.Join("results", experimentID)
+		}
 		var results []transport.Result
 		if transportName == "tcp" {
 			results, err = tcptransport.RunBatch(context.Background(), addr, cfg, expected, timeout)
 		} else {
 			results, err = quictransport.RunBatch(context.Background(), addr, cfg, expected, timeout)
+		}
+		meta := metrics.TrialMeta{ExperimentID: experimentID, RunID: runID, Phase: "measured", Scenario: "loopback-test",
+			Transport: transportName, Mode: mode, TraceMode: "performance", NetworkProfile: "loopback-test",
+			ResourceCount: expected.Count(), ResourceSizeBytes: uint64(expected.Profile().ResourceSizeBytes), ChunkBytes: uint32(expected.Profile().ChunkBytes)}
+		if len(results) == expected.Count() {
+			record, recordErr := metrics.NewTrial(meta, results, err)
+			if recordErr != nil {
+				fmt.Fprintln(errOut, "result conversion failed:", recordErr)
+				return 1
+			}
+			if writeErr := metrics.WriteTrial(outDir, record); writeErr != nil {
+				fmt.Fprintln(errOut, "result write failed:", writeErr)
+				return 1
+			}
+			fmt.Fprintln(errOut, "results:", outDir)
 		}
 		if err != nil {
 			fmt.Fprintln(errOut, transportName, "transfer failed:", err)
@@ -268,20 +306,33 @@ func Run(name string, args []string, out, errOut io.Writer) int {
 	return 1
 }
 
+func newID(prefix string) (string, error) {
+	var b [8]byte
+	if _, err := rand.Read(b[:]); err != nil {
+		return "", err
+	}
+	return prefix + "_" + time.Now().UTC().Format("20060102T150405") + "_" + hex.EncodeToString(b[:]), nil
+}
+
 func writeTransfer(out io.Writer, transportName, profile, format string, results []transport.Result) error {
-	elapsed := float64(results[0].Timing.End.Sub(results[0].Timing.Start)) / float64(time.Millisecond)
+	timings, _, err := metrics.Run(transportName, results, true)
+	if err != nil {
+		return err
+	}
+	elapsed := timings.ElapsedMS
 	if format == "json" {
 		if len(results) == 1 {
 			r := results[0]
 			return json.NewEncoder(out).Encode(struct {
-				Transport         string  `json:"transport"`
-				Profile           string  `json:"profile"`
-				ResourceID        uint32  `json:"resource_id"`
-				TransportStreamID *int64  `json:"transport_stream_id,omitempty"`
-				Bytes             uint64  `json:"bytes"`
-				ChecksumOK        bool    `json:"checksum_ok"`
-				ElapsedMS         float64 `json:"elapsed_ms"`
-			}{transportName, profile, r.ResourceID, r.StreamID, r.BytesReceived, r.ChecksumOK, elapsed})
+				Transport         string            `json:"transport"`
+				Profile           string            `json:"profile"`
+				ResourceID        uint32            `json:"resource_id"`
+				TransportStreamID *int64            `json:"transport_stream_id,omitempty"`
+				Bytes             uint64            `json:"bytes"`
+				ChecksumOK        bool              `json:"checksum_ok"`
+				ElapsedMS         float64           `json:"elapsed_ms"`
+				Metrics           metrics.RunTiming `json:"metrics"`
+			}{transportName, profile, r.ResourceID, r.StreamID, r.BytesReceived, r.ChecksumOK, elapsed, timings})
 		}
 		type row struct {
 			ResourceID        uint32 `json:"resource_id"`
@@ -296,13 +347,14 @@ func writeTransfer(out io.Writer, transportName, profile, format string, results
 			total += r.BytesReceived
 		}
 		return json.NewEncoder(out).Encode(struct {
-			Transport     string  `json:"transport"`
-			Profile       string  `json:"profile"`
-			ResourceCount int     `json:"resource_count"`
-			Bytes         uint64  `json:"bytes"`
-			ElapsedMS     float64 `json:"elapsed_ms"`
-			Resources     []row   `json:"resources"`
-		}{transportName, profile, len(results), total, elapsed, rows})
+			Transport     string            `json:"transport"`
+			Profile       string            `json:"profile"`
+			ResourceCount int               `json:"resource_count"`
+			Bytes         uint64            `json:"bytes"`
+			ElapsedMS     float64           `json:"elapsed_ms"`
+			Resources     []row             `json:"resources"`
+			Metrics       metrics.RunTiming `json:"metrics"`
+		}{transportName, profile, len(results), total, elapsed, rows, timings})
 	}
 	for _, r := range results {
 		if r.StreamID != nil {

@@ -17,6 +17,7 @@ import (
 
 	quicgo "github.com/quic-go/quic-go"
 	"quic-performance-lab/internal/config"
+	"quic-performance-lab/internal/metrics"
 	"quic-performance-lab/internal/protocol"
 	quictransport "quic-performance-lab/internal/transport/quic"
 	"quic-performance-lab/internal/transport/tcp"
@@ -187,6 +188,10 @@ func TestQUICBulkOneConnectionSixNativeStreamsAndSharedPort(t *testing.T) {
 	results, err := quictransport.RunBatch(context.Background(), addr.String(), client, store, 20*time.Second)
 	if err != nil {
 		t.Fatal(err)
+	}
+	measured, streamMetrics, metricErr := metrics.Run("quic", results, true)
+	if metricErr != nil || measured.TotalMS == nil || measured.HandshakeMS == nil || measured.TCPConnectMS != nil || measured.TLSHandshakeMS != nil || measured.TTFAMS == nil || len(streamMetrics) != 6 {
+		t.Fatalf("actual QUIC metrics: %+v %+v %v", measured, streamMetrics, metricErr)
 	}
 	if tcpAccepted.Load() != 1 || quicAccepted.Load() != 1 || len(tcpResults) != 6 || len(results) != 6 {
 		t.Fatalf("accepted TCP=%d QUIC=%d, rows TCP=%d QUIC=%d", tcpAccepted.Load(), quicAccepted.Load(), len(tcpResults), len(results))

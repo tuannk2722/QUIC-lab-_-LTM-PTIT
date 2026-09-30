@@ -1,0 +1,7 @@
+schema_version,experiment_id,run_id,resource_id,transport_stream_id,attempt_index,request_start_ms,request_end_ms,first_byte_ms,ttfb_request_ms,payload_done_ms,complete_ms,completion_request_ms,bytes_expected,bytes_received,checksum_ok,success,error_code,error_message
+1,p6_g06,tcp_failure,1,,0,,,,,,,,1048576,0,,false,transfer_error,"tls: failed to verify certificate: x509: certificate is valid for localhost, not wrong.example"
+1,p6_g06,tcp_failure,2,,0,,,,,,,,1048576,0,,false,transfer_error,"tls: failed to verify certificate: x509: certificate is valid for localhost, not wrong.example"
+1,p6_g06,tcp_failure,3,,0,,,,,,,,1048576,0,,false,transfer_error,"tls: failed to verify certificate: x509: certificate is valid for localhost, not wrong.example"
+1,p6_g06,tcp_failure,4,,0,,,,,,,,1048576,0,,false,transfer_error,"tls: failed to verify certificate: x509: certificate is valid for localhost, not wrong.example"
+1,p6_g06,tcp_failure,5,,0,,,,,,,,1048576,0,,false,transfer_error,"tls: failed to verify certificate: x509: certificate is valid for localhost, not wrong.example"
+1,p6_g06,tcp_failure,6,,0,,,,,,,,1048576,0,,false,transfer_error,"tls: failed to verify certificate: x509: certificate is valid for localhost, not wrong.example"

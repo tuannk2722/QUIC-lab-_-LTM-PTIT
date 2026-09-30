@@ -4,8 +4,8 @@ package transport
 import "time"
 
 type Timing struct {
-	Start, TCPConnected, Handshake, RequestStart, RequestEnd time.Time
-	FirstByte, PayloadDone, Done, End                        time.Time
+	Start, TCPConnected, EarlyReady, Handshake, RequestStart, RequestEnd time.Time
+	FirstByte, PayloadDone, Done, End                                    time.Time
 }
 
 type Result struct {

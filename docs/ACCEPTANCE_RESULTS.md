@@ -1,8 +1,8 @@
-# Kết quả nghiệm thu — P0/G00 đến P4/G04
+# Kết quả nghiệm thu — P0/G00 đến P6/G06
 
-Ngày: 2026-09-30 UTC. Baseline: `7e54ad654b14b8eb38b0db369203df4d34f003d7`; đầu P4 ở commit `65d5a7b`. Người dùng đã human-review/approve P0/G00, cho phép P1→G01→P2→G02 tuần tự, rồi yêu cầu riêng P3/G03 và P4/G04. Môi trường: Ubuntu 26.04.1 LTS trong WSL2, UID 1000.
+Ngày: 2026-09-30 UTC. Baseline: `7e54ad654b14b8eb38b0db369203df4d34f003d7`; đầu P4 ở commit `65d5a7b`. Người dùng đã human-review/approve P0/G00 và P4/G04; cho phép P5→G05→P6→G06 tuần tự. Môi trường: Ubuntu 26.04.1 LTS trong WSL2, UID 1000.
 
-**P0/G00 PASS; P1/G01 PASS; P2/G02 PASS; P3/G03 PASS; P4/G04 PASS.** Phần capability G00 được đóng bằng log probe do người dùng chạy trong WSL2 lúc `2026-09-30T04:48:25Z`. Agent đã đối chiếu output và script, không tự nhận là người thực thi. P4 dừng chờ human review; chưa có xác nhận review P1/P2/P3.
+**P0/G00 PASS; P1/G01 PASS; P2/G02 PASS; P3/G03 PASS; P4/G04 PASS; P5/G05 PASS; P6/G06 PASS.** Phần capability G00 được đóng bằng log probe do người dùng chạy trong WSL2 lúc `2026-09-30T04:48:25Z`. Agent đã đối chiếu output và script, không tự nhận là người thực thi. P5/G05 đạt trước khi bắt đầu P6. P5/P6 dừng chờ human review; chưa có xác nhận review P1/P2/P3/P5/P6.
 
 | ID / subcase | Trạng thái | Lệnh / cách kiểm | Kỳ vọng và kết quả thực | Evidence | Còn thiếu |
 |---|---|---|---|---|---|
@@ -29,7 +29,11 @@ Ngày: 2026-09-30 UTC. Baseline: `7e54ad654b14b8eb38b0db369203df4d34f003d7`; đ�
 | G04-one-connection/stream-map | PASS | `go test -mod=readonly -count=1 -v -run '^TestQUIC' ./tests/integration` | 1 accepted QUIC connection, 6 native stream IDs khác nhau, server/client map khớp ID 1..6, 6×1 MiB và SHA-256 đúng; TCP cùng port/store cũng có 6 hash | [detailed tests](evidence/p4/g04-detailed-tests.log), [QUIC result](evidence/p4/quic-transfer.json), [TCP result](evidence/p4/tcp-transfer.json) | Loopback correctness, không phải performance |
 | G04-batch/lifecycle/error | PASS | Cùng detailed test và `make test-race` | Barrier chờ đủ request; requests chạy đồng thời; missing/duplicate/invalid/truncated/non-EOF/extra stream đều kết thúc hữu hạn; server cancel giải phóng workers; client từ chối EOF trước FIN; CA không tin cậy bị x509 từ chối; race sạch | [detailed tests](evidence/p4/g04-detailed-tests.log), [race](evidence/p4/g04-race.log) | Không chạy long fuzz hay loss test trong G04 |
 | G04-dual-listener CLI | PASS | `bin/server --transport=both --profile=bulk --listen=127.0.0.1:4433 --ready-file=<temp>`; `bin/client --transport=tcp|quic --mode=cold --profile=bulk --addr=127.0.0.1:4433 --server-name=localhost --format=json` | Một server process ready TCP+UDP cùng `:4433`, cùng certificate/store và limiter 8 trong code; hai client exit 0, 6 hash/6.291.456 bytes mỗi transport, QUIC JSON có 6 stream ID thật; server SIGTERM exit 0, ready file được gỡ | [CLI transfer](evidence/p4/g04-cli-transfer.log), [stream map/result](evidence/p4/quic-transfer.json), [TCP result](evidence/p4/tcp-transfer.json) | `elapsed_ms` trên localhost không dùng so sánh hiệu năng; CSV/metrics chuẩn thuộc P5/P6 |
-| G05–G12 | NOT_RUN | Chưa chạy | Chưa có metrics/CSV chuẩn, topology G07/G08, benchmark, 0-RTT hoặc PCAP/qlog thực | Không có dataset hiệu năng | Chờ phase riêng |
+| G05-formulas/nullability | PASS | `make build`; `make test`; `go test -mod=readonly -count=1 -v ./internal/metrics ./internal/protocol ./tests/integration` | Synthetic monotonic events đúng connect/handshake/TTFA/transfer/total/elapsed/goodput, missing mốc null; reqEnd sau firstByte hợp lệ; total loại hash/cleanup; TCP failure sau dial giữ tcp_connect mà handshake rỗng | [build](evidence/p5/g05-build.log), [suite](evidence/p5/g05-suite.log), [detailed](evidence/p5/g05-detailed-tests.log) | Localhost chỉ correctness |
+| G05-first byte/integration/race | PASS | `TestFirstByteHookBeforeFullChunk`, TCP/QUIC integration, `make test-race` | Callback khi đọc byte DATA đầu, trước đủ chunk; mốc TCP/QUIC client thực hợp lệ; race suite exit 0 | [detailed](evidence/p5/g05-detailed-tests.log), [race](evidence/p5/g05-race.log) | Không có performance cohort |
+| G06-typed files/real trials | PASS | `make build`; `make test`; `make test-race`; `bash docs/evidence/p6/run-g06.sh` | 2 trial cold thành công (TCP, QUIC) và 1 TLS trust failure thật; mỗi trial có raw typed JSON, runs.csv 1 row, streams.csv 6 rows; failure exit 1 nhưng vẫn lưu 6 rows/bytes=0/null timings; cả ba validator PASS | [gate log](evidence/p6/g06-actual-trials.log), [actual records](evidence/p6/actual/), [build](evidence/p6/g06-build.log), [suite](evidence/p6/g06-suite.log), [race](evidence/p6/g06-race.log) | Trial localhost 6×1MiB là dữ liệu correctness, không là benchmark |
+| G06-contract/negative checks | PASS | `go test ./internal/metrics`, `python3 analysis/test_validate.py <actual-parent>` | CSV error có comma/quote/newline roundtrip; null ô rỗng; flush error được trả; existing directory không ghi đè; validator đối chiếu schema/raw/CSV/FK/N/công thức, từ chối duplicate run ID và thiếu stream; bản sao gắn warmup có measured_count=2 và warmup_excluded=1 | [detailed](evidence/p5/g05-detailed-tests.log), [validator](evidence/p6/g06-actual-trials.log), [actual records](evidence/p6/actual/) | P9 mới có runner, cohort summary và manifest đầy đủ |
+| G07–G12 | NOT_RUN | Chưa chạy | Chưa có topology G07/G08, benchmark, 0-RTT hoặc PCAP/qlog thực | Không có dataset hiệu năng | Chờ phase riêng |
 
 ## Lệnh tái lập P0
 
@@ -93,6 +97,25 @@ bin/client --transport=quic --mode=cold --profile=bulk --addr=127.0.0.1:4433 --s
 ```
 
 Tạo thư mục `results/` trước nếu dùng ready-file như ví dụ; dừng server bằng Ctrl+C. G04 chạy localhost thật dưới UID thường ngoài sandbox hạn chế socket; lần thử sandbox cũ bị EPERM, không coi là lỗi ứng dụng. Log và JSON tại `docs/evidence/p4/` là correctness evidence, không phải benchmark dataset hoặc kết quả G07/G08. Client resumed/early, qlog, canonical CSV và network impairment thuộc các gate sau.
+
+## Tái lập P5/G05 và P6/G06
+
+```bash
+make build
+make test
+make test-race
+GOPATH="$PWD/.tools/gopath" GOCACHE="$PWD/.tools/gocache" GOTOOLCHAIN=local GOMAXPROCS=2 GOFLAGS=-p=2 .tools/go1.27.1/bin/go test -mod=readonly -count=1 -v ./internal/metrics ./internal/protocol ./tests/integration
+bash docs/evidence/p6/run-g06.sh
+# Script in ra results_dir mới; thay PATH bằng path vừa in:
+python3 analysis/validate.py PATH/tcp_success
+python3 analysis/validate.py PATH/quic_success
+python3 analysis/validate.py PATH/tcp_failure
+python3 analysis/test_validate.py PATH
+```
+
+Chạy dưới UID thường trong Ubuntu WSL2 có quyền socket localhost. Script chọn port tạm, tạo thư mục `results/p6-g06-*` mới, dừng server do chính script tạo và không ghi đè kết quả cũ. Lần đầu script dùng port 0 bị CLI từ chối ở preflight; script đã sửa để chọn port hợp lệ, lần chạy gate cuối exit 0. Bản dữ liệu thật đã sao lưu ở `docs/evidence/p6/actual/`; original path lần cuối là `results/p6-g06-ag6vK3/`. Các timestamp/latency ở đây không dùng để so sánh hiệu năng.
+
+P5 đặt công thức và mốc client. P6 thêm canonical raw JSON/CSV và validator. CLI cold transfer hiện ghi `results/<experiment_id>/` theo mặc định hoặc thư mục mới từ `--out`; `--experiment-id/--run-id` tự sinh nếu thiếu. Mỗi invocation là một trial, không append. `--out` đã tồn tại hoặc write/flush lỗi trả exit 1; raw đã ghi được giữ lại nếu CSV lỗi và `INCOMPLETE` marker còn hiện diện. Chưa có `manifest.json` thí nghiệm đầy đủ, schedule/merge, main cohort, progress events hoặc thống kê/plots; chúng thuộc P9/P11/P12. `docs/REPORT.md` vẫn là template không có số liệu benchmark.
 
 ## Review thay đổi P4
 

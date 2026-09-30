@@ -14,8 +14,10 @@ import (
 	"time"
 
 	"quic-performance-lab/internal/config"
+	"quic-performance-lab/internal/metrics"
 	"quic-performance-lab/internal/protocol"
 	"quic-performance-lab/internal/tlsconfig"
+	"quic-performance-lab/internal/transport"
 	"quic-performance-lab/internal/transport/tcp"
 	"quic-performance-lab/internal/workload"
 )
@@ -70,15 +72,23 @@ func TestTCPRealLocalhostAndTrust(t *testing.T) {
 		t.Fatalf("bad transfer %+v", result)
 	}
 	timing := result.Timing
+	measured, streams, metricErr := metrics.Run("tcp", []transport.Result{result}, true)
+	if metricErr != nil || measured.TotalMS == nil || measured.HandshakeMS == nil || measured.TLSHandshakeMS == nil || measured.TTFAMS == nil || measured.GoodputMbps == nil || streams[0].FirstByteMS == nil {
+		t.Fatalf("actual TCP metrics: %+v %+v %v", measured, streams, metricErr)
+	}
 	if timing.Start.IsZero() || timing.TCPConnected.Before(timing.Start) || timing.Handshake.Before(timing.TCPConnected) || timing.RequestStart.Before(timing.Handshake) || timing.FirstByte.Before(timing.RequestStart) || timing.Done.Before(timing.FirstByte) {
 		t.Fatalf("invalid actual timing %+v", timing)
 	}
 	t.Logf("real localhost TCP/TLS: bytes=%d checksum_ok=%t elapsed=%s", result.BytesReceived, result.ChecksumOK, timing.Done.Sub(timing.Start))
 	bad := client.Clone()
 	bad.RootCAs = x509.NewCertPool()
-	if _, err := tcp.Run(context.Background(), addr.String(), bad, store, time.Second); err == nil {
+	if failed, err := tcp.Run(context.Background(), addr.String(), bad, store, time.Second); err == nil {
 		t.Fatal("untrusted server certificate accepted")
 	} else {
+		partial, _, metricErr := metrics.Run("tcp", []transport.Result{failed}, false)
+		if metricErr != nil || partial.TCPConnectMS == nil || partial.HandshakeMS != nil || partial.TotalMS != nil {
+			t.Fatalf("failed TLS milestone nullability: %+v %v", partial, metricErr)
+		}
 		t.Logf("untrusted cert rejected: %v", err)
 	}
 	cancel()
