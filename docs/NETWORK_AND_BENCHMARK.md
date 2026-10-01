@@ -22,6 +22,10 @@ Không default route/NAT/forward host cần thiết để traffic giữa hai end
 
 Đề xuất setup ban đầu: `ip netns add`; tạo veth-client/veth-server; move từng đầu; rename eth0; gán IP; up lo/eth0. Bản triển khai thêm ownership marker để không xóa namespace trùng tên thuộc công việc khác. Setup/teardown lặp được trên tài nguyên của lab; nếu trùng tên không có ownership hợp lệ thì báo rõ, không delete mù.
 
+P7 dùng marker root-owned mode 0600 tại `/run/quic-performance-lab/topology-v1` trong thư mục mode 0700. Marker lưu UID/GID người gọi sudo và định danh device:inode của cả hai namespace. Setup từ chối tên `qclient`/`qserver` có sẵn mà marker không xác thực; setup lỗi/INT/TERM rollback chỉ những namespace vừa tạo và có định danh khớp. Teardown kiểm marker và định danh trước khi xóa; nếu còn PID trong namespace thì báo lỗi để người vận hành dừng process trước, không tự kill PID không rõ chủ. `ifb0` được tạo/up trong P7; ingress mirred/netem và kiểm counter thuộc P8. Việc script trả thành công chưa thay bằng chứng traffic, cleanup interrupt và host-state của G07.
+
+Lần chạy G07 đầu tiên ngày 2026-10-01 cho thấy tạo IFB trong namespace khi driver chưa nạp kích hoạt mặc định `numifbs=2`, sinh thêm `ifb0`/`ifb1` trên host. Setup P7 sau sửa gọi `modprobe ifb numifbs=0` trước khi tạo namespace IFB và kiểm danh sách host link không đổi ngay sau nạp module. Hai IFB host từ lần lỗi cũ phải được khôi phục riêng bằng precheck snapshot trước khi chạy lại gate; không coi chúng là topology lab hoặc âm thầm xóa trong teardown. Nguồn cơ chế: [Linux kernel IFB driver](https://github.com/torvalds/linux/blob/master/drivers/net/ifb.c). G07 vẫn cần snapshot host thực trước/đang hoạt động/sau teardown ở lần rerun.
+
 ## 3. Hai profile network, không trộn kết quả
 
 ### ingress-ifb — profile benchmark chính

@@ -1,0 +1,2 @@
+PASS: failed-run host IFBs absent; host link/address/route match original snapshots
+recovery_exit=0

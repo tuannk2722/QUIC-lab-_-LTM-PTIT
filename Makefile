@@ -11,8 +11,10 @@ BUILD := $(shell git rev-parse --short HEAD 2>/dev/null || echo uncommitted)
 CERT_DIR ?= certs
 CERT_FORCE ?=
 REPORT ?= results/doctor.txt
+PROFILE ?= bulk
+export PROFILE
 
-.PHONY: check-go build test test-race certs doctor
+.PHONY: check-go build test test-race certs doctor setup-network server clean-network
 check-go:
 	@test "$$($(GO) version | awk '{print $$3}')" = "go$(GO_VERSION)" || { echo 'Expected Go $(GO_VERSION); see README.md' >&2; exit 3; }
 
@@ -33,3 +35,14 @@ certs:
 
 doctor:
 	bash scripts/doctor.sh "$(REPORT)"
+
+setup-network:
+	sudo bash scripts/network/setup.sh
+
+server: build
+	@server_bin=$$(realpath -e -- ./bin/server) || exit 1; \
+		sudo bash scripts/run-in-netns.sh qserver -- "$$server_bin" \
+		--transport=both --listen=0.0.0.0:4433 --profile="$$PROFILE"
+
+clean-network:
+	sudo bash scripts/network/teardown.sh

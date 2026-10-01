@@ -1,0 +1,10 @@
+sudo bash scripts/network/setup.sh
+test "$(/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/.tools/go1.27.1/bin/go version | awk '{print $3}')" = "go1.27.1" || { echo 'Expected Go 1.27.1; see README.md' >&2; exit 3; }
+mkdir -p bin
+/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/.tools/go1.27.1/bin/go build -mod=readonly -trimpath -ldflags '-X quic-performance-lab/internal/cli.Build=2050424' -o bin/server ./cmd/server
+/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/.tools/go1.27.1/bin/go build -mod=readonly -trimpath -ldflags '-X quic-performance-lab/internal/cli.Build=2050424' -o bin/client ./cmd/client
+/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/.tools/go1.27.1/bin/go build -mod=readonly -trimpath -ldflags '-X quic-performance-lab/internal/cli.Build=2050424' -o bin/bench ./cmd/bench
+server_bin=$(realpath -e -- ./bin/server) || exit 1; \
+	sudo bash scripts/run-in-netns.sh qserver -- "$server_bin" \
+	--transport=both --listen=0.0.0.0:4433 --profile="$PROFILE"
+sudo bash scripts/network/teardown.sh

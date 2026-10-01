@@ -1,0 +1,101 @@
+G07: UTC=2026-10-01T01:09:39Z repo=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT root_uid=0 app_uid=1000 app_gid=1000
+G07: results_dir=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p7-g07-vNiIgt
+G07: collision test: create a foreign qclient namespace
+network: qclient or qserver exists without this lab ownership marker; refusing collision
+G07: host-link before/collision identical sha256=4a10cbb212db75ab47dc961a20e4bd0ddde17554201764a6dfacf5f7297af4f1
+G07: host-address before/collision identical sha256=4eeaa1b90b9ec8c8cc2a743b50cb5bffc5204de98e81817917312f813121e9a2
+G07: host-route before/collision identical sha256=6ef3db3eada1fd03b7b371a8103510e7a5a248fc1d5b4597c359254a6a149c01
+G07: injected setup failure after client-namespace
+network: injected setup failure after qclient creation
+G07: host-link before/partial-failure identical sha256=4a10cbb212db75ab47dc961a20e4bd0ddde17554201764a6dfacf5f7297af4f1
+G07: host-address before/partial-failure identical sha256=4eeaa1b90b9ec8c8cc2a743b50cb5bffc5204de98e81817917312f813121e9a2
+G07: host-route before/partial-failure identical sha256=6ef3db3eada1fd03b7b371a8103510e7a5a248fc1d5b4597c359254a6a149c01
+G07: topology pass=1 setup
+P7 topology ready: qclient=10.10.0.1/24 qserver=10.10.0.2/24 eth0 MTU=1500 ifb0=up owner_uid=1000
+P7 topology already ready and owned by UID 1000: qclient, qserver
+G07: qclient eth0=10.10.0.1/24 mtu=1500 lo/eth0/ifb0=UP app_uid_gid=1000:1000
+G07: qserver eth0=10.10.0.2/24 mtu=1500 lo/eth0/ifb0=UP app_uid_gid=1000:1000
+PING 10.10.0.2 (10.10.0.2) 56(84) bytes of data.
+64 bytes from 10.10.0.2: icmp_seq=1 ttl=64 time=1.92 ms
+64 bytes from 10.10.0.2: icmp_seq=2 ttl=64 time=0.051 ms
+64 bytes from 10.10.0.2: icmp_seq=3 ttl=64 time=0.046 ms
+
+--- 10.10.0.2 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2029ms
+rtt min/avg/max/mdev = 0.046/0.672/1.919/0.881 ms
+PING 10.10.0.1 (10.10.0.1) 56(84) bytes of data.
+64 bytes from 10.10.0.1: icmp_seq=1 ttl=64 time=0.030 ms
+64 bytes from 10.10.0.1: icmp_seq=2 ttl=64 time=0.120 ms
+64 bytes from 10.10.0.1: icmp_seq=3 ttl=64 time=0.094 ms
+
+--- 10.10.0.1 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2049ms
+rtt min/avg/max/mdev = 0.030/0.081/0.120/0.037 ms
+G07: host-link before/pass1-active identical sha256=4a10cbb212db75ab47dc961a20e4bd0ddde17554201764a6dfacf5f7297af4f1
+G07: host-address before/pass1-active identical sha256=4eeaa1b90b9ec8c8cc2a743b50cb5bffc5204de98e81817917312f813121e9a2
+G07: host-route before/pass1-active identical sha256=6ef3db3eada1fd03b7b371a8103510e7a5a248fc1d5b4597c359254a6a149c01
+both ready tcp=10.10.0.2:4433 udp=10.10.0.2:4433 profile=bulk resources=6
+G07: managed_server_pid=7493 ready=both ready tcp=10.10.0.2:4433 udp=10.10.0.2:4433 profile=bulk resources=6
+G07: pass=1 transport=tcp begin
+results: /home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p7-g07-vNiIgt/tcp-pass1
+{"transport":"tcp","profile":"bulk","resource_count":6,"bytes":6291456,"elapsed_ms":89.359692,"resources":[{"resource_id":1,"bytes":1048576,"checksum_ok":true},{"resource_id":2,"bytes":1048576,"checksum_ok":true},{"resource_id":3,"bytes":1048576,"checksum_ok":true},{"resource_id":4,"bytes":1048576,"checksum_ok":true},{"resource_id":5,"bytes":1048576,"checksum_ok":true},{"resource_id":6,"bytes":1048576,"checksum_ok":true}],"metrics":{"tcp_connect_ms":0.675863,"tls_handshake_ms":1.288632,"handshake_ms":1.964495,"connect_ms":1.964495,"early_ready_ms":null,"ttfa_ms":2.182248,"transfer_ms":80.463782,"total_ms":82.428988,"elapsed_ms":89.359692,"goodput_mbps":625.5192926427446,"e2e_goodput_mbps":610.6061619972819}}
+{"attempted": 1, "evidence_trials_excluded": 0, "failed": 0, "measured_trials": 1, "status": "PASS", "success": 1, "warmup_trials_excluded": 0}
+G07 tcp: 6 resources, 6291456 bytes, all checksums true, output uid:gid=1000:1000
+G07: pass=1 transport=quic begin
+results: /home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p7-g07-vNiIgt/quic-pass1
+{"transport":"quic","profile":"bulk","resource_count":6,"bytes":6291456,"elapsed_ms":56.925806,"resources":[{"resource_id":1,"transport_stream_id":0,"bytes":1048576,"checksum_ok":true},{"resource_id":2,"transport_stream_id":4,"bytes":1048576,"checksum_ok":true},{"resource_id":3,"transport_stream_id":8,"bytes":1048576,"checksum_ok":true},{"resource_id":4,"transport_stream_id":12,"bytes":1048576,"checksum_ok":true},{"resource_id":5,"transport_stream_id":16,"bytes":1048576,"checksum_ok":true},{"resource_id":6,"transport_stream_id":20,"bytes":1048576,"checksum_ok":true}],"metrics":{"tcp_connect_ms":null,"tls_handshake_ms":null,"handshake_ms":4.83,"connect_ms":4.83,"early_ready_ms":null,"ttfa_ms":5.783277,"transfer_ms":47.17689,"total_ms":52.044788,"elapsed_ms":56.925806,"goodput_mbps":1066.8708344276192,"e2e_goodput_mbps":967.0833513626764}}
+{"attempted": 1, "evidence_trials_excluded": 0, "failed": 0, "measured_trials": 1, "status": "PASS", "success": 1, "warmup_trials_excluded": 0}
+G07 quic: 6 resources, 6291456 bytes, all checksums true, output uid:gid=1000:1000
+G07: pass=1 managed Ctrl+C (SIGINT)
+G07: managed server signal=INT exit=0 forced_kill=false
+P7 owned topology removed; verify host link/address/route snapshots for G07
+P7 topology already absent
+G07: host-link before/pass1-teardown identical sha256=4a10cbb212db75ab47dc961a20e4bd0ddde17554201764a6dfacf5f7297af4f1
+G07: host-address before/pass1-teardown identical sha256=4eeaa1b90b9ec8c8cc2a743b50cb5bffc5204de98e81817917312f813121e9a2
+G07: host-route before/pass1-teardown identical sha256=6ef3db3eada1fd03b7b371a8103510e7a5a248fc1d5b4597c359254a6a149c01
+G07: topology pass=2 setup
+P7 topology ready: qclient=10.10.0.1/24 qserver=10.10.0.2/24 eth0 MTU=1500 ifb0=up owner_uid=1000
+P7 topology already ready and owned by UID 1000: qclient, qserver
+G07: qclient eth0=10.10.0.1/24 mtu=1500 lo/eth0/ifb0=UP app_uid_gid=1000:1000
+G07: qserver eth0=10.10.0.2/24 mtu=1500 lo/eth0/ifb0=UP app_uid_gid=1000:1000
+PING 10.10.0.2 (10.10.0.2) 56(84) bytes of data.
+64 bytes from 10.10.0.2: icmp_seq=1 ttl=64 time=2.56 ms
+64 bytes from 10.10.0.2: icmp_seq=2 ttl=64 time=0.060 ms
+64 bytes from 10.10.0.2: icmp_seq=3 ttl=64 time=0.074 ms
+
+--- 10.10.0.2 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2010ms
+rtt min/avg/max/mdev = 0.060/0.896/2.555/1.172 ms
+PING 10.10.0.1 (10.10.0.1) 56(84) bytes of data.
+64 bytes from 10.10.0.1: icmp_seq=1 ttl=64 time=0.071 ms
+64 bytes from 10.10.0.1: icmp_seq=2 ttl=64 time=0.069 ms
+64 bytes from 10.10.0.1: icmp_seq=3 ttl=64 time=0.062 ms
+
+--- 10.10.0.1 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2055ms
+rtt min/avg/max/mdev = 0.062/0.067/0.071/0.003 ms
+G07: host-link before/pass2-active identical sha256=4a10cbb212db75ab47dc961a20e4bd0ddde17554201764a6dfacf5f7297af4f1
+G07: host-address before/pass2-active identical sha256=4eeaa1b90b9ec8c8cc2a743b50cb5bffc5204de98e81817917312f813121e9a2
+G07: host-route before/pass2-active identical sha256=6ef3db3eada1fd03b7b371a8103510e7a5a248fc1d5b4597c359254a6a149c01
+both ready tcp=10.10.0.2:4433 udp=10.10.0.2:4433 profile=bulk resources=6
+G07: managed_server_pid=7878 ready=both ready tcp=10.10.0.2:4433 udp=10.10.0.2:4433 profile=bulk resources=6
+G07: pass=2 transport=tcp begin
+results: /home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p7-g07-vNiIgt/tcp-pass2
+{"transport":"tcp","profile":"bulk","resource_count":6,"bytes":6291456,"elapsed_ms":21.738897,"resources":[{"resource_id":1,"bytes":1048576,"checksum_ok":true},{"resource_id":2,"bytes":1048576,"checksum_ok":true},{"resource_id":3,"bytes":1048576,"checksum_ok":true},{"resource_id":4,"bytes":1048576,"checksum_ok":true},{"resource_id":5,"bytes":1048576,"checksum_ok":true},{"resource_id":6,"bytes":1048576,"checksum_ok":true}],"metrics":{"tcp_connect_ms":1.564341,"tls_handshake_ms":1.218502,"handshake_ms":2.782843,"connect_ms":2.782843,"early_ready_ms":null,"ttfa_ms":3.074553,"transfer_ms":14.413126,"total_ms":17.197076,"elapsed_ms":21.738897,"goodput_mbps":3492.07021433102,"e2e_goodput_mbps":2926.756153197206}}
+{"attempted": 1, "evidence_trials_excluded": 0, "failed": 0, "measured_trials": 1, "status": "PASS", "success": 1, "warmup_trials_excluded": 0}
+G07 tcp: 6 resources, 6291456 bytes, all checksums true, output uid:gid=1000:1000
+G07: pass=2 transport=quic begin
+results: /home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p7-g07-vNiIgt/quic-pass2
+{"transport":"quic","profile":"bulk","resource_count":6,"bytes":6291456,"elapsed_ms":40.508767,"resources":[{"resource_id":1,"transport_stream_id":0,"bytes":1048576,"checksum_ok":true},{"resource_id":2,"transport_stream_id":4,"bytes":1048576,"checksum_ok":true},{"resource_id":3,"transport_stream_id":8,"bytes":1048576,"checksum_ok":true},{"resource_id":4,"transport_stream_id":12,"bytes":1048576,"checksum_ok":true},{"resource_id":5,"transport_stream_id":16,"bytes":1048576,"checksum_ok":true},{"resource_id":6,"transport_stream_id":20,"bytes":1048576,"checksum_ok":true}],"metrics":{"tcp_connect_ms":null,"tls_handshake_ms":null,"handshake_ms":2.482233,"connect_ms":2.482233,"early_ready_ms":null,"ttfa_ms":3.506767,"transfer_ms":33.534308,"total_ms":36.054403,"elapsed_ms":40.508767,"goodput_mbps":1500.9001527629553,"e2e_goodput_mbps":1395.9917184039907}}
+{"attempted": 1, "evidence_trials_excluded": 0, "failed": 0, "measured_trials": 1, "status": "PASS", "success": 1, "warmup_trials_excluded": 0}
+G07 quic: 6 resources, 6291456 bytes, all checksums true, output uid:gid=1000:1000
+G07: pass=2 managed Ctrl+C (SIGINT)
+G07: managed server signal=INT exit=0 forced_kill=false
+P7 owned topology removed; verify host link/address/route snapshots for G07
+P7 topology already absent
+G07: host-link before/pass2-teardown identical sha256=4a10cbb212db75ab47dc961a20e4bd0ddde17554201764a6dfacf5f7297af4f1
+G07: host-address before/pass2-teardown identical sha256=4eeaa1b90b9ec8c8cc2a743b50cb5bffc5204de98e81817917312f813121e9a2
+G07: host-route before/pass2-teardown identical sha256=6ef3db3eada1fd03b7b371a8103510e7a5a248fc1d5b4597c359254a6a149c01
+G07: PASS: G07 collision, partial rollback, two topology cycles, UID drop, ping, TCP+QUIC, SIGINT cleanup, unchanged host state
+G07: results_dir=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p7-g07-vNiIgt
+g07_exit=0

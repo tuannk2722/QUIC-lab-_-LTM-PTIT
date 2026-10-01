@@ -1,0 +1,41 @@
+G07: UTC=2026-10-01T00:23:06Z repo=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT root_uid=0 app_uid=1000 app_gid=1000
+G07: results_dir=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p7-g07-JqV32x
+G07: collision test: create a foreign qclient namespace
+network: qclient or qserver exists without this lab ownership marker; refusing collision
+G07: host-link before/collision identical sha256=4a10cbb212db75ab47dc961a20e4bd0ddde17554201764a6dfacf5f7297af4f1
+G07: host-address before/collision identical sha256=4eeaa1b90b9ec8c8cc2a743b50cb5bffc5204de98e81817917312f813121e9a2
+G07: host-route before/collision identical sha256=6ef3db3eada1fd03b7b371a8103510e7a5a248fc1d5b4597c359254a6a149c01
+G07: injected setup failure after client-namespace
+network: injected setup failure after qclient creation
+G07: host-link before/partial-failure identical sha256=4a10cbb212db75ab47dc961a20e4bd0ddde17554201764a6dfacf5f7297af4f1
+G07: host-address before/partial-failure identical sha256=4eeaa1b90b9ec8c8cc2a743b50cb5bffc5204de98e81817917312f813121e9a2
+G07: host-route before/partial-failure identical sha256=6ef3db3eada1fd03b7b371a8103510e7a5a248fc1d5b4597c359254a6a149c01
+G07: topology pass=1 setup
+P7 topology ready: qclient=10.10.0.1/24 qserver=10.10.0.2/24 eth0 MTU=1500 ifb0=up owner_uid=1000
+P7 topology already ready and owned by UID 1000: qclient, qserver
+G07: qclient eth0=10.10.0.1/24 mtu=1500 lo/eth0/ifb0=UP app_uid_gid=1000:1000
+G07: qserver eth0=10.10.0.2/24 mtu=1500 lo/eth0/ifb0=UP app_uid_gid=1000:1000
+PING 10.10.0.2 (10.10.0.2) 56(84) bytes of data.
+64 bytes from 10.10.0.2: icmp_seq=1 ttl=64 time=1.62 ms
+64 bytes from 10.10.0.2: icmp_seq=2 ttl=64 time=0.076 ms
+64 bytes from 10.10.0.2: icmp_seq=3 ttl=64 time=0.181 ms
+
+--- 10.10.0.2 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2008ms
+rtt min/avg/max/mdev = 0.076/0.624/1.616/0.702 ms
+PING 10.10.0.1 (10.10.0.1) 56(84) bytes of data.
+64 bytes from 10.10.0.1: icmp_seq=1 ttl=64 time=0.069 ms
+64 bytes from 10.10.0.1: icmp_seq=2 ttl=64 time=0.154 ms
+64 bytes from 10.10.0.1: icmp_seq=3 ttl=64 time=0.193 ms
+
+--- 10.10.0.1 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2084ms
+rtt min/avg/max/mdev = 0.069/0.138/0.193/0.051 ms
+--- /home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p7-g07-JqV32x/host-state/link.before.json	2026-10-01 00:23:06.394210364 +0000
++++ /home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p7-g07-JqV32x/host-state/link.pass1-active.json	2026-10-01 00:23:15.818208060 +0000
+@@ -1 +1 @@
+-[{"ifindex":1,"ifname":"lo","flags":["LOOPBACK","UP","LOWER_UP"],"mtu":65536,"qdisc":"noqueue","operstate":"UNKNOWN","linkmode":"DEFAULT","group":"default","txqlen":1000,"link_type":"loopback","address":"00:00:00:00:00:00","broadcast":"00:00:00:00:00:00"},{"ifindex":2,"ifname":"eth0","flags":["BROADCAST","MULTICAST","UP","LOWER_UP"],"mtu":1280,"qdisc":"mq","operstate":"UP","linkmode":"DEFAULT","group":"default","txqlen":1000,"link_type":"ether","address":"00:15:5d:ff:08:c6","broadcast":"ff:ff:ff:ff:ff:ff","altnames":["enx00155dff08c6"]}]
++[{"ifindex":1,"ifname":"lo","flags":["LOOPBACK","UP","LOWER_UP"],"mtu":65536,"qdisc":"noqueue","operstate":"UNKNOWN","linkmode":"DEFAULT","group":"default","txqlen":1000,"link_type":"loopback","address":"00:00:00:00:00:00","broadcast":"00:00:00:00:00:00"},{"ifindex":2,"ifname":"eth0","flags":["BROADCAST","MULTICAST","UP","LOWER_UP"],"mtu":1280,"qdisc":"mq","operstate":"UP","linkmode":"DEFAULT","group":"default","txqlen":1000,"link_type":"ether","address":"00:15:5d:ff:08:c6","broadcast":"ff:ff:ff:ff:ff:ff","altnames":["enx00155dff08c6"]},{"ifindex":3,"ifname":"ifb0","flags":["BROADCAST","NOARP"],"mtu":1500,"qdisc":"noop","operstate":"DOWN","linkmode":"DEFAULT","group":"default","txqlen":32,"link_type":"ether","address":"be:a9:54:3a:c9:bd","broadcast":"ff:ff:ff:ff:ff:ff"},{"ifindex":4,"ifname":"ifb1","flags":["BROADCAST","NOARP"],"mtu":1500,"qdisc":"noop","operstate":"DOWN","linkmode":"DEFAULT","group":"default","txqlen":32,"link_type":"ether","address":"7e:9e:bd:49:3a:52","broadcast":"ff:ff:ff:ff:ff:ff"}]
+G07 FAIL: host link state changed at pass1-active
+P7 topology removed; host interfaces and routes were not modified
+G07: results_dir=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p7-g07-JqV32x

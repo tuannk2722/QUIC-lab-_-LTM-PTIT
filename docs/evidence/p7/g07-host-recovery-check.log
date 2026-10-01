@@ -1,0 +1,4 @@
+ifb0: present; host matches failed G07 snapshots and has no IFB tc configuration
+ifb1: present; host matches failed G07 snapshots and has no IFB tc configuration
+CHECK ONLY: no host device was changed
+check_only_exit=0
