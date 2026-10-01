@@ -1,0 +1,146 @@
+G08: UTC=2026-10-01T02:57:20Z app_uid_gid=1000:1000 results_dir=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p8-g08-96nOtS
+Linux LAPTOP-MS2KV5BU 6.18.40.1-microsoft-standard-WSL2 #1 SMP PREEMPT_DYNAMIC Fri Jul 31 22:12:15 UTC 2026 x86_64 GNU/Linux
+tc utility, iproute2-6.19.0, libbpf 1.6.3
+P7 topology ready: qclient=10.10.0.1/24 qserver=10.10.0.2/24 eth0 MTU=1500 ifb0=up owner_uid=1000
+PING 10.10.0.2 (10.10.0.2) 56(84) bytes of data.
+64 bytes from 10.10.0.2: icmp_seq=1 ttl=64 time=0.141 ms
+64 bytes from 10.10.0.2: icmp_seq=2 ttl=64 time=0.296 ms
+64 bytes from 10.10.0.2: icmp_seq=3 ttl=64 time=0.341 ms
+64 bytes from 10.10.0.2: icmp_seq=4 ttl=64 time=0.343 ms
+64 bytes from 10.10.0.2: icmp_seq=5 ttl=64 time=0.299 ms
+64 bytes from 10.10.0.2: icmp_seq=6 ttl=64 time=0.384 ms
+64 bytes from 10.10.0.2: icmp_seq=7 ttl=64 time=0.248 ms
+64 bytes from 10.10.0.2: icmp_seq=8 ttl=64 time=0.319 ms
+64 bytes from 10.10.0.2: icmp_seq=9 ttl=64 time=0.180 ms
+64 bytes from 10.10.0.2: icmp_seq=10 ttl=64 time=0.357 ms
+64 bytes from 10.10.0.2: icmp_seq=11 ttl=64 time=0.321 ms
+64 bytes from 10.10.0.2: icmp_seq=12 ttl=64 time=0.392 ms
+
+--- 10.10.0.2 ping statistics ---
+12 packets transmitted, 12 received, 0% packet loss, time 2248ms
+rtt min/avg/max/mdev = 0.141/0.301/0.392/0.073 ms
+{"scenario": "baseline", "namespace": "qclient", "samples_ms": [0.141, 0.296, 0.341, 0.343, 0.299, 0.384, 0.248, 0.319, 0.18, 0.357, 0.321, 0.392], "sample_count": 12, "median_rtt_ms": 0.32, "status": "PASS"}
+PING 10.10.0.1 (10.10.0.1) 56(84) bytes of data.
+64 bytes from 10.10.0.1: icmp_seq=1 ttl=64 time=0.296 ms
+64 bytes from 10.10.0.1: icmp_seq=2 ttl=64 time=0.342 ms
+64 bytes from 10.10.0.1: icmp_seq=3 ttl=64 time=0.576 ms
+64 bytes from 10.10.0.1: icmp_seq=4 ttl=64 time=0.370 ms
+64 bytes from 10.10.0.1: icmp_seq=5 ttl=64 time=0.398 ms
+64 bytes from 10.10.0.1: icmp_seq=6 ttl=64 time=0.288 ms
+64 bytes from 10.10.0.1: icmp_seq=7 ttl=64 time=0.373 ms
+64 bytes from 10.10.0.1: icmp_seq=8 ttl=64 time=0.357 ms
+64 bytes from 10.10.0.1: icmp_seq=9 ttl=64 time=0.308 ms
+64 bytes from 10.10.0.1: icmp_seq=10 ttl=64 time=0.251 ms
+64 bytes from 10.10.0.1: icmp_seq=11 ttl=64 time=0.306 ms
+64 bytes from 10.10.0.1: icmp_seq=12 ttl=64 time=0.253 ms
+
+--- 10.10.0.1 ping statistics ---
+12 packets transmitted, 12 received, 0% packet loss, time 2246ms
+rtt min/avg/max/mdev = 0.251/0.343/0.576/0.083 ms
+{"scenario": "baseline", "namespace": "qserver", "samples_ms": [0.296, 0.342, 0.576, 0.37, 0.398, 0.288, 0.373, 0.357, 0.308, 0.251, 0.306, 0.253], "sample_count": 12, "median_rtt_ms": 0.325, "status": "PASS"}
+PING 10.10.0.2 (10.10.0.2) 56(84) bytes of data.
+64 bytes from 10.10.0.2: icmp_seq=1 ttl=64 time=50.5 ms
+64 bytes from 10.10.0.2: icmp_seq=2 ttl=64 time=50.4 ms
+64 bytes from 10.10.0.2: icmp_seq=3 ttl=64 time=50.5 ms
+64 bytes from 10.10.0.2: icmp_seq=4 ttl=64 time=50.5 ms
+64 bytes from 10.10.0.2: icmp_seq=5 ttl=64 time=50.4 ms
+64 bytes from 10.10.0.2: icmp_seq=6 ttl=64 time=52.0 ms
+64 bytes from 10.10.0.2: icmp_seq=7 ttl=64 time=50.5 ms
+64 bytes from 10.10.0.2: icmp_seq=8 ttl=64 time=50.5 ms
+64 bytes from 10.10.0.2: icmp_seq=9 ttl=64 time=50.4 ms
+64 bytes from 10.10.0.2: icmp_seq=10 ttl=64 time=50.5 ms
+64 bytes from 10.10.0.2: icmp_seq=11 ttl=64 time=50.7 ms
+64 bytes from 10.10.0.2: icmp_seq=12 ttl=64 time=50.5 ms
+
+--- 10.10.0.2 ping statistics ---
+12 packets transmitted, 12 received, 0% packet loss, time 2209ms
+rtt min/avg/max/mdev = 50.363/50.614/51.991/0.421 ms
+{"scenario": "rtt50-loss0", "namespace": "qclient", "samples_ms": [50.5, 50.4, 50.5, 50.5, 50.4, 52.0, 50.5, 50.5, 50.4, 50.5, 50.7, 50.5], "sample_count": 12, "median_rtt_ms": 50.5, "status": "PASS"}
+PING 10.10.0.1 (10.10.0.1) 56(84) bytes of data.
+64 bytes from 10.10.0.1: icmp_seq=1 ttl=64 time=50.5 ms
+64 bytes from 10.10.0.1: icmp_seq=2 ttl=64 time=50.5 ms
+64 bytes from 10.10.0.1: icmp_seq=3 ttl=64 time=50.4 ms
+64 bytes from 10.10.0.1: icmp_seq=4 ttl=64 time=50.6 ms
+64 bytes from 10.10.0.1: icmp_seq=5 ttl=64 time=50.5 ms
+64 bytes from 10.10.0.1: icmp_seq=6 ttl=64 time=50.5 ms
+64 bytes from 10.10.0.1: icmp_seq=7 ttl=64 time=50.4 ms
+64 bytes from 10.10.0.1: icmp_seq=8 ttl=64 time=50.4 ms
+64 bytes from 10.10.0.1: icmp_seq=9 ttl=64 time=50.4 ms
+64 bytes from 10.10.0.1: icmp_seq=10 ttl=64 time=51.8 ms
+64 bytes from 10.10.0.1: icmp_seq=11 ttl=64 time=50.4 ms
+64 bytes from 10.10.0.1: icmp_seq=12 ttl=64 time=50.4 ms
+
+--- 10.10.0.1 ping statistics ---
+12 packets transmitted, 12 received, 0% packet loss, time 2213ms
+rtt min/avg/max/mdev = 50.392/50.568/51.841/0.386 ms
+{"scenario": "rtt50-loss0", "namespace": "qserver", "samples_ms": [50.5, 50.5, 50.4, 50.6, 50.5, 50.5, 50.4, 50.4, 50.4, 51.8, 50.4, 50.4], "sample_count": 12, "median_rtt_ms": 50.45, "status": "PASS"}
+G08: host link/address/route unchanged at active
+both ready tcp=10.10.0.2:4433 udp=10.10.0.2:4433 profile=bulk resources=6
+G08: trial=baseline-tcp seed=default network_profile=ingress-ifb
+network: profile=ingress-ifb scenario=baseline snapshot=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p8-g08-96nOtS/network/baseline-tcp.before.json (evidence trial)
+results: /home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p8-g08-96nOtS/baseline-tcp
+{"transport":"tcp","profile":"bulk","resource_count":6,"bytes":6291456,"elapsed_ms":2683.056821,"resources":[{"resource_id":1,"bytes":1048576,"checksum_ok":true},{"resource_id":2,"bytes":1048576,"checksum_ok":true},{"resource_id":3,"bytes":1048576,"checksum_ok":true},{"resource_id":4,"bytes":1048576,"checksum_ok":true},{"resource_id":5,"bytes":1048576,"checksum_ok":true},{"resource_id":6,"bytes":1048576,"checksum_ok":true}],"metrics":{"tcp_connect_ms":10.032261,"tls_handshake_ms":21.792063,"handshake_ms":31.824324,"connect_ms":31.824324,"early_ready_ms":null,"ttfa_ms":40.675815,"transfer_ms":2643.986405,"total_ms":2675.815434,"elapsed_ms":2683.056821,"goodput_mbps":19.036273372971444,"e2e_goodput_mbps":18.809835446969025}}
+{"attempted": 1, "evidence_trials_excluded": 1, "failed": 0, "measured_trials": 0, "status": "PASS", "success": 1, "warmup_trials_excluded": 0}
+{"run_id": "baseline-tcp", "scenario": "baseline", "transport": "tcp", "network_profile": "ingress-ifb", "goodput_mbps": 19.036273372971444, "counter_delta": {"qclient": {"bytes": 6609766, "packets": 4383, "drops": 0, "overlimits": 0}, "qserver": {"bytes": 141759, "packets": 2117, "drops": 0, "overlimits": 0}}, "status": "PASS", "loss_note": "Downstream is server\u2192client IPv4, including handshake/control/ACK; drops may include queue overflow, not empirical random-loss probability."}
+G08: trial=baseline-quic seed=default network_profile=ingress-ifb
+network: profile=ingress-ifb scenario=baseline snapshot=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p8-g08-96nOtS/network/baseline-quic.before.json (evidence trial)
+results: /home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p8-g08-96nOtS/baseline-quic
+{"transport":"quic","profile":"bulk","resource_count":6,"bytes":6291456,"elapsed_ms":2725.924192,"resources":[{"resource_id":1,"transport_stream_id":0,"bytes":1048576,"checksum_ok":true},{"resource_id":2,"transport_stream_id":4,"bytes":1048576,"checksum_ok":true},{"resource_id":3,"transport_stream_id":8,"bytes":1048576,"checksum_ok":true},{"resource_id":4,"transport_stream_id":12,"bytes":1048576,"checksum_ok":true},{"resource_id":5,"transport_stream_id":16,"bytes":1048576,"checksum_ok":true},{"resource_id":6,"transport_stream_id":20,"bytes":1048576,"checksum_ok":true}],"metrics":{"tcp_connect_ms":null,"tls_handshake_ms":null,"handshake_ms":53.819034,"connect_ms":53.819034,"early_ready_ms":null,"ttfa_ms":62.067667,"transfer_ms":2658.609374,"total_ms":2713.291451,"elapsed_ms":2725.924192,"goodput_mbps":18.93156944838185,"e2e_goodput_mbps":18.55003375381954}}
+{"attempted": 1, "evidence_trials_excluded": 1, "failed": 0, "measured_trials": 0, "status": "PASS", "success": 1, "warmup_trials_excluded": 0}
+{"run_id": "baseline-quic", "scenario": "baseline", "transport": "quic", "network_profile": "ingress-ifb", "goodput_mbps": 18.93156944838185, "counter_delta": {"qclient": {"bytes": 6616970, "packets": 4536, "drops": 0, "overlimits": 0}, "qserver": {"bytes": 172160, "packets": 2138, "drops": 0, "overlimits": 0}}, "status": "PASS", "loss_note": "Downstream is server\u2192client IPv4, including handshake/control/ACK; drops may include queue overflow, not empirical random-loss probability."}
+G08: trial=rtt50-loss0-tcp seed=default network_profile=ingress-ifb
+network: profile=ingress-ifb scenario=rtt50-loss0 snapshot=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p8-g08-96nOtS/network/rtt50-loss0-tcp.before.json (evidence trial)
+results: /home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p8-g08-96nOtS/rtt50-loss0-tcp
+{"transport":"tcp","profile":"bulk","resource_count":6,"bytes":6291456,"elapsed_ms":2980.085362,"resources":[{"resource_id":1,"bytes":1048576,"checksum_ok":true},{"resource_id":2,"bytes":1048576,"checksum_ok":true},{"resource_id":3,"bytes":1048576,"checksum_ok":true},{"resource_id":4,"bytes":1048576,"checksum_ok":true},{"resource_id":5,"bytes":1048576,"checksum_ok":true},{"resource_id":6,"bytes":1048576,"checksum_ok":true}],"metrics":{"tcp_connect_ms":51.912661,"tls_handshake_ms":54.541486,"handshake_ms":106.454147,"connect_ms":106.454147,"early_ready_ms":null,"ttfa_ms":266.15885,"transfer_ms":2866.916421,"total_ms":2973.372326,"elapsed_ms":2980.085362,"goodput_mbps":17.556022083979684,"e2e_goodput_mbps":16.9274623160665}}
+{"attempted": 1, "evidence_trials_excluded": 1, "failed": 0, "measured_trials": 0, "status": "PASS", "success": 1, "warmup_trials_excluded": 0}
+{"run_id": "rtt50-loss0-tcp", "scenario": "rtt50-loss0", "transport": "tcp", "network_profile": "ingress-ifb", "goodput_mbps": 17.556022083979684, "counter_delta": {"qclient": {"bytes": 6609967, "packets": 4386, "drops": 0, "overlimits": 0}, "qserver": {"bytes": 146977, "packets": 2196, "drops": 0, "overlimits": 0}}, "status": "PASS", "loss_note": "Downstream is server\u2192client IPv4, including handshake/control/ACK; drops may include queue overflow, not empirical random-loss probability."}
+G08: trial=rtt50-loss0-quic seed=default network_profile=ingress-ifb
+network: profile=ingress-ifb scenario=rtt50-loss0 snapshot=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p8-g08-96nOtS/network/rtt50-loss0-quic.before.json (evidence trial)
+results: /home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p8-g08-96nOtS/rtt50-loss0-quic
+{"transport":"quic","profile":"bulk","resource_count":6,"bytes":6291456,"elapsed_ms":2821.282697,"resources":[{"resource_id":1,"transport_stream_id":0,"bytes":1048576,"checksum_ok":true},{"resource_id":2,"transport_stream_id":4,"bytes":1048576,"checksum_ok":true},{"resource_id":3,"transport_stream_id":8,"bytes":1048576,"checksum_ok":true},{"resource_id":4,"transport_stream_id":12,"bytes":1048576,"checksum_ok":true},{"resource_id":5,"transport_stream_id":16,"bytes":1048576,"checksum_ok":true},{"resource_id":6,"transport_stream_id":20,"bytes":1048576,"checksum_ok":true}],"metrics":{"tcp_connect_ms":null,"tls_handshake_ms":null,"handshake_ms":57.628361,"connect_ms":57.628361,"early_ready_ms":null,"ttfa_ms":110.768457,"transfer_ms":2755.222611,"total_ms":2812.957306,"elapsed_ms":2821.282697,"goodput_mbps":18.267724647386032,"e2e_goodput_mbps":17.892787740732246}}
+{"attempted": 1, "evidence_trials_excluded": 1, "failed": 0, "measured_trials": 0, "status": "PASS", "success": 1, "warmup_trials_excluded": 0}
+{"run_id": "rtt50-loss0-quic", "scenario": "rtt50-loss0", "transport": "quic", "network_profile": "ingress-ifb", "goodput_mbps": 18.267724647386032, "counter_delta": {"qclient": {"bytes": 6633324, "packets": 4796, "drops": 0, "overlimits": 0}, "qserver": {"bytes": 187196, "packets": 2340, "drops": 0, "overlimits": 0}}, "status": "PASS", "loss_note": "Downstream is server\u2192client IPv4, including handshake/control/ACK; drops may include queue overflow, not empirical random-loss probability."}
+G08: trial=rtt50-loss1-tcp seed=default network_profile=ingress-ifb
+network: profile=ingress-ifb scenario=rtt50-loss1 snapshot=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p8-g08-96nOtS/network/rtt50-loss1-tcp.before.json (evidence trial)
+results: /home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p8-g08-96nOtS/rtt50-loss1-tcp
+{"transport":"tcp","profile":"bulk","resource_count":6,"bytes":6291456,"elapsed_ms":16594.076123,"resources":[{"resource_id":1,"bytes":1048576,"checksum_ok":true},{"resource_id":2,"bytes":1048576,"checksum_ok":true},{"resource_id":3,"bytes":1048576,"checksum_ok":true},{"resource_id":4,"bytes":1048576,"checksum_ok":true},{"resource_id":5,"bytes":1048576,"checksum_ok":true},{"resource_id":6,"bytes":1048576,"checksum_ok":true}],"metrics":{"tcp_connect_ms":51.7217,"tls_handshake_ms":55.119433,"handshake_ms":106.841133,"connect_ms":106.841133,"early_ready_ms":null,"ttfa_ms":267.544665,"transfer_ms":16480.949607,"total_ms":16587.794189,"elapsed_ms":16594.076123,"goodput_mbps":3.0539288815386283,"e2e_goodput_mbps":3.034258047002828}}
+{"attempted": 1, "evidence_trials_excluded": 1, "failed": 0, "measured_trials": 0, "status": "PASS", "success": 1, "warmup_trials_excluded": 0}
+{"run_id": "rtt50-loss1-tcp", "scenario": "rtt50-loss1", "transport": "tcp", "network_profile": "ingress-ifb", "goodput_mbps": 3.0539288815386283, "counter_delta": {"qclient": {"bytes": 6609633, "packets": 4381, "drops": 43, "overlimits": 0}, "qserver": {"bytes": 166905, "packets": 2384, "drops": 0, "overlimits": 0}}, "status": "PASS", "loss_note": "Downstream is server\u2192client IPv4, including handshake/control/ACK; drops may include queue overflow, not empirical random-loss probability."}
+G08: trial=rtt50-loss1-quic seed=default network_profile=ingress-ifb
+network: profile=ingress-ifb scenario=rtt50-loss1 snapshot=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p8-g08-96nOtS/network/rtt50-loss1-quic.before.json (evidence trial)
+results: /home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p8-g08-96nOtS/rtt50-loss1-quic
+{"transport":"quic","profile":"bulk","resource_count":6,"bytes":6291456,"elapsed_ms":9128.670633,"resources":[{"resource_id":1,"transport_stream_id":0,"bytes":1048576,"checksum_ok":true},{"resource_id":2,"transport_stream_id":4,"bytes":1048576,"checksum_ok":true},{"resource_id":3,"transport_stream_id":8,"bytes":1048576,"checksum_ok":true},{"resource_id":4,"transport_stream_id":12,"bytes":1048576,"checksum_ok":true},{"resource_id":5,"transport_stream_id":16,"bytes":1048576,"checksum_ok":true},{"resource_id":6,"transport_stream_id":20,"bytes":1048576,"checksum_ok":true}],"metrics":{"tcp_connect_ms":null,"tls_handshake_ms":null,"handshake_ms":66.4548,"connect_ms":66.4548,"early_ready_ms":null,"ttfa_ms":119.449939,"transfer_ms":9055.243943,"total_ms":9121.818597,"elapsed_ms":9128.670633,"goodput_mbps":5.558287365511341,"e2e_goodput_mbps":5.517720777362659}}
+{"attempted": 1, "evidence_trials_excluded": 1, "failed": 0, "measured_trials": 0, "status": "PASS", "success": 1, "warmup_trials_excluded": 0}
+{"run_id": "rtt50-loss1-quic", "scenario": "rtt50-loss1", "transport": "quic", "network_profile": "ingress-ifb", "goodput_mbps": 5.558287365511341, "counter_delta": {"qclient": {"bytes": 6623244, "packets": 4628, "drops": 45, "overlimits": 0}, "qserver": {"bytes": 186164, "packets": 2288, "drops": 0, "overlimits": 0}}, "status": "PASS", "loss_note": "Downstream is server\u2192client IPv4, including handshake/control/ACK; drops may include queue overflow, not empirical random-loss probability."}
+G08: trial=rtt50-loss3-tcp seed=default network_profile=ingress-ifb
+network: profile=ingress-ifb scenario=rtt50-loss3 snapshot=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p8-g08-96nOtS/network/rtt50-loss3-tcp.before.json (evidence trial)
+results: /home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p8-g08-96nOtS/rtt50-loss3-tcp
+{"transport":"tcp","profile":"bulk","resource_count":6,"bytes":6291456,"elapsed_ms":36733.664584,"resources":[{"resource_id":1,"bytes":1048576,"checksum_ok":true},{"resource_id":2,"bytes":1048576,"checksum_ok":true},{"resource_id":3,"bytes":1048576,"checksum_ok":true},{"resource_id":4,"bytes":1048576,"checksum_ok":true},{"resource_id":5,"bytes":1048576,"checksum_ok":true},{"resource_id":6,"bytes":1048576,"checksum_ok":true}],"metrics":{"tcp_connect_ms":51.269231,"tls_handshake_ms":54.063942,"handshake_ms":105.333173,"connect_ms":105.333173,"early_ready_ms":null,"ttfa_ms":329.09834,"transfer_ms":36622.50344,"total_ms":36727.838194,"elapsed_ms":36733.664584,"goodput_mbps":1.3743366310951461,"e2e_goodput_mbps":1.3703950593046983}}
+{"attempted": 1, "evidence_trials_excluded": 1, "failed": 0, "measured_trials": 0, "status": "PASS", "success": 1, "warmup_trials_excluded": 0}
+{"run_id": "rtt50-loss3-tcp", "scenario": "rtt50-loss3", "transport": "tcp", "network_profile": "ingress-ifb", "goodput_mbps": 1.3743366310951461, "counter_delta": {"qclient": {"bytes": 6609832, "packets": 4384, "drops": 112, "overlimits": 0}, "qserver": {"bytes": 183215, "packets": 2637, "drops": 0, "overlimits": 0}}, "status": "PASS", "loss_note": "Downstream is server\u2192client IPv4, including handshake/control/ACK; drops may include queue overflow, not empirical random-loss probability."}
+G08: trial=rtt50-loss3-quic seed=default network_profile=ingress-ifb
+network: profile=ingress-ifb scenario=rtt50-loss3 snapshot=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p8-g08-96nOtS/network/rtt50-loss3-quic.before.json (evidence trial)
+results: /home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p8-g08-96nOtS/rtt50-loss3-quic
+{"transport":"quic","profile":"bulk","resource_count":6,"bytes":6291456,"elapsed_ms":22957.16266,"resources":[{"resource_id":1,"transport_stream_id":0,"bytes":1048576,"checksum_ok":true},{"resource_id":2,"transport_stream_id":4,"bytes":1048576,"checksum_ok":true},{"resource_id":3,"transport_stream_id":8,"bytes":1048576,"checksum_ok":true},{"resource_id":4,"transport_stream_id":12,"bytes":1048576,"checksum_ok":true},{"resource_id":5,"transport_stream_id":16,"bytes":1048576,"checksum_ok":true},{"resource_id":6,"transport_stream_id":20,"bytes":1048576,"checksum_ok":true}],"metrics":{"tcp_connect_ms":null,"tls_handshake_ms":null,"handshake_ms":57.14107,"connect_ms":57.14107,"early_ready_ms":null,"ttfa_ms":172.335983,"transfer_ms":22893.712518,"total_ms":22951.00958,"elapsed_ms":22957.16266,"goodput_mbps":2.198492182533835,"e2e_goodput_mbps":2.19300365958019}}
+{"attempted": 1, "evidence_trials_excluded": 1, "failed": 0, "measured_trials": 0, "status": "PASS", "success": 1, "warmup_trials_excluded": 0}
+{"run_id": "rtt50-loss3-quic", "scenario": "rtt50-loss3", "transport": "quic", "network_profile": "ingress-ifb", "goodput_mbps": 2.198492182533835, "counter_delta": {"qclient": {"bytes": 6614750, "packets": 4502, "drops": 116, "overlimits": 0}, "qserver": {"bytes": 185080, "packets": 2299, "drops": 0, "overlimits": 0}}, "status": "PASS", "loss_note": "Downstream is server\u2192client IPv4, including handshake/control/ACK; drops may include queue overflow, not empirical random-loss probability."}
+{"status": "PASS", "clear": "/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p8-g08-96nOtS/network/explicit.clear.json"}
+{"status": "PASS", "clear": "/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p8-g08-96nOtS/network/idempotent.clear.json"}
+network: ['ip', 'netns', 'exec', 'qserver', 'tc', 'qdisc', 'add', 'dev', 'ifb0', 'root', 'handle', '1:', 'netem', 'limit', 'invalid-g08-limit', 'delay', '25ms', 'loss', 'random', '0%', 'rate', '20mbit', 'seed', '20260928'] exit=1: Illegal "limit"
+G08: injected netem apply exit=3 (expected nonzero)
+{"status": "PASS", "clear": "/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p8-g08-96nOtS/network/error-cleared.json"}
+{"status": "PASS", "clear": "/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p8-g08-96nOtS/network/after-error.clear.json"}
+P7 owned topology removed; verify host link/address/route snapshots for G07
+G08: host link/address/route unchanged at teardown
+G08: UTC=2026-10-01T02:59:34Z app_uid_gid=1000:1000 results_dir=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p8-g08-qOYl2H
+Linux LAPTOP-MS2KV5BU 6.18.40.1-microsoft-standard-WSL2 #1 SMP PREEMPT_DYNAMIC Fri Jul 31 22:12:15 UTC 2026 x86_64 GNU/Linux
+tc utility, iproute2-6.19.0, libbpf 1.6.3
+P7 topology ready: qclient=10.10.0.1/24 qserver=10.10.0.2/24 eth0 MTU=1500 ifb0=up owner_uid=1000
+P7 owned topology removed; verify host link/address/route snapshots for G07
+G08: host link/address/route unchanged at final
+G08: results_dir=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p8-g08-qOYl2H original_exit=130 cleanup_exit=0
+G08: host link/address/route unchanged at interrupt
+G08: PASS: G08 receiver IFB path, RTT, counters/direction, seed/offloads, TCP+QUIC rate/loss, profile switch, tc-error and SIGINT cleanup
+G08: host link/address/route unchanged at final
+G08: results_dir=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p8-g08-96nOtS original_exit=0 cleanup_exit=0
+g08_exit=0

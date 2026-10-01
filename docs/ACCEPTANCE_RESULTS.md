@@ -1,8 +1,8 @@
-# Kết quả nghiệm thu — P0/G00 đến P7/G07
+# Kết quả nghiệm thu — P0/G00 đến P8/G08
 
 Ngày cập nhật: 2026-10-01 UTC. Baseline: `7e54ad654b14b8eb38b0db369203df4d34f003d7`; đầu P4 ở commit `65d5a7b`. Người dùng đã human-review/approve P0/G00 và P4/G04; cho phép P5→G05→P6→G06 tuần tự. Môi trường: Ubuntu 26.04.1 LTS trong WSL2, UID 1000.
 
-**P0/G00 PASS; P1/G01 PASS; P2/G02 PASS; P3/G03 PASS; P4/G04 PASS; P5/G05 PASS; P6/G06 PASS; P7/G07 FAIL ở lần chạy đầu.** User chạy system runner trong WSL2 ngày 2026-10-01; topology/ping vòng 1 đạt nhưng host link thay đổi do IFB driver tạo thêm `ifb0`/`ifb1`, nên runner dừng trước transfer. Bản sửa setup và recovery precheck đã có; cleanup host và rerun đặc quyền chưa thực hiện. Phần capability G00 chỉ là primitive probe, không thay G07. Chưa có xác nhận human review P7 hay các phase chưa được người dùng xác nhận trước đó.
+**P0/G00 đến P8/G08 PASS.** User chạy G08 rerun UTC02:57:20Z main exit0/cleanup0, tám successful bulk evidence trials/48 hashes, bốn RTT probes và expected SIGINT child130/cleanup0. Agent đối chiếu 35 verified snapshots, five clear snapshots, 15 equal host comparisons; [review/hash](evidence/p8/g08-rerun-review.json). Giữ failure/blocked logs lịch sử. Dừng review P8; không P9, chưa human-review code P8.
 
 | ID / subcase | Trạng thái | Lệnh / cách kiểm | Kỳ vọng và kết quả thực | Evidence | Còn thiếu |
 |---|---|---|---|---|---|
@@ -33,12 +33,20 @@ Ngày cập nhật: 2026-10-01 UTC. Baseline: `7e54ad654b14b8eb38b0db369203df4d3
 | G05-first byte/integration/race | PASS | `TestFirstByteHookBeforeFullChunk`, TCP/QUIC integration, `make test-race` | Callback khi đọc byte DATA đầu, trước đủ chunk; mốc TCP/QUIC client thực hợp lệ; race suite exit 0 | [detailed](evidence/p5/g05-detailed-tests.log), [race](evidence/p5/g05-race.log) | Không có performance cohort |
 | G06-typed files/real trials | PASS | `make build`; `make test`; `make test-race`; `bash docs/evidence/p6/run-g06.sh` | 2 trial cold thành công (TCP, QUIC) và 1 TLS trust failure thật; mỗi trial có raw typed JSON, runs.csv 1 row, streams.csv 6 rows; failure exit 1 nhưng vẫn lưu 6 rows/bytes=0/null timings; cả ba validator PASS | [gate log](evidence/p6/g06-actual-trials.log), [actual records](evidence/p6/actual/), [build](evidence/p6/g06-build.log), [suite](evidence/p6/g06-suite.log), [race](evidence/p6/g06-race.log) | Trial localhost 6×1MiB là dữ liệu correctness, không là benchmark |
 | G06-contract/negative checks | PASS | `go test ./internal/metrics`, `python3 analysis/test_validate.py <actual-parent>` | CSV error có comma/quote/newline roundtrip; null ô rỗng; flush error được trả; existing directory không ghi đè; validator đối chiếu schema/raw/CSV/FK/N/công thức, từ chối duplicate run ID và thiếu stream; bản sao gắn warmup có measured_count=2 và warmup_excluded=1 | [detailed](evidence/p5/g05-detailed-tests.log), [validator](evidence/p6/g06-actual-trials.log), [actual records](evidence/p6/actual/) | P9 mới có runner, cohort summary và manifest đầy đủ |
-| G07-code/static | PASS | `make build`; `make test`; `bash -n scripts/network/*.sh scripts/run-in-netns.sh tests/system/run.sh`; `make -n setup-network server clean-network`; gọi runner/recovery không root | Build và Go suite exit 0; syntax/dry-run exit 0; runner và mutating recovery không root đều exit 3. Sau log thật, setup thêm `modprobe ifb numifbs=0`; syntax/precheck được chạy lại, nhưng chưa có system rerun | [build](evidence/p7/g07-build.log), [Go suite](evidence/p7/g07-go-suite.log), [dry-run](evidence/p7/g07-make-dry-run.log), [runner nonroot](evidence/p7/g07-nonroot.log), [recovery nonroot](evidence/p7/g07-host-recovery-nonroot.log), [notes](evidence/p7/README.md) | Static checks không chứng minh IFB preload hoạt động trên host |
-| G07-collision/rollback/topology/ping | PASS trong vòng 1 | Người dùng: `sudo bash tests/system/run.sh` UTC 2026-10-01T00:23:06Z | Collision từ chối và giữ foreign qclient; injected failure rollback; owned setup + idempotent setup; qclient/qserver UID/GID 1000:1000, địa chỉ/MTU/lo/ifb đúng; ping 3/3 mỗi chiều | [G07 first-run log](evidence/p7/g07-system.log), [host snapshots](../results/p7-g07-JqV32x/host-state/) | Vòng 2 và app transfers chưa tới |
-| G07-host-state | FAIL | Cùng system run, `compare_host pass1-active` | Host baseline có lo/eth0; active có thêm ifb0/ifb1 DOWN/noop; runner in `G07 FAIL` và teardown owned namespaces. Host hiện vẫn có hai IFB này, dù qclient/qserver đã hết; numeric shell exit không lưu riêng | [G07 first-run log](evidence/p7/g07-system.log), [host snapshots](../results/p7-g07-JqV32x/host-state/), [recovery precheck](evidence/p7/g07-host-recovery-check.log) | Recovery guard snapshot/link identity/tc đã precheck exit 0 nhưng chưa xóa thật; cần rerun, không coi host đã sạch |
-| G07-TCP/QUIC/two-cycles/SIGINT | NOT_RUN | Runner dừng ở pass1 host-state | Không có TCP/QUIC result directories, chưa kiểm server readiness, SIGINT/no-orphan hoặc pass2 | [G07 first-run log](evidence/p7/g07-system.log) | Chạy lại toàn bộ G07 sau recovery |
-| G07-system overall | FAIL | Lần đầu có thực; bản sửa chưa rerun | Chưa đạt tiêu chí G07; permission attempt cũ chỉ là lịch sử | [first-run log](evidence/p7/g07-system.log), [permission attempt cũ](evidence/p7/g07-system-attempt.log) | Recovery host và system rerun với log/result/exit thực |
-| G08–G12 | NOT_RUN | Chưa chạy | Chưa có IFB impairment đã verify, benchmark, 0-RTT hoặc PCAP/qlog thực | Không có dataset hiệu năng | Chờ phase riêng |
+| G07-code/static | PASS | build/test/shell checks P7, recovery script | Bằng chứng lịch sử giữ nguyên; system rerun sau sửa đã có | [P7 evidence](evidence/p7/README.md) | First-load IFB sau fresh boot chưa kiểm |
+| G07-first-run (lịch sử) | FAIL, đã recovery/rerun | User system gate UTC 00:23:06Z | IFB host tạo ngoài dự kiến, host comparison FAIL trước transfer; không thay log cũ | [first run](evidence/p7/g07-system.log) | Không là trạng thái G07 hiện hành |
+| G07-recovery | PASS | User guarded recovery, recovery_exit=0 | IFB lỗi đã hết, host link/address/route khớp baseline | [recovery log](evidence/p7/g07-host-recovery.log) | Không |
+| G07-collision/rollback/topology/UID/ping | PASS | User G07 rerun UTC 01:09:39Z | Collision và rollback đạt; hai vòng setup/idempotence, qclient/qserver/UID1000/ping hai chiều đạt | [rerun](evidence/p7/g07-system-rerun.log) | Không |
+| G07-host-state/TCP/QUIC/two-cycles/SIGINT | PASS | Cùng rerun, g07_exit=0; agent kiểm artifacts khi mở P8 | Bốn cold bulk trials mỗi trial 6 hashes/6291456 bytes, server SIGINT exit0 không forced-kill, hai vòng teardown; 18 host snapshot comparisons khớp | [review JSON](evidence/p7/g07-rerun-review.json), [results](../results/p7-g07-vNiIgt/) | Namespace correctness, không là impairment/performance evidence |
+| G07-system overall | PASS | User rerun đầy đủ và xác nhận PASS | gate final PASS, g07_exit=0; agent đối chiếu logs/artifacts, không tự nhận chạy sudo | [rerun](evidence/p7/g07-system-rerun.log) | Không |
+| G08-code/build/regression | PASS | make build; make test; make test-race; G06 actual CLI regression | exit0, build/suite/race; TCP/QUIC success và TLS failure thật, validator/mutations PASS, mặc định loopback labels giữ nguyên | [build](evidence/p8/g08-build.log), [suite](evidence/p8/g08-go-suite.log), [race](evidence/p8/g08-race.log), [CLI regression](evidence/p8/g08-g06-regression.log) | Localhost chỉ regression, không thay G08 |
+| G08-config/units/direction/rollback/offload (unit) | PASS | make test-network | Strict config/duplicate/type/bounds, tc units/loss direction/seed, foreign qdisc/filter refusal, mocked partial tc failure rollback, fixed-ON offload refusal | [Python tests](evidence/p8/g08-python-tests.log) | Không phải actual tc traffic/error/cleanup gate |
+| G08-metadata/error-policy (software) | PASS | Go config/CLI/metrics tests; nonroot runner/wrappers | Reject stale/unverified/wrong namespace; failed record giữ network fields; root wrappers và runner không root exit3; shell syntax/dry-run đạt | [suite](evidence/p8/g08-go-suite.log), [static](evidence/p8/g08-static.log), [nonroot](evidence/p8/g08-nonroot.log), [dry-run](evidence/p8/g08-make-dry-run.log) | Live inspect/client metadata cần chạy trong actual G08 |
+| G08-IFB/RTT/rate/loss/counters/offloads/seed (actual) | PASS | User: sudo bash tests/system/run.sh --gate G08; g08_exit=0 | 8 trials/48 hashes, baseline RTT0.320/0.325ms và rtt5050.500/50.450ms; seed20260928, offloads/placement/filter/counter/rate verified | [rerun](evidence/p8/g08-system-rerun.log), [review](evidence/p8/g08-rerun-review.json), [results](../results/p8-g08-96nOtS/) | One evidence trial per transport/scenario; no general performance claim |
+| G08-switch/tc-error/clear/teardown/SIGINT/host-state (actual) | PASS | Same full gate; child130 expected | ingress→egress→ingress, repeated clear, injected tc-error rollback, parent/child cleanup0, 15 equal host comparisons | [review](evidence/p8/g08-rerun-review.json), [child](../results/p8-g08-qOYl2H/) | SIGKILL not trapped; fresh-boot IFB load unverified |
+| G08 overall | PASS | Full user-run gate exit0, agent read-only artifact review | 8 attempted/8 success/0 failed/0 missing; original0/cleanup0 | [P8 evidence](evidence/p8/README.md) | Dừng human review P8; không P9/cohort |
+| G09–G12 | NOT_RUN | Chưa mở phase | Chưa benchmark cohort/0-RTT/qlog/PCAP/plots thật | Không dataset hiệu năng | Chờ phase riêng |
+
 
 ## Lệnh tái lập P0
 
@@ -122,29 +130,24 @@ Chạy dưới UID thường trong Ubuntu WSL2 có quyền socket localhost. Scr
 
 P5 đặt công thức và mốc client. P6 thêm canonical raw JSON/CSV và validator. CLI cold transfer hiện ghi `results/<experiment_id>/` theo mặc định hoặc thư mục mới từ `--out`; `--experiment-id/--run-id` tự sinh nếu thiếu. Mỗi invocation là một trial, không append. `--out` đã tồn tại hoặc write/flush lỗi trả exit 1; raw đã ghi được giữ lại nếu CSV lỗi và `INCOMPLETE` marker còn hiện diện. Chưa có `manifest.json` thí nghiệm đầy đủ, schedule/merge, main cohort, progress events hoặc thống kê/plots; chúng thuộc P9/P11/P12. `docs/REPORT.md` vẫn là template không có số liệu benchmark.
 
-## P7/G07 — log lần đầu, recovery và rerun cần thiết
+## P7/G07 — recovery và rerun đã PASS
 
-Lần đầu người dùng chạy từ Ubuntu WSL2 ngày 2026-10-01 và lưu `docs/evidence/p7/g07-system.log`. Runner dừng tại `host link state changed at pass1-active`; `results/p7-g07-JqV32x/host-state/` giữ snapshot trước/đang hoạt động. Có ping hai chiều thực nhưng không có TCP/QUIC result. Lệnh recovery sau đây chỉ xóa `ifb0`/`ifb1` host nếu trạng thái hiện tại vẫn khớp snapshot lỗi, hai thiết bị là IFB DOWN/noop, không có địa chỉ/route hoặc host tc filter mới và không còn namespace/marker P7. Script recheck trước từng lần xóa, hỗ trợ chạy tiếp sau khi mới xóa một IFB; tránh thay đổi mạng host đồng thời. Precheck read-only đã exit 0; lệnh sudo xóa thật chưa chạy:
+Log lỗi đầu giữ ở evidence/p7/g07-system.log. Người dùng đã chạy guarded recovery exit0 và G07 rerun exit0 (UTC 01:09:39Z), kết quả `results/p7-g07-vNiIgt/`; agent kiểm bốn CSV trials/6 stream rows và 18 comparisons host snapshots khi mở P8. Chi tiết/hash ở evidence/p7/g07-rerun-review.json. Không cần recovery lại trong trạng thái hiện tại. P7 raw vẫn loopback-test cho correctness; first-load IFB sau fresh boot còn chưa kiểm.
 
-```bash
-bash scripts/network/restore-host-ifb.sh --check-only results/p7-g07-JqV32x/host-state
-set -o pipefail
-sudo bash scripts/network/restore-host-ifb.sh results/p7-g07-JqV32x/host-state 2>&1 | tee docs/evidence/p7/g07-host-recovery.log
-recovery_status=${PIPESTATUS[0]}; printf 'recovery_exit=%s\n' "$recovery_status" | tee -a docs/evidence/p7/g07-host-recovery.log
-```
+## Tái lập P8/G08 và review
 
-Sau khi recovery exit 0, từ repo trên native Linux filesystem, build/cert bằng UID thường và chạy lại toàn bộ runner. Nó từ chối namespace `qclient`/`qserver` hoặc marker P7 đã có, tạo kết quả mới thuộc UID người gọi sudo, kiểm collision/rollback, hai lần setup/teardown, ping hai chiều, UID drop, TCP và QUIC thực, validator, SIGINT/no-orphan và host link/address/route trước/sau. Giữ log đầu, lưu log rerun riêng và ghi mã thoát thực trước khi đổi trạng thái G07:
+Lệnh/full matrix/files/evidence ở [P8 runbook](evidence/p8/README.md). Actual rerun PASS với results/p8-g08-96nOtS/ và SIGINT child p8-g08-qOYl2H/. Không cần chạy lại để đóng gate; khi cần tái lập, lưu log mới trong terminal Ubuntu WSL2 từ repo root, không có topology/server cũ:
 
 ```bash
 make build
+make test-network
 test -r certs/server.crt && test -r certs/server.key || make certs
-mkdir -p results
 set -o pipefail
-sudo bash tests/system/run.sh 2>&1 | tee docs/evidence/p7/g07-system-rerun.log
-g07_status=${PIPESTATUS[0]}; printf 'g07_exit=%s\n' "$g07_status" | tee -a docs/evidence/p7/g07-system-rerun.log
+sudo bash tests/system/run.sh --gate G08 2>&1 | tee docs/evidence/p8/g08-system-review.log
+g08_status=${PIPESTATUS[0]}; printf 'g08_exit=%s\n' "$g08_status" | tee -a docs/evidence/p8/g08-system-review.log
 ```
 
-Nếu rerun hoàn tất, script in `results_dir=results/p7-g07-*`; mỗi `tcp-pass{1,2}` và `quic-pass{1,2}` phải có raw JSON/runs.csv/streams.csv, thêm host-state snapshots. Nếu chưa có sudo session, lệnh yêu cầu xác thực trong terminal của người dùng; agent không lấy/ghi mật khẩu. Log `g07-system-attempt.log` chỉ là lần thử `sudo -n` cũ, không phải lỗi topology. `network_profile=loopback-test` hiện vẫn là nhãn cố định của cold CLI P6 kể cả khi đi qua namespace; các record P7 chỉ dùng chứng minh transfer correctness, không dùng làm benchmark hoặc bằng chứng impairment G08.
+Review receiver IFB/flower direction, tc JSON units/seed, offload fixed/absent handling, reset sau probes, counter before/after/drop/backlog và rate upper sanity. Review exception/signal rollback + host comparison, root ownership/UID split, snapshot client identity/freshness + evidence labels và failure rows. Snapshot không khóa kernel trong transfer; wrappers phải verify trước/sau. Downstream loss không DATA-only, drops không phải empirical random probability. Nếu kernel/tc không hỗ trợ seed, explicit NETEM_SEED=none được document trong runbook, không silently downgrade. Không mở P9 trước actual G08 PASS.
 
 ## Review thay đổi P4
 

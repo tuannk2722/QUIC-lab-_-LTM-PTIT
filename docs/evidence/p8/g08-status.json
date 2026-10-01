@@ -1,0 +1,92 @@
+{
+  "updated_utc": "2026-10-01",
+  "phase": "P8",
+  "gate": "G08",
+  "status": "PASS",
+  "environment": "Ubuntu WSL2 kernel6.18.40.1, iproute2-6.19.0, native /home repo; user ran sudo gate, apps UID/GID1000:1000",
+  "checks": [
+    {
+      "id": "G08-code/build/regression",
+      "status": "PASS",
+      "commands": [
+        "make build",
+        "make test",
+        "make test-race",
+        "bash docs/evidence/p6/run-g06.sh"
+      ],
+      "exit_codes": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "real_regression_results": "results/p6-g06-YZJE5Q/"
+    },
+    {
+      "id": "G08-config/units/direction/rollback/offload-unit",
+      "status": "PASS",
+      "command": "make test-network",
+      "exit_code": 0,
+      "tests": 8
+    },
+    {
+      "id": "G08-metadata/error-policy-software",
+      "status": "PASS",
+      "evidence": "g08-go-suite.log; g08-static.log; nonroot logs (expected exit3)"
+    },
+    {
+      "id": "G08-network-actual",
+      "status": "PASS",
+      "command": "sudo bash tests/system/run.sh --gate G08",
+      "gate_exit": 0,
+      "cleanup_exit": 0,
+      "actual_g08_results": "results/p8-g08-96nOtS/",
+      "interrupt_results": "results/p8-g08-qOYl2H/",
+      "interrupt_expected_exit": 130,
+      "interrupt_cleanup_exit": 0,
+      "attempted": 8,
+      "success": 8,
+      "failed": 0,
+      "hashes_ok": 48,
+      "probes": 4,
+      "host_comparisons": 15,
+      "evidence": [
+        "g08-system-rerun.log",
+        "g08-rerun-review.json"
+      ]
+    },
+    {
+      "id": "G08-default-qdisc-regression",
+      "status": "PASS",
+      "command": "make test-network",
+      "exit_code": 0,
+      "tests": 9,
+      "evidence": "g08-default-qdisc-tests.log"
+    }
+  ],
+  "next_exact_command": null,
+  "p9_authorized": false,
+  "human_p8_review": "not yet confirmed",
+  "historical_attempts": [
+    {
+      "status": "BLOCKED",
+      "exit": 1,
+      "reason": "Agent sudo interactive authentication before runner",
+      "log": "g08-system-attempt.log"
+    },
+    {
+      "status": "FAIL",
+      "original_exit": 3,
+      "cleanup_exit": 1,
+      "results": "results/p8-g08-Dw8rGB/",
+      "log": "g08-system-first-fail.log",
+      "reason": "Default IFB fq_codel rejected; fixed before successful rerun"
+    },
+    {
+      "status": "BLOCKED",
+      "exit": 1,
+      "reason": "sudo: interactive authentication is required"
+    }
+  ],
+  "next_action": "Stop for human review P8; P9 needs separate authorization"
+}

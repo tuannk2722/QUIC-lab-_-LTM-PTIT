@@ -116,3 +116,7 @@ Không biết field nào ghi `unknown` kèm lý do, không bịa “CUBIC giốn
 Schemas trong `schemas/` định nghĩa header/field type, enums, nullability; chưa có result rows. Agent implement validation: unique run_id, streams FK, N rows/trial, metrics đúng công thức với tolerance floating, totals không âm, success yêu cầu bytes/hash đúng, main cohorts đúng count/config, không trộn trace mode. JSON schema định nghĩa record; validator CSV chuyển kiểu theo mapping rồi validate.
 
 CSV write failure làm command nonzero; raw output đã ghi giữ lại với trạng thái incomplete. Writer flush/close error phải được kiểm. Timeout process phải tạo failed row từ runner, không im lặng thiếu run.
+
+## P8 metadata handoff
+
+Cold CLI có `--network-state` nhận recent ownership-checked snapshot từ inspect.sh, kiểm namespace client. Run fields scenario/network_profile/delay/loss/rate/netem_seed lấy từ snapshot đã đối chiếu kernel; success và failure giữ như nhau. Gate P8 dùng phase=evidence/trace_mode=evidence; không gộp vào main240+16 P9. Không có flag vẫn loopback-test/exploratory. Wrapper chịu trách nhiệm inspect trước/sau, reset sau probes khi idle; file không khóa kernel trong trial. Schema/công thức/timing giữ v1. Snapshot network và probes/actual qdisc counters là evidence riêng; G08 chưa PASS khi chỉ metadata/unit tests đúng.

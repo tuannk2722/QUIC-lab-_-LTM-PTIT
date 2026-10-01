@@ -1,0 +1,3 @@
+sudo -n bash tests/system/run.sh --gate G08
+sudo: interactive authentication is required
+exit=1 (before runner)

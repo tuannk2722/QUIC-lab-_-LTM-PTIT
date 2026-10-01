@@ -34,7 +34,9 @@ Mỗi phase: đọc hợp đồng → inspect code → implement → chạy gate
 | scripts/doctor.sh, preflight-network.sh | Inventory không root; primitive probe đặc quyền tách riêng, namespace tạm | P0/P7/P8 |
 | scripts/run-in-netns.sh | Privileged entry → user UID/GID | P7 |
 | scripts/network/setup.sh, teardown.sh | Owned topology, rollback partial setup | P7 |
-| scripts/network/netem.sh, clear-netem.sh, inspect.sh | Apply profiles, verify actual state | P8 |
+| scripts/network/netem.sh, clear-netem.sh, inspect.sh, state.py | Apply/clear profiles, verify kernel/offload/seed actual state | P8 |
+| internal/config/network.go | Read bounded recent network snapshot, check client namespace identity | P8 |
+| tests/system/g08.sh, check_g08.py, test_network.py | G08 traffic gate/checker and unprivileged negative tests | P8 |
 | scripts/bench.sh | Privileged network orchestration around unprivileged bench | P9 |
 | scripts/capture.sh, demo.sh | Evidence capture và managed live lifecycle | P11/P12 |
 | analysis/validate.py, summarize.py, plot.py | Results contract, stats, charts | P6/P9/P12 |

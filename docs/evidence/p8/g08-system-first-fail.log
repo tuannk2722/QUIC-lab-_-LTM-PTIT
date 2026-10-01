@@ -1,0 +1,11 @@
+G08: UTC=2026-10-01T02:49:45Z app_uid_gid=1000:1000 results_dir=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p8-g08-Dw8rGB
+Linux LAPTOP-MS2KV5BU 6.18.40.1-microsoft-standard-WSL2 #1 SMP PREEMPT_DYNAMIC Fri Jul 31 22:12:15 UTC 2026 x86_64 GNU/Linux
+tc utility, iproute2-6.19.0, libbpf 1.6.3
+P7 topology ready: qclient=10.10.0.1/24 qserver=10.10.0.2/24 eth0 MTU=1500 ifb0=up owner_uid=1000
+network: rollback failed: refusing foreign qdisc qclient/ifb0: {'kind': 'fq_codel', 'handle': '0:', 'root': True, 'refcnt': 2, 'options': {'limit': 10240, 'flows': 1024, 'quantum': 1514, 'target': 4999, 'interval': 99999, 'memory_limit': 33554432, 'ecn': True, 'drop_batch': 64}, 'bytes': 140, 'packets': 2, 'drops': 0, 'overlimits': 0, 'requeues': 0, 'backlog': 0, 'qlen': 0, 'maxpacket': 0, 'drop_overlimit': 0, 'new_flow_count': 0, 'ecn_mark': 0, 'new_flows_len': 0, 'old_flows_len': 0}
+network: refusing foreign qdisc qclient/ifb0: {'kind': 'fq_codel', 'handle': '0:', 'root': True, 'refcnt': 2, 'options': {'limit': 10240, 'flows': 1024, 'quantum': 1514, 'target': 4999, 'interval': 99999, 'memory_limit': 33554432, 'ecn': True, 'drop_batch': 64}, 'bytes': 140, 'packets': 2, 'drops': 0, 'overlimits': 0, 'requeues': 0, 'backlog': 0, 'qlen': 0, 'maxpacket': 0, 'drop_overlimit': 0, 'new_flow_count': 0, 'ecn_mark': 0, 'new_flows_len': 0, 'old_flows_len': 0}
+network: refusing foreign qdisc qclient/ifb0: {'kind': 'fq_codel', 'handle': '0:', 'root': True, 'refcnt': 2, 'options': {'limit': 10240, 'flows': 1024, 'quantum': 1514, 'target': 4999, 'interval': 99999, 'memory_limit': 33554432, 'ecn': True, 'drop_batch': 64}, 'bytes': 140, 'packets': 2, 'drops': 0, 'overlimits': 0, 'requeues': 0, 'backlog': 0, 'qlen': 0, 'maxpacket': 0, 'drop_overlimit': 0, 'new_flow_count': 0, 'ecn_mark': 0, 'new_flows_len': 0, 'old_flows_len': 0}
+P7 owned topology removed; verify host link/address/route snapshots for G07
+G08: host link/address/route unchanged at final
+G08: results_dir=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p8-g08-Dw8rGB original_exit=3 cleanup_exit=1
+g08_exit=3

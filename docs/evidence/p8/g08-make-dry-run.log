@@ -1,0 +1,4 @@
+sudo bash scripts/network/netem.sh --scenario="$SCENARIO" --profile="$NETWORK_PROFILE" --seed="$NETEM_SEED"
+sudo bash scripts/network/clear-netem.sh
+sudo bash scripts/network/inspect.sh
+python3 tests/system/test_network.py

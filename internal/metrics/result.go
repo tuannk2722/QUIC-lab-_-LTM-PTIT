@@ -89,6 +89,8 @@ type TrialMeta struct {
 	ResourceCount                                                                    int
 	ResourceSizeBytes                                                                uint64
 	ChunkBytes                                                                       uint32
+	DelayEachWayMS, LossDownstreamPct, LossUpstreamPct, RateMbps                     float64
+	NetemSeed                                                                        *uint64
 }
 
 func classify(err error) (string, string) {
@@ -133,6 +135,7 @@ func NewTrial(meta TrialMeta, results []transport.Result, transferErr error) (Tr
 		TimestampUTC: start.UTC().Format(time.RFC3339Nano), Scenario: meta.Scenario, Transport: meta.Transport,
 		Mode: meta.Mode, TraceMode: meta.TraceMode, NetworkProfile: meta.NetworkProfile,
 		ResourceCount: meta.ResourceCount, ResourceSizeBytes: meta.ResourceSizeBytes, ChunkBytes: meta.ChunkBytes,
+		DelayEachWayMS: meta.DelayEachWayMS, LossDownstreamPct: meta.LossDownstreamPct, LossUpstreamPct: meta.LossUpstreamPct, RateMbps: meta.RateMbps, NetemSeed: meta.NetemSeed,
 		BytesExpected: uint64(meta.ResourceCount) * meta.ResourceSizeBytes, RunTiming: runTiming,
 		Success: success, ErrorCode: code, ErrorMessage: msg}
 	record.Streams = make([]StreamRecord, meta.ResourceCount)

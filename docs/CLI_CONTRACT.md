@@ -1,6 +1,6 @@
 # CLI và Make contract
 
-Các lệnh dưới đây là **hợp đồng cuối cùng**. P0 đã có help/version, parse/validate flags/config, build/test/certs/doctor. P2 có TCP/TLS một resource với `--profile=handshake`; P3 có bulk multiplex 6 resource với `--profile=bulk`; P4 hỗ trợ cold batch qua TCP/TLS hoặc raw QUIC. P5/P6 đã thêm metrics client và canonical raw JSON/runs.csv/streams.csv cho mỗi cold client trial. P7 đã thêm setup/teardown namespace, entry hạ UID và ba Make targets; G07 lần đầu FAIL ở host-state do IFB tạo interface host, bản sửa cần rerun. `bin/bench`, client resumed/early, plan/merge/benchmark vẫn chưa triển khai và phải trả nonzero. Defaults phải dùng chung config loader. Không dùng command string eval từ input; subprocess dùng argument list.
+Các lệnh dưới đây là **hợp đồng cuối cùng**. P0 đã có help/version, parse/validate flags/config, build/test/certs/doctor. P2 có TCP/TLS một resource với `--profile=handshake`; P3 có bulk multiplex 6 resource với `--profile=bulk`; P4 hỗ trợ cold batch qua TCP/TLS hoặc raw QUIC. P5/P6 đã thêm metrics client và canonical raw JSON/runs.csv/streams.csv cho mỗi cold client trial. P7 topology/entry có G07 rerun PASS. P8 đã thêm impairment/inspect/clear, client network-state và G08 runner; G08 actual BLOCKED tại sudo tương tác, static/regression PASS. `bin/bench`, client resumed/early, plan/merge/benchmark vẫn chưa triển khai và phải trả nonzero. Defaults phải dùng chung config loader. Không dùng command string eval từ input; subprocess dùng argument list.
 
 ## 1. Binaries
 
@@ -14,6 +14,7 @@ Các lệnh dưới đây là **hợp đồng cuối cùng**. P0 đã có help/v
 | client | `--addr=10.10.0.2:4433 --transport=tcp --mode=cold --profile=bulk` | transport tcp/quic; mode cold/resumed/early, early chỉ QUIC |
 | client | `--ca=certs/server.crt --server-name=10.10.0.2 --timeout=60s` | trust đúng cert và identity |
 | client | `--experiment-id=ID --run-id=ID --out=DIR --format=table` | ID tự sinh nếu thiếu; table/json; raw result ghi atomically |
+| client | `--network-state=PATH` | Snapshot inspect.sh mới trong 5 phút, đúng qclient identity; gắn scenario/profile/rate/loss/seed, phase/trace_mode=evidence trong P8 |
 | client | `--qlog-dir=PATH --keylog=PATH --progress` | Tự label evidence mode khi bật |
 | client | `--mode=early --profile=handshake` | warm-up lấy ticket rồi measured attempt cùng process |
 | bench | `--scenario=rtt50-loss3 --runs=30 --warmups=2 --profile=bulk --out=DIR` | Local scheduling correctness, không tự apply netem |
@@ -37,11 +38,11 @@ QUIC P4 cho phép server nhận 64 incoming bidirectional streams, còn client t
 
 Cold client tính các mốc client monotonic theo METRICS: first DATA byte khi Read trả n>0, total_ms đến FIN cuối, elapsed_ms đến kết thúc trial và goodput chỉ khi success. Không ép request_end trước first_byte. TCP dial thành công vẫn ghi tcp_connect_ms khi TLS handshake fail; các mốc chưa có là null/ô CSV rỗng. Chưa có 0-RTT actual state nên tls_resumed/used_0rtt/early_rejected nullable, attempted_0rtt=false cho cold.
 
-Mỗi invocation client tạo thư mục mới `results/<experiment_id>/` hoặc `--out=DIR`; ID tự sinh khi thiếu, ID chỉ gồm 1..128 ASCII chữ/số/`_`/`-`. Trong đó có `raw/<run_id>.json`, `runs.csv`, `streams.csv`; validator: `python3 analysis/validate.py DIR`. Failure sau khi trial bắt đầu vẫn ghi run và N resource rows trước khi trả exit 1. Directory đã tồn tại bị từ chối để không append/overwrite. Result write failure trả exit 1; raw đã ghi giữ lại nếu lỗi CSV và file `INCOMPLETE` còn hiện diện cho đến khi ghi đủ. Client P6 vẫn ghi `network_profile=loopback-test` trong raw/CSV của cold trial, kể cả khi invocation đặt trong namespace P7; đây chỉ là nhãn correctness/exploratory, không phải network-state đã verify hoặc benchmark. Full manifest và schedule/merge thuộc P9.
+Mỗi invocation client tạo thư mục mới `results/<experiment_id>/` hoặc `--out=DIR`; ID tự sinh khi thiếu, ID chỉ gồm 1..128 ASCII chữ/số/`_`/`-`. Trong đó có `raw/<run_id>.json`, `runs.csv`, `streams.csv`; validator: `python3 analysis/validate.py DIR`. Failure sau khi trial bắt đầu vẫn ghi run và N resource rows trước khi trả exit 1. Directory đã tồn tại bị từ chối để không append/overwrite. Result write failure trả exit 1; raw đã ghi giữ lại nếu lỗi CSV và file `INCOMPLETE` còn hiện diện cho đến khi ghi đủ. Nếu không có `--network-state`, cold CLI giữ `network_profile=loopback-test` cho correctness/exploratory. P8 flag nhận snapshot đã verify, đúng namespace và mới trong 5 phút; gắn network fields và phase/trace_mode=evidence, không đưa G08 vào main cohort. Full manifest và schedule/merge thuộc P9.
 
 ### Hiện trạng P7/G07
 
-`make setup-network` gọi setup đặc quyền để tạo topology cố định qclient/qserver, veth `eth0` MTU 1500, `lo` và `ifb0` up. Setup nạp IFB với `numifbs=0` trước namespace IFB để không sinh thiết bị mặc định trên host; sửa này chưa qua system gate rerun. Marker root-owned ở `/run/quic-performance-lab/topology-v1` gắn UID/GID người gọi sudo với identity namespace; setup lặp lại được khi owned topology khớp, từ chối collision/marker sai và rollback khi setup lỗi hoặc bị INT/TERM. `scripts/run-in-netns.sh qclient|qserver -- command args...` kiểm marker/topology, vào namespace bằng root rồi chạy command dưới UID/GID người gọi sudo qua `setpriv --clear-groups`. Server/client không chạy root. `make server PROFILE=bulk` build bằng user rồi chạy foreground trong qserver trên TCP+UDP :4433; Ctrl+C dừng server. `PROFILE` được truyền thành một argument và CLI kiểm tên profile, không eval. `make clean-network` chỉ xóa tài nguyên owned sau khi namespace hết PID; nếu còn server, dừng foreground trước. P7 chưa gắn tc ingress/netem lên IFB; việc này thuộc P8/G08.
+`make setup-network` gọi setup đặc quyền để tạo topology cố định qclient/qserver, veth `eth0` MTU 1500, `lo` và `ifb0` up. Setup nạp IFB với `numifbs=0` trước namespace IFB để không sinh thiết bị mặc định trên host; G07 rerun đã PASS trong boot hiện tại (first-load sau fresh boot vẫn chưa kiểm). Marker root-owned ở `/run/quic-performance-lab/topology-v1` gắn UID/GID người gọi sudo với identity namespace; setup lặp lại được khi owned topology khớp, từ chối collision/marker sai và rollback khi setup lỗi hoặc bị INT/TERM. `scripts/run-in-netns.sh qclient|qserver -- command args...` kiểm marker/topology, vào namespace bằng root rồi chạy command dưới UID/GID người gọi sudo qua `setpriv --clear-groups`. Server/client không chạy root. `make server PROFILE=bulk` build bằng user rồi chạy foreground trong qserver trên TCP+UDP :4433; Ctrl+C dừng server. `PROFILE` được truyền thành một argument và CLI kiểm tên profile, không eval. `make clean-network` chỉ xóa tài nguyên owned sau khi namespace hết PID; nếu còn server, dừng foreground trước. P8 gắn tc ingress/netem lên IFB khi apply, không tự bật trong setup.
 
 Từ repo root trong Ubuntu WSL2, với cert local đã có và `results/` writable:
 
@@ -55,7 +56,17 @@ sudo bash scripts/run-in-netns.sh qclient -- "$PWD/bin/client" --transport=quic 
 make clean-network
 ```
 
-G07 đầy đủ dùng `sudo bash tests/system/run.sh` từ trạng thái qclient/qserver chưa tồn tại; runner kiểm collision, partial failure, hai vòng setup/teardown, ping, TCP/QUIC transfers, UID, SIGINT và host link/address/routes. Lần đầu user chạy dừng tại host comparison trước transfer và tạo hai IFB host; lệnh recovery có precheck snapshot tại `scripts/network/restore-host-ifb.sh`. G07 hiện FAIL; cần recovery rồi rerun toàn bộ. Build/test hoặc P0 preflight không thay system gate.
+G07 đầy đủ dùng `sudo bash tests/system/run.sh` từ trạng thái qclient/qserver chưa tồn tại; runner kiểm collision, partial failure, hai vòng setup/teardown, ping, TCP/QUIC transfers, UID, SIGINT và host link/address/routes. Lần đầu user chạy dừng tại host comparison trước transfer và tạo hai IFB host; lệnh recovery có precheck snapshot tại `scripts/network/restore-host-ifb.sh`. Recovery exit 0 và rerun G07 exit 0 đã có log, bốn trial dirs và host comparisons tại evidence/p7. Build/test hoặc P0 preflight không thay system gate.
+
+### Hiện trạng P8/G08
+
+`sudo bash scripts/network/netem.sh --scenario=NAME [--scenarios=PATH] [--profile=ingress-ifb|egress-demo] [--seed=default|UINT64|none]`: dùng configs/scenarios.json, validate trước khi đổi mạng; xóa profile cũ, tắt offloads liên quan trên eth0/ifb0, apply và đối chiếu actual kernel JSON. Profile chính redirect exact IPv4 10.10.0.1↔10.10.0.2 sang IFB receiver; ARP bypass. Egress-demo chỉ netem trên eth0, nhãn riêng. Root-owned impairment metadata nằm trong /run/quic-performance-lab, dùng chung ownership lock P7; không giữ lock khi client chạy. Handle 1: (netem) và ffff:/pref10 (ingress flower/mirred) reserved cho lab; từ chối qdisc/filter foreign. Apply/inspect JSON ra stdout; dùng tee/redirect của user để lưu file, không mở output path tùy ý với root.
+
+`--seed=default` lấy base_seed từ config, verify kernel/tc report. Lỗi seed không bị silently bỏ: command nonzero; `--seed=none` là lựa chọn explicit seed=null, disabled-explicitly. Bản ghi offload có before/after và requested/fixed/absent/failed; feature còn ON làm apply fail. `sudo bash scripts/network/inspect.sh` đọc actual qdisc/filter/counters/link/address/offload/CC và kiểm với metadata apply trước khi verified=true. Snapshot sau clear có verified=false, không được client dùng để gán applied network.
+
+`client --network-state=PATH` là metadata handoff từ wrapper, không tự cấp quyền hoặc truy vấn tc; snapshot không bảo đảm kernel không đổi sau khi đọc. Wrapper phải inspect trước/sau mỗi trial và apply/reset khi idle, sau probes. P8 gắn phase/trace_mode=evidence vì đây là gate validation trials, chưa có benchmark schedule P9. Input snapshot lỗi/stale/wrong namespace exit 2 trước t0. Trial failure giữ cùng network metadata trong raw/CSV. Schema kết quả vẫn v1.
+
+`make netem SCENARIO=rtt50-loss0 NETWORK_PROFILE=ingress-ifb NETEM_SEED=default`; `make -s inspect-network` xuất JSON sạch; `make clear-netem` gỡ qdisc/filter giữ namespaces và offload OFF; teardown xóa toàn topology và impairment metadata. Clear không restore offloads của disposable veth/IFB; không sửa host NIC. `make test-network` chạy Python negative tests UID thường. Actual G08: `sudo bash tests/system/run.sh --gate G08` (không args vẫn G07); gate cần topology ban đầu absent, server/client unprivileged, output user-owned. Test-only `QUICLAB_FAIL_NETEM_AFTER=client` cố ý gây tc parser error sau qclient apply để kiểm rollback; không dùng trong benchmark. Gate actual hiện BLOCKED tại sudo, không thay bằng static tests.
 
 ## 2. Exit codes và output
 
@@ -90,10 +101,13 @@ Bench summary có attempted/success/failed; có failures thì CSV vẫn giữ đ
 | `make benchmark` | Main 240 measured +16 warm-up, ingress-ifb, performance mode |
 | `make benchmark-handshake` | QUIC 3 modes ×30 measured; ticket warm-ups riêng |
 | `make analyze RESULTS=...` | Validate → summary/charts/report, không sửa raw |
-| `make clear-netem` | Gỡ impairment trong lab; giữ namespace |
+| `make netem` | Apply scenario/profile/seed P8, clear cũ và verify kernel |
+| `make inspect-network` | Actual JSON; dùng make -s để không lẫn recipe echo |
+| `make test-network` | Python negative tests P8 unprivileged; không thay G08 |
+| `make clear-netem` | Gỡ qdisc/filter trong lab; giữ namespace và offload OFF |
 | `make clean-network` | Stop owned processes rồi teardown tài nguyên lab |
 
-`SCENARIO`, `RUNS`, `RESULTS`, `PROFILE` nếu hỗ trợ phải document/validate, không eval. P7 chỉ hỗ trợ `PROFILE` cho `make server`; CLI kiểm tên profile. Không target `clean` xóa source hoặc raw results. Live wrappers hoàn thành phải clear-netem, nhưng giữ artifacts. Nếu server foreground do người dùng chạy với profile khác, wrapper báo conflict hoặc hướng dẫn stop; không kill không rõ ownership.
+`SCENARIO`, `RUNS`, `RESULTS`, `PROFILE` nếu hỗ trợ phải document/validate, không eval. P7 hỗ trợ `PROFILE` cho `make server`; P8 hỗ trợ `SCENARIO`, `NETWORK_PROFILE`, `NETEM_SEED` cho apply, truyền qua environment thành arguments, parser kiểm input; không eval. `NETEM_SEED=none` là explicit limitation. Không target `clean` xóa source hoặc raw results. Live wrappers hoàn thành phải clear-netem, nhưng giữ artifacts. Nếu server foreground do người dùng chạy với profile khác, wrapper báo conflict hoặc hướng dẫn stop; không kill không rõ ownership.
 
 ## 4. Usage flow sau implementation
 

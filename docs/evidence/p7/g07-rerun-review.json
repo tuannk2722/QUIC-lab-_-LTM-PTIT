@@ -1,0 +1,50 @@
+{
+  "source": "user-run G07 rerun; checked during P8 handoff",
+  "log": "docs/evidence/p7/g07-system-rerun.log",
+  "log_sha256": "24d52347a8360651fd9d2d6f185f6d8a1b96c01e8a1b4204b24b3d6ff9c3b1a6",
+  "reported_exit": 0,
+  "results_dir": "results/p7-g07-vNiIgt",
+  "trials": [
+    {
+      "path": "results/p7-g07-vNiIgt/tcp-pass1",
+      "success": true,
+      "bytes_received": 6291456,
+      "stream_rows": 6
+    },
+    {
+      "path": "results/p7-g07-vNiIgt/quic-pass1",
+      "success": true,
+      "bytes_received": 6291456,
+      "stream_rows": 6
+    },
+    {
+      "path": "results/p7-g07-vNiIgt/tcp-pass2",
+      "success": true,
+      "bytes_received": 6291456,
+      "stream_rows": 6
+    },
+    {
+      "path": "results/p7-g07-vNiIgt/quic-pass2",
+      "success": true,
+      "bytes_received": 6291456,
+      "stream_rows": 6
+    }
+  ],
+  "host_comparisons": [
+    {
+      "kind": "link",
+      "all_equal": true,
+      "sha256": "4a10cbb212db75ab47dc961a20e4bd0ddde17554201764a6dfacf5f7297af4f1"
+    },
+    {
+      "kind": "address",
+      "all_equal": true,
+      "sha256": "4eeaa1b90b9ec8c8cc2a743b50cb5bffc5204de98e81817917312f813121e9a2"
+    },
+    {
+      "kind": "route",
+      "all_equal": true,
+      "sha256": "6ef3db3eada1fd03b7b371a8103510e7a5a248fc1d5b4597c359254a6a149c01"
+    }
+  ]
+}

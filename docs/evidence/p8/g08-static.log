@@ -1,0 +1,70 @@
+[
+  {
+    "command": [
+      "bash",
+      "-n",
+      "scripts/network/clear-netem.sh",
+      "scripts/network/common.sh",
+      "scripts/network/inspect.sh",
+      "scripts/network/netem.sh",
+      "scripts/network/restore-host-ifb.sh",
+      "scripts/network/setup.sh",
+      "scripts/network/teardown.sh",
+      "scripts/run-in-netns.sh",
+      "tests/system/run.sh",
+      "tests/system/g08.sh"
+    ],
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "python3",
+      "-m",
+      "py_compile",
+      "scripts/network/state.py",
+      "tests/system/check_g08.py",
+      "tests/system/test_network.py"
+    ],
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "command": [
+      ".tools/go1.27.1/bin/gofmt",
+      "-l",
+      "internal/config/network.go",
+      "internal/config/network_test.go",
+      "internal/cli/cli.go",
+      "internal/cli/cli_test.go",
+      "internal/metrics/result.go",
+      "internal/metrics/result_test.go"
+    ],
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "diff",
+      "--check"
+    ],
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "diff",
+      "--check"
+    ],
+    "stage": "final-after-TASK-and-evidence",
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ""
+  }
+]

@@ -2,13 +2,13 @@
 
 T03 — QUIC Protocol Implementation and Performance, môn Lập trình mạng, PTIT.
 
-**Trạng thái hiện tại:** P0/G00 đến P6/G06 PASS. G07 **FAIL trong lần chạy đầu 2026-10-01**: topology và ping đạt, nhưng IFB driver tạo thêm hai interface host; runner dừng trước TCP/QUIC transfer. Setup đã được sửa, cần khôi phục host IFB và chạy lại G07 thực. G08 impairment và benchmark chưa triển khai. Xem [ACCEPTANCE_RESULTS](docs/ACCEPTANCE_RESULTS.md) và [START_HERE.md](START_HERE.md).
+**Trạng thái hiện tại:** P0/G00 đến P8/G08 PASS. P8 actual rerun exit0: RTT, receiver IFB, counters/rate/loss, seed/offloads, transitions và error/SIGINT cleanup đã được kiểm chứng. Eight evidence trials thành công, chưa main benchmark cohort/P9 hoặc human review P8. Xem [ACCEPTANCE_RESULTS](docs/ACCEPTANCE_RESULTS.md) và [evidence P8](docs/evidence/p8/README.md).
 
-Thiết kế: cùng bộ resource trong RAM được phục vụ bởi TCP/TLS trên TCP và raw QUIC trên UDP cùng số port 4433. P7 chuẩn bị hai namespace trong Ubuntu WSL2; impairment qua IFB, benchmark và qlog/packet capture thuộc các phase sau.
+Thiết kế: cùng bộ resource trong RAM được phục vụ bởi TCP/TLS trên TCP và raw QUIC trên UDP cùng số port 4433. Hai namespace chạy trong Ubuntu WSL2; P8 cấu hình impairment phía nhận qua IFB. Benchmark và qlog/packet capture thuộc các phase sau.
 
 [Đặc tả](docs/DEMO_SPEC.md) · [Kế hoạch triển khai](docs/IMPLEMENTATION_PLAN.md) · [Nghiệm thu](docs/ACCEPTANCE.md) · [Kịch bản demo](docs/DEMO_SCRIPT.md)
 
-Repo phải nằm trong filesystem Linux native, ưu tiên `/home/<user>/...`, không `/mnt/c/...` hoặc `/mnt/d/...`. Mở Windows VS Code bằng Remote WSL, workspace `WSL: Ubuntu`. Implementation mặc định human-gated: chỉ phase được người dùng cho phép, chạy gate rồi cập nhật TASK và dừng review. Người dùng đã cho phép P7/G07; xem [bằng chứng acceptance](docs/ACCEPTANCE_RESULTS.md) để biết trạng thái gate mới nhất.
+Repo phải nằm trong filesystem Linux native, ưu tiên `/home/<user>/...`, không `/mnt/c/...` hoặc `/mnt/d/...`. Mở Windows VS Code bằng Remote WSL, workspace `WSL: Ubuntu`. Implementation mặc định human-gated: chỉ phase được người dùng cho phép, chạy gate rồi cập nhật TASK và dừng review. Người dùng đã cho phép riêng P8/G08; xem [bằng chứng acceptance](docs/ACCEPTANCE_RESULTS.md) để biết trạng thái gate mới nhất.
 
 ## Tái lập P0 (chạy bên trong Ubuntu WSL2)
 
@@ -112,7 +112,7 @@ python3 analysis/validate.py results/<p6-g06-dir>/tcp_failure
 
 ## P7: topology namespace và tách quyền
 
-P7 có `qclient` (`10.10.0.1/24`) và `qserver` (`10.10.0.2/24`) nối bằng veth `eth0`, MTU 1500; `lo` và `ifb0` được đưa lên. Ownership marker root-owned ở `/run/quic-performance-lab/topology-v1` gắn người gọi sudo với identity của hai namespace. Setup lặp lại được khi topology và marker khớp; collision không có marker bị từ chối. Setup nạp IFB với `numifbs=0` để tránh tạo IFB mặc định trên host; sửa này chưa qua G07 rerun. `ifb0` ở P7 chưa gắn ingress redirect hoặc netem: impairment chính và xác minh RTT/counter thuộc P8/G08.
+P7 có `qclient` (`10.10.0.1/24`) và `qserver` (`10.10.0.2/24`) nối bằng veth `eth0`, MTU 1500; `lo` và `ifb0` được đưa lên. Ownership marker root-owned ở `/run/quic-performance-lab/topology-v1` gắn người gọi sudo với identity của hai namespace. Setup lặp lại được khi topology và marker khớp; collision không có marker bị từ chối. Setup nạp IFB với `numifbs=0` để tránh tạo IFB mặc định trên host; G07 rerun đã PASS. P8 gắn ingress redirect/netem khi gọi apply bên dưới.
 
 Các lệnh sau chạy từ repo root trong terminal Ubuntu WSL2 của người dùng thường. Nếu chưa có `certs/server.crt` và `certs/server.key`, chạy `make certs` trước. Terminal 1:
 
@@ -138,27 +138,40 @@ make clean-network
 
 Teardown từ chối xóa namespace còn PID; không xóa tên trùng nhưng không có marker sở hữu. Raw JSON/CSV của client hiện vẫn ghi `network_profile=loopback-test` theo P6; dùng chúng để kiểm correctness, không coi là số liệu benchmark đã xác minh mạng.
 
-Lần G07 đầu để lại hai IFB host DOWN/noop; snapshot xác nhận chúng không có ở baseline. Trước khi rerun, chạy precheck không đặc quyền rồi dọn đúng hai thiết bị đã xác minh bằng sudo tương tác, giữ log riêng:
+G07 lần đầu FAIL vì hai IFB host được tạo khi module nạp với mặc định. Recovery và rerun đã exit 0: [log và review artifacts](docs/evidence/p7/README.md), kết quả thật `results/p7-g07-vNiIgt/`. Không cần recovery lại trong trạng thái hiện tại. G07 chỉ xác nhận topology/correctness, không thay G08.
+
+## P8: impairment và G08
+
+Từ repo root trong Ubuntu WSL2, setup topology rồi apply khi client/server idle:
 
 ```bash
-bash scripts/network/restore-host-ifb.sh --check-only results/p7-g07-JqV32x/host-state
-set -o pipefail
-sudo bash scripts/network/restore-host-ifb.sh results/p7-g07-JqV32x/host-state 2>&1 | tee docs/evidence/p7/g07-host-recovery.log
-recovery_status=${PIPESTATUS[0]}; printf 'recovery_exit=%s\n' "$recovery_status" | tee -a docs/evidence/p7/g07-host-recovery.log
+make setup-network
+make netem SCENARIO=rtt50-loss0 NETWORK_PROFILE=ingress-ifb NETEM_SEED=default
+mkdir -p results/p8-inspect
+make -s inspect-network > results/p8-inspect/network.json
+# Server chạy foreground ở terminal khác: make server PROFILE=bulk
+sudo bash scripts/run-in-netns.sh qclient -- "$PWD/bin/client" --transport=quic --mode=cold --profile=bulk --addr=10.10.0.2:4433 --server-name=10.10.0.2 --network-state="$PWD/results/p8-inspect/network.json" --out=results/p8-inspect/quic
+make clear-netem
+# Dừng server bằng Ctrl+C trước:
+make clean-network
 ```
 
-Script từ chối nếu host đã đổi so với snapshot, IFB đang được cấu hình/sử dụng hoặc host có tc filter; kiểm lại trước từng lần xóa và hỗ trợ chạy tiếp sau khi mới xóa một IFB. Tránh thay đổi mạng host đồng thời khi recovery; script so sánh lại link/address/route với baseline sau khi xóa. Chưa có log recovery thực. Sau khi recovery exit 0, để chạy **toàn bộ G07** từ trạng thái không có `qclient`/`qserver`, giữ `results/` writable và cert đã tạo, chạy trong terminal Ubuntu WSL2:
+Để lưu JSON dùng trực tiếp `sudo bash scripts/network/inspect.sh | tee PATH` hoặc `make -s inspect-network > PATH` (Make thông thường echo recipe, nên dùng `-s`). Client `--network-state` yêu cầu snapshot mới trong 5 phút và đúng qclient identity; records gắn scenario/profile/seed thực với phase/trace_mode=evidence. Refresh snapshot trước mỗi trial; wrapper phải kiểm trước/sau vì file không khóa kernel trong suốt transfer. Không có flag thì giữ loopback-test/exploratory.
+
+`make netem NETWORK_PROFILE=egress-demo` chỉ dùng minh họa; clear rồi đổi profile, không trộn vào main ingress-ifb. Offloads GSO/GRO/TSO và UDP liên quan được tắt trên veth/IFB khi có thể; option fixed/absent được ghi, option còn ON làm apply fail. Clear gỡ qdisc/filter, giữ namespace và offload OFF; teardown xóa namespace. Seed không hỗ trợ làm command nonzero; chỉ chọn `NETEM_SEED=none` có chủ ý mới ghi seed=null/disabled-explicitly, không fallback ngầm.
+
+Chạy đầy đủ G08 từ trạng thái không có topology/server (build/certs bằng UID thường):
 
 ```bash
 make build
+make test-network
 test -r certs/server.crt && test -r certs/server.key || make certs
-mkdir -p results
 set -o pipefail
-sudo bash tests/system/run.sh 2>&1 | tee docs/evidence/p7/g07-system-rerun.log
-g07_status=${PIPESTATUS[0]}; printf 'g07_exit=%s\n' "$g07_status" | tee -a docs/evidence/p7/g07-system-rerun.log
+sudo bash tests/system/run.sh --gate G08 2>&1 | tee docs/evidence/p8/g08-system.log
+g08_status=${PIPESTATUS[0]}; printf 'g08_exit=%s\n' "$g08_status" | tee -a docs/evidence/p8/g08-system.log
 ```
 
-Runner kiểm collision, rollback lỗi giữa setup, hai vòng setup/teardown, ping hai chiều, transfer TCP/QUIC thật, UID/GID, SIGINT cleanup và so sánh host link/address/routes. Log đầu `docs/evidence/p7/g07-system.log` có `G07 FAIL` ở host-state, chưa có TCP/QUIC result. Bản sửa IFB chưa được kiểm bằng lần chạy đặc quyền; chỉ đổi G07 sang PASS sau khi rerun đạt hết các bước và review artifacts thật.
+Runner giữ network/probes/raw/CSV và gate-summary tại `results/p8-g08-96nOtS/`; actual rerun exit0/cleanup0 đã PASS RTT/counters/rate/loss, profile switch, tc-error và SIGINT cleanup. Agent đối chiếu tám successful trials/48 hashes và host snapshots, review ở [evidence P8](docs/evidence/p8/README.md). Dừng human review P8; chưa mở P9.
 
 ## Hợp đồng README sau triển khai đầy đủ
 
@@ -173,4 +186,4 @@ Agent phải thay mục này bằng các bước **đã kiểm tra thực tế**
 7. Chỉ rõ lệnh chạy ở host Windows hay bên trong Ubuntu WSL2; mọi build/test/network/benchmark chạy trong Ubuntu WSL2.
 8. Liên kết provenance, disclosure AI và giới hạn kết luận.
 
-Hiện có targets build/test/test-race/certs/doctor và P7 setup-network/server/clean-network. Các targets demo, benchmark, analyze và clear-netem trong CLI contract vẫn để các phase sau.
+Hiện có targets build/test/test-race/certs/doctor và P7/P8 setup-network/server/netem/inspect-network/clear-netem/clean-network/test-network. Các targets demo, benchmark, analyze vẫn để các phase sau.

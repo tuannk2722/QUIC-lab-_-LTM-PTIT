@@ -12,9 +12,12 @@ CERT_DIR ?= certs
 CERT_FORCE ?=
 REPORT ?= results/doctor.txt
 PROFILE ?= bulk
-export PROFILE
+SCENARIO ?= rtt50-loss0
+NETWORK_PROFILE ?= ingress-ifb
+NETEM_SEED ?= default
+export PROFILE SCENARIO NETWORK_PROFILE NETEM_SEED
 
-.PHONY: check-go build test test-race certs doctor setup-network server clean-network
+.PHONY: check-go build test test-race certs doctor setup-network server clean-network netem clear-netem inspect-network test-network
 check-go:
 	@test "$$($(GO) version | awk '{print $$3}')" = "go$(GO_VERSION)" || { echo 'Expected Go $(GO_VERSION); see README.md' >&2; exit 3; }
 
@@ -46,3 +49,15 @@ server: build
 
 clean-network:
 	sudo bash scripts/network/teardown.sh
+
+netem:
+	sudo bash scripts/network/netem.sh --scenario="$$SCENARIO" --profile="$$NETWORK_PROFILE" --seed="$$NETEM_SEED"
+
+clear-netem:
+	sudo bash scripts/network/clear-netem.sh
+
+inspect-network:
+	sudo bash scripts/network/inspect.sh
+
+test-network:
+	python3 tests/system/test_network.py

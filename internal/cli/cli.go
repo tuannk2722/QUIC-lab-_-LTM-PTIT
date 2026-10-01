@@ -79,6 +79,7 @@ func Run(name string, args []string, out, errOut io.Writer) int {
 	profile := fs.String("profile", "bulk", "workload profile")
 	var transportName, addr, mode, format, ca, serverName, cert, key, readyFile, scenario, suite, entry, merge, experimentID, runID, outDir string
 	var timeout time.Duration
+	var networkStatePath string
 	var runs, warmups int
 	var plan bool
 	fs.String("qlog-dir", "", "qlog directory (future evidence mode)")
@@ -102,6 +103,7 @@ func Run(name string, args []string, out, errOut io.Writer) int {
 		fs.StringVar(&runID, "run-id", "", "trial identifier")
 		fs.StringVar(&outDir, "out", "", "new result directory")
 		fs.Bool("progress", false, "collect progress in future evidence mode")
+		fs.StringVar(&networkStatePath, "network-state", "", "recent ownership-checked network snapshot from inspect.sh")
 	} else {
 		fmt.Fprintln(errOut, "unknown binary")
 		return 2
@@ -117,7 +119,6 @@ func Run(name string, args []string, out, errOut io.Writer) int {
 		fs.Uint64("seed", 0, "schedule seed (default: scenario config; planning in future phase)")
 		fs.StringVar(&entry, "schedule-entry", "", "entry JSON path (future phase)")
 		fs.StringVar(&merge, "merge", "", "shard directory (future phase)")
-		fs.String("network-state", "", "verified network metadata path")
 	}
 	if err := fs.Parse(args); err != nil {
 		if errors.Is(err, flag.ErrHelp) {
@@ -245,6 +246,17 @@ func Run(name string, args []string, out, errOut io.Writer) int {
 		return 0
 	}
 	if name == "client" && mode == "cold" {
+		var network *config.NetworkState
+		if networkStatePath != "" {
+			n, err := config.LoadNetworkState(networkStatePath)
+			if err != nil {
+				return bad(err.Error())
+			}
+			if err := n.CheckClientNamespace(); err != nil {
+				return bad(err.Error())
+			}
+			network = &n
+		}
 		expected, err := workload.NewStore(w.Profiles[*profile], w.Limits)
 		if err != nil {
 			return bad(err.Error())
@@ -280,6 +292,13 @@ func Run(name string, args []string, out, errOut io.Writer) int {
 		meta := metrics.TrialMeta{ExperimentID: experimentID, RunID: runID, Phase: "measured", Scenario: "loopback-test",
 			Transport: transportName, Mode: mode, TraceMode: "performance", NetworkProfile: "loopback-test",
 			ResourceCount: expected.Count(), ResourceSizeBytes: uint64(expected.Profile().ResourceSizeBytes), ChunkBytes: uint32(expected.Profile().ChunkBytes)}
+		if network != nil {
+			meta.Phase, meta.TraceMode = "evidence", "evidence"
+			meta.Scenario, meta.NetworkProfile = network.Scenario, network.NetworkProfile
+			meta.DelayEachWayMS, meta.LossDownstreamPct, meta.LossUpstreamPct, meta.RateMbps = network.DelayEachWayMS, network.LossDownstreamPct, network.LossUpstreamPct, network.RateMbps
+			meta.NetemSeed = network.NetemSeed
+			fmt.Fprintf(errOut, "network: profile=%s scenario=%s snapshot=%s (evidence trial)\n", network.NetworkProfile, network.Scenario, networkStatePath)
+		}
 		if len(results) == expected.Count() {
 			record, recordErr := metrics.NewTrial(meta, results, err)
 			if recordErr != nil {

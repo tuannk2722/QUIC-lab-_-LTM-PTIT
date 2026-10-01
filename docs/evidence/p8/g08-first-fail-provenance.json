@@ -1,0 +1,19 @@
+{
+  "source": "docs/evidence/p8/g08-system.log",
+  "sha256": "5bd582a47f1381ee08a43a97d7f00a7798f145bf88f9aefd7457b7e59e9d0090",
+  "results": "results/p8-g08-Dw8rGB/",
+  "summary": {
+    "gate": "G08",
+    "status": "FAIL",
+    "original_exit": 3,
+    "cleanup_exit": 1,
+    "attempted_invocations": 0,
+    "trial_rows": 0,
+    "n_success": 0,
+    "n_failed": 0,
+    "missing_trial_records": [],
+    "trials": [],
+    "probes": [],
+    "traffic_checks": []
+  }
+}

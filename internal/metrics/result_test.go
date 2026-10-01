@@ -16,6 +16,9 @@ import (
 func TestRecordsCSVFailureAndNoOverwrite(t *testing.T) {
 	base := time.Now()
 	meta := TrialMeta{ExperimentID: "exp_test", RunID: "run_test", Phase: "measured", Scenario: "loopback-test", Transport: "tcp", Mode: "cold", TraceMode: "performance", NetworkProfile: "loopback-test", ResourceCount: 2, ResourceSizeBytes: 4, ChunkBytes: 4}
+	seed := uint64(7)
+	meta.NetworkProfile, meta.Scenario, meta.Phase, meta.TraceMode = "ingress-ifb", "rtt50-loss3", "evidence", "evidence"
+	meta.DelayEachWayMS, meta.LossDownstreamPct, meta.RateMbps, meta.NetemSeed = 25, 3, 20, &seed
 	results := []transport.Result{{ResourceID: 1, BytesExpected: 4, BytesReceived: 4, Timing: transport.Timing{Start: base, TCPConnected: at(base, 1), Handshake: at(base, 2), RequestStart: at(base, 3), RequestEnd: at(base, 4), FirstByte: at(base, 5), PayloadDone: at(base, 6), Done: at(base, 7), End: at(base, 10)}}, {ResourceID: 2, BytesExpected: 4, Timing: transport.Timing{Start: base, TCPConnected: at(base, 1), Handshake: at(base, 2), End: at(base, 10)}}}
 	message := "peer said, \"bad\"\nrequest"
 	record, err := NewTrial(meta, results, errors.New(message))
@@ -24,6 +27,9 @@ func TestRecordsCSVFailureAndNoOverwrite(t *testing.T) {
 	}
 	if record.Run.Success || record.Run.TotalMS != nil || record.Run.BytesReceived != 4 || len(record.Streams) != 2 {
 		t.Fatalf("failed row lost: %+v", record)
+	}
+	if record.Run.NetworkProfile != "ingress-ifb" || record.Run.Scenario != "rtt50-loss3" || record.Run.DelayEachWayMS != 25 || record.Run.LossDownstreamPct != 3 || record.Run.RateMbps != 20 || record.Run.NetemSeed == nil || *record.Run.NetemSeed != 7 || record.Run.Phase != "evidence" {
+		t.Fatal("failed trial lost its network conditions", record.Run)
 	}
 	if record.Streams[1].RequestStartMS != nil || record.Streams[1].ChecksumOK != nil {
 		t.Fatalf("unrequested stream has fake fields: %+v", record.Streams[1])

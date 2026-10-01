@@ -1,12 +1,12 @@
 # Bắt đầu — QUIC Performance Lab / T03
 
 Bộ bàn giao dành cho Codex trong IDE, phiên bản 1.0, ngày 28/09/2026 (Asia/Ho_Chi_Minh).
-Bản gốc là **đặc tả + cấu trúc khởi đầu**. Cập nhật 2026-10-01: P0/G00 đến P6/G06 PASS; TCP/TLS và raw QUIC cold batch 6 resource trên một connection mỗi transport, cùng số port TCP/UDP; metrics client và canonical JSON/CSV cho cold trial. G07 lần đầu FAIL ở host-state vì IFB tạo hai interface host; setup đã sửa nhưng cần khôi phục host và rerun G07. G08 impairment và network benchmark chưa triển khai. Bằng chứng ở ACCEPTANCE_RESULTS, lệnh recovery/rerun ở README.
+Bản gốc là **đặc tả + cấu trúc khởi đầu**. Cập nhật 2026-10-01: P0/G00 đến P8/G08 PASS; cold TCP/QUIC, metrics/CSV, topology và impairment receiver IFB đã chạy thật. G08 rerun exit0/cleanup0 với tám successful evidence trials; [Evidence P8](docs/evidence/p8/README.md) có log và artifact review. Dừng human review P8; benchmark/0-RTT/qlog thuộc phase sau.
 
 ## Bạn cần làm gì?
 
 1. Môi trường hiện hành từ 2026-09-30: **Ubuntu dưới WSL2 trên Windows 11**. Windows VS Code là UI, mở bằng Remote WSL với workspace `WSL: Ubuntu`; terminal/build/test/network chạy trong Ubuntu WSL2. Repo phải nằm trên filesystem Linux native, ưu tiên `/home/<user>/...`, không `/mnt/c/...` hoặc `/mnt/d/...`.
-2. Cho phép rõ ràng từng phase/milestone. Mặc định HUMAN-GATED: agent chỉ làm phase được phép, chạy gate, cập nhật TASK rồi dừng review; build thành công riêng lẻ không đủ. Chỉ tự tiếp tục nhiều phase khi người dùng yêu cầu rõ ràng. Khi bị chặn, agent ghi BLOCKED/lệnh thủ công và làm phần độc lập trong phạm vi được phép. Người dùng đã cho phép P7/G07; sau khi cập nhật hồ sơ gate thì dừng review, không tự mở P8.
+2. Cho phép rõ ràng từng phase/milestone. Mặc định HUMAN-GATED: agent chỉ làm phase được phép, chạy gate, cập nhật TASK rồi dừng review; build thành công riêng lẻ không đủ. Chỉ tự tiếp tục nhiều phase khi người dùng yêu cầu rõ ràng. Khi bị chặn, agent ghi FAIL (actual IFB baseline rejection; fixed, rerun pending)/lệnh thủ công và làm phần độc lập trong phạm vi được phép. Người dùng đã cho phép riêng P8/G08; sau cập nhật gate thì dừng review, không tự mở P9.
 
 Không cần dán lại toàn bộ cuộc trò chuyện. `AGENTS.md` chỉ cách đọc; `docs/00-INDEX.md` chỉ nguồn sự thật; `.codex/TASK.md` giữ tiến độ qua phiên. Context quan trọng phải nằm trong file, không phụ thuộc trí nhớ phiên chat.
 
@@ -27,6 +27,6 @@ Không cần dán lại toàn bộ cuộc trò chuyện. `AGENTS.md` chỉ cách
 
 Quyết định môi trường ban đầu được D13 (2026-09-30) thay bằng WSL2 sau capability preflight thành công; xem VERSIONS. Đây không phải G07/G08 pass.
 
-Đường chạy P7 trong Ubuntu WSL2: trước hết khôi phục đúng hai IFB host còn lại từ lần G07 lỗi theo [README.md](README.md). Sau đó `make build`, `make setup-network`, `make server PROFILE=bulk` (foreground trong qserver); ở terminal khác gọi `sudo bash scripts/run-in-netns.sh qclient -- "$PWD/bin/client" --transport=quic --addr=10.10.0.2:4433 --server-name=10.10.0.2 --format=json`. Dừng server bằng Ctrl+C trước `make clean-network`. Tạo cert bằng `make certs` chỉ nếu chưa có và giữ `results/` writable cho user. Lệnh G07 đầy đủ ở README; chưa có log TCP/QUIC transfer trong namespace được xác nhận.
+Đường chạy P8 trong Ubuntu WSL2: `make setup-network`; `make netem SCENARIO=rtt50-loss0`; `make -s inspect-network > PATH`; server foreground `make server PROFILE=bulk`, client qua `scripts/run-in-netns.sh` và `--network-state=PATH`. Clear bằng `make clear-netem`, dừng server rồi `make clean-network`. Toàn bộ G08: `sudo bash tests/system/run.sh --gate G08`; xem README để lưu exit/evidence. Không dùng capability preflight hay localhost regression thay G08.
 
 Không có bản xuất nguyên văn của phần chat bị lược bỏ; không tuyên bố đã đọc được phần không được cung cấp. Bảng truy vết và quyết định nằm tại [CONTEXT_AND_DECISIONS.md](docs/CONTEXT_AND_DECISIONS.md) và [TRACEABILITY.md](docs/TRACEABILITY.md).

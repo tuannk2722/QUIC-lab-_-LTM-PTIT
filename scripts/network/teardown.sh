@@ -35,4 +35,5 @@ for ns in qserver qclient; do
     fi
 done
 rm -- "$LAB_MARKER"
+rm -f -- "$LAB_STATE_DIR/impairment-v1.json"
 printf 'P7 owned topology removed; verify host link/address/route snapshots for G07\n'

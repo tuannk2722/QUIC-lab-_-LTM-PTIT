@@ -39,6 +39,9 @@ func TestCommandContract(t *testing.T) {
 				t.Fatalf("fake success: %d %s %s", code, &out, &errs)
 			}
 			cases := [][]string{{"--transport=http3"}, {"--profile=missing"}}
+			if name == "client" {
+				cases = append(cases, []string{"--network-state=/nonexistent"})
+			}
 			if name == "server" {
 				cases = append(cases, []string{"--listen=localhost:0"}, []string{"--cert="})
 			} else {

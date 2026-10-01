@@ -1,0 +1,396 @@
+{
+  "status": "PASS",
+  "scope": "Read-only review of user-run actual G08 artifacts; agent did not execute privileged gate",
+  "main_results": "results/p8-g08-96nOtS",
+  "interrupt_results": "results/p8-g08-qOYl2H",
+  "original_exit": 0,
+  "cleanup_exit": 0,
+  "interrupt_expected_exit": 130,
+  "interrupt_cleanup_exit": 0,
+  "trials": [
+    {
+      "run_id": "baseline-quic",
+      "bytes": 6291456,
+      "hashes_ok": 6,
+      "goodput_mbps": 18.93156944838185,
+      "total_ms": 2713.291451,
+      "downstream_drops": 0,
+      "validator_exit": 0
+    },
+    {
+      "run_id": "baseline-tcp",
+      "bytes": 6291456,
+      "hashes_ok": 6,
+      "goodput_mbps": 19.036273372971444,
+      "total_ms": 2675.815434,
+      "downstream_drops": 0,
+      "validator_exit": 0
+    },
+    {
+      "run_id": "rtt50-loss0-quic",
+      "bytes": 6291456,
+      "hashes_ok": 6,
+      "goodput_mbps": 18.267724647386032,
+      "total_ms": 2812.957306,
+      "downstream_drops": 0,
+      "validator_exit": 0
+    },
+    {
+      "run_id": "rtt50-loss0-tcp",
+      "bytes": 6291456,
+      "hashes_ok": 6,
+      "goodput_mbps": 17.556022083979684,
+      "total_ms": 2973.372326,
+      "downstream_drops": 0,
+      "validator_exit": 0
+    },
+    {
+      "run_id": "rtt50-loss1-quic",
+      "bytes": 6291456,
+      "hashes_ok": 6,
+      "goodput_mbps": 5.558287365511341,
+      "total_ms": 9121.818597,
+      "downstream_drops": 45,
+      "validator_exit": 0
+    },
+    {
+      "run_id": "rtt50-loss1-tcp",
+      "bytes": 6291456,
+      "hashes_ok": 6,
+      "goodput_mbps": 3.0539288815386283,
+      "total_ms": 16587.794189,
+      "downstream_drops": 43,
+      "validator_exit": 0
+    },
+    {
+      "run_id": "rtt50-loss3-quic",
+      "bytes": 6291456,
+      "hashes_ok": 6,
+      "goodput_mbps": 2.198492182533835,
+      "total_ms": 22951.00958,
+      "downstream_drops": 116,
+      "validator_exit": 0
+    },
+    {
+      "run_id": "rtt50-loss3-tcp",
+      "bytes": 6291456,
+      "hashes_ok": 6,
+      "goodput_mbps": 1.3743366310951461,
+      "total_ms": 36727.838194,
+      "downstream_drops": 112,
+      "validator_exit": 0
+    }
+  ],
+  "probes": [
+    {
+      "scenario": "baseline",
+      "namespace": "qclient",
+      "samples_ms": [
+        0.141,
+        0.296,
+        0.341,
+        0.343,
+        0.299,
+        0.384,
+        0.248,
+        0.319,
+        0.18,
+        0.357,
+        0.321,
+        0.392
+      ],
+      "sample_count": 12,
+      "median_rtt_ms": 0.32,
+      "status": "PASS"
+    },
+    {
+      "scenario": "baseline",
+      "namespace": "qserver",
+      "samples_ms": [
+        0.296,
+        0.342,
+        0.576,
+        0.37,
+        0.398,
+        0.288,
+        0.373,
+        0.357,
+        0.308,
+        0.251,
+        0.306,
+        0.253
+      ],
+      "sample_count": 12,
+      "median_rtt_ms": 0.325,
+      "status": "PASS"
+    },
+    {
+      "scenario": "rtt50-loss0",
+      "namespace": "qclient",
+      "samples_ms": [
+        50.5,
+        50.4,
+        50.5,
+        50.5,
+        50.4,
+        52.0,
+        50.5,
+        50.5,
+        50.4,
+        50.5,
+        50.7,
+        50.5
+      ],
+      "sample_count": 12,
+      "median_rtt_ms": 50.5,
+      "status": "PASS"
+    },
+    {
+      "scenario": "rtt50-loss0",
+      "namespace": "qserver",
+      "samples_ms": [
+        50.5,
+        50.5,
+        50.4,
+        50.6,
+        50.5,
+        50.5,
+        50.4,
+        50.4,
+        50.4,
+        51.8,
+        50.4,
+        50.4
+      ],
+      "sample_count": 12,
+      "median_rtt_ms": 50.45,
+      "status": "PASS"
+    }
+  ],
+  "verified_snapshots": [
+    "results/p8-g08-96nOtS/network/baseline-probe.after.json",
+    "results/p8-g08-96nOtS/network/baseline-probe.apply.json",
+    "results/p8-g08-96nOtS/network/baseline-probe.before.json",
+    "results/p8-g08-96nOtS/network/baseline-quic.after.json",
+    "results/p8-g08-96nOtS/network/baseline-quic.apply.json",
+    "results/p8-g08-96nOtS/network/baseline-quic.before.json",
+    "results/p8-g08-96nOtS/network/baseline-tcp.after.json",
+    "results/p8-g08-96nOtS/network/baseline-tcp.apply.json",
+    "results/p8-g08-96nOtS/network/baseline-tcp.before.json",
+    "results/p8-g08-96nOtS/network/egress-demo.apply.json",
+    "results/p8-g08-96nOtS/network/egress-demo.inspect.json",
+    "results/p8-g08-96nOtS/network/ingress-again.apply.json",
+    "results/p8-g08-96nOtS/network/ingress-again.inspect.json",
+    "results/p8-g08-96nOtS/network/rtt50-loss0-probe.after.json",
+    "results/p8-g08-96nOtS/network/rtt50-loss0-probe.apply.json",
+    "results/p8-g08-96nOtS/network/rtt50-loss0-probe.before.json",
+    "results/p8-g08-96nOtS/network/rtt50-loss0-quic.after.json",
+    "results/p8-g08-96nOtS/network/rtt50-loss0-quic.apply.json",
+    "results/p8-g08-96nOtS/network/rtt50-loss0-quic.before.json",
+    "results/p8-g08-96nOtS/network/rtt50-loss0-tcp.after.json",
+    "results/p8-g08-96nOtS/network/rtt50-loss0-tcp.apply.json",
+    "results/p8-g08-96nOtS/network/rtt50-loss0-tcp.before.json",
+    "results/p8-g08-96nOtS/network/rtt50-loss1-quic.after.json",
+    "results/p8-g08-96nOtS/network/rtt50-loss1-quic.apply.json",
+    "results/p8-g08-96nOtS/network/rtt50-loss1-quic.before.json",
+    "results/p8-g08-96nOtS/network/rtt50-loss1-tcp.after.json",
+    "results/p8-g08-96nOtS/network/rtt50-loss1-tcp.apply.json",
+    "results/p8-g08-96nOtS/network/rtt50-loss1-tcp.before.json",
+    "results/p8-g08-96nOtS/network/rtt50-loss3-quic.after.json",
+    "results/p8-g08-96nOtS/network/rtt50-loss3-quic.apply.json",
+    "results/p8-g08-96nOtS/network/rtt50-loss3-quic.before.json",
+    "results/p8-g08-96nOtS/network/rtt50-loss3-tcp.after.json",
+    "results/p8-g08-96nOtS/network/rtt50-loss3-tcp.apply.json",
+    "results/p8-g08-96nOtS/network/rtt50-loss3-tcp.before.json",
+    "results/p8-g08-qOYl2H/network/interrupt.apply.json"
+  ],
+  "cleared_snapshots": [
+    "results/p8-g08-96nOtS/network/after-error.clear.json",
+    "results/p8-g08-96nOtS/network/error-cleared.json",
+    "results/p8-g08-96nOtS/network/explicit.clear.json",
+    "results/p8-g08-96nOtS/network/idempotent.clear.json",
+    "results/p8-g08-qOYl2H/network/cleanup.json"
+  ],
+  "host_comparisons": [
+    {
+      "path": "results/p8-g08-96nOtS/host/link.active.json",
+      "equal_to_before": true
+    },
+    {
+      "path": "results/p8-g08-96nOtS/host/link.final.json",
+      "equal_to_before": true
+    },
+    {
+      "path": "results/p8-g08-96nOtS/host/link.interrupt.json",
+      "equal_to_before": true
+    },
+    {
+      "path": "results/p8-g08-96nOtS/host/link.teardown.json",
+      "equal_to_before": true
+    },
+    {
+      "path": "results/p8-g08-96nOtS/host/address.active.json",
+      "equal_to_before": true
+    },
+    {
+      "path": "results/p8-g08-96nOtS/host/address.final.json",
+      "equal_to_before": true
+    },
+    {
+      "path": "results/p8-g08-96nOtS/host/address.interrupt.json",
+      "equal_to_before": true
+    },
+    {
+      "path": "results/p8-g08-96nOtS/host/address.teardown.json",
+      "equal_to_before": true
+    },
+    {
+      "path": "results/p8-g08-96nOtS/host/route.active.json",
+      "equal_to_before": true
+    },
+    {
+      "path": "results/p8-g08-96nOtS/host/route.final.json",
+      "equal_to_before": true
+    },
+    {
+      "path": "results/p8-g08-96nOtS/host/route.interrupt.json",
+      "equal_to_before": true
+    },
+    {
+      "path": "results/p8-g08-96nOtS/host/route.teardown.json",
+      "equal_to_before": true
+    },
+    {
+      "path": "results/p8-g08-qOYl2H/host/link.final.json",
+      "equal_to_before": true
+    },
+    {
+      "path": "results/p8-g08-qOYl2H/host/address.final.json",
+      "equal_to_before": true
+    },
+    {
+      "path": "results/p8-g08-qOYl2H/host/route.final.json",
+      "equal_to_before": true
+    }
+  ],
+  "artifact_sha256": {
+    "results/p8-g08-96nOtS/attempted-runs.txt": "a50bc3da909100fde4539f8ee712fc2bd26b475e45c6399faf167e02dab73184",
+    "results/p8-g08-96nOtS/baseline-quic/raw/baseline-quic.json": "187ee2a8f06f50bf26a4086212e2892fcc97968aa169f7d81c597944579121b9",
+    "results/p8-g08-96nOtS/baseline-quic/runs.csv": "689b0321bce5aea9b5578e0644121f77e1d9a198c74efb1ed126c90b5b219ea1",
+    "results/p8-g08-96nOtS/baseline-quic/streams.csv": "00c63816284b051a5417e5acb5d53c418c5041a8bb7b61fd4fd038f9b9f99c33",
+    "results/p8-g08-96nOtS/baseline-tcp/raw/baseline-tcp.json": "619850022dd0cec519ad14edc7d69cf476206295411d425b32d794b277bd78d3",
+    "results/p8-g08-96nOtS/baseline-tcp/runs.csv": "7c6e5b013efedf60f73893623cf5dba2ce5c887386fea60867d433f6a50f1e71",
+    "results/p8-g08-96nOtS/baseline-tcp/streams.csv": "0b910c0c8cd238307369e099e1c2c39696a804b31287f7883bca1d275b6ecc4a",
+    "results/p8-g08-96nOtS/gate-summary.json": "149ea3390a1e333d48232b1a126a6a530c064405e844931896e83ff09b07e55c",
+    "results/p8-g08-96nOtS/host/address.active.json": "4eeaa1b90b9ec8c8cc2a743b50cb5bffc5204de98e81817917312f813121e9a2",
+    "results/p8-g08-96nOtS/host/address.before.json": "4eeaa1b90b9ec8c8cc2a743b50cb5bffc5204de98e81817917312f813121e9a2",
+    "results/p8-g08-96nOtS/host/address.final.json": "4eeaa1b90b9ec8c8cc2a743b50cb5bffc5204de98e81817917312f813121e9a2",
+    "results/p8-g08-96nOtS/host/address.interrupt.json": "4eeaa1b90b9ec8c8cc2a743b50cb5bffc5204de98e81817917312f813121e9a2",
+    "results/p8-g08-96nOtS/host/address.teardown.json": "4eeaa1b90b9ec8c8cc2a743b50cb5bffc5204de98e81817917312f813121e9a2",
+    "results/p8-g08-96nOtS/host/link.active.json": "4a10cbb212db75ab47dc961a20e4bd0ddde17554201764a6dfacf5f7297af4f1",
+    "results/p8-g08-96nOtS/host/link.before.json": "4a10cbb212db75ab47dc961a20e4bd0ddde17554201764a6dfacf5f7297af4f1",
+    "results/p8-g08-96nOtS/host/link.final.json": "4a10cbb212db75ab47dc961a20e4bd0ddde17554201764a6dfacf5f7297af4f1",
+    "results/p8-g08-96nOtS/host/link.interrupt.json": "4a10cbb212db75ab47dc961a20e4bd0ddde17554201764a6dfacf5f7297af4f1",
+    "results/p8-g08-96nOtS/host/link.teardown.json": "4a10cbb212db75ab47dc961a20e4bd0ddde17554201764a6dfacf5f7297af4f1",
+    "results/p8-g08-96nOtS/host/route.active.json": "6ef3db3eada1fd03b7b371a8103510e7a5a248fc1d5b4597c359254a6a149c01",
+    "results/p8-g08-96nOtS/host/route.before.json": "6ef3db3eada1fd03b7b371a8103510e7a5a248fc1d5b4597c359254a6a149c01",
+    "results/p8-g08-96nOtS/host/route.final.json": "6ef3db3eada1fd03b7b371a8103510e7a5a248fc1d5b4597c359254a6a149c01",
+    "results/p8-g08-96nOtS/host/route.interrupt.json": "6ef3db3eada1fd03b7b371a8103510e7a5a248fc1d5b4597c359254a6a149c01",
+    "results/p8-g08-96nOtS/host/route.teardown.json": "6ef3db3eada1fd03b7b371a8103510e7a5a248fc1d5b4597c359254a6a149c01",
+    "results/p8-g08-96nOtS/kernel.txt": "bce5ad030043c3bd71afa60524ca2ddb05241bf585ec1b5146a0914d51813ffe",
+    "results/p8-g08-96nOtS/network/after-error.clear.json": "380772f80e2c0b252158484d38aee037733ec0d5814723878437f28c011bfd25",
+    "results/p8-g08-96nOtS/network/baseline-probe.after.json": "79f50455cb382690c3446f59ca878b59db0334f7f311b750e98a0a14fdf83ff8",
+    "results/p8-g08-96nOtS/network/baseline-probe.apply.json": "fd41dc73c23da301bc569b9e4ac90d531191da8b83d4208ac0b0fd8abf7b43ff",
+    "results/p8-g08-96nOtS/network/baseline-probe.before.json": "55c44634f467652279dd257b2c8297d68463ed31142d62e8b79918dc4b382210",
+    "results/p8-g08-96nOtS/network/baseline-quic.after.json": "44b9d921b2aadff7f91fbaaad03daac9590294469da73a519315f99e6e8d504c",
+    "results/p8-g08-96nOtS/network/baseline-quic.after.json.check.json": "c96aee9932c56e6346fda51f46f84126b8d3daf03151493063724e4bfed1e565",
+    "results/p8-g08-96nOtS/network/baseline-quic.apply.json": "cead4915bc0e0ccd716b4725ff889f6d20dab37efb6d452480843b08ce4c4bbb",
+    "results/p8-g08-96nOtS/network/baseline-quic.before.json": "023a80a699b2256ccced58c689df84ea138a80260a7b93df06e8f922f3897e18",
+    "results/p8-g08-96nOtS/network/baseline-tcp.after.json": "4e0da1d54013bf0070e7bfdf455df4d6a2097c29acde5ca9e376fcdb136f9a73",
+    "results/p8-g08-96nOtS/network/baseline-tcp.after.json.check.json": "770cc7ca1092fb508c4f2ef62adafc778556866c985745ff96833a182e9c7dc9",
+    "results/p8-g08-96nOtS/network/baseline-tcp.apply.json": "a790f84c5174cacba8815065a7139987105b4cdc06a2dee6019b9f08b55a35c6",
+    "results/p8-g08-96nOtS/network/baseline-tcp.before.json": "30dc656f1b172a6fb27d568b289ac9d4d10825f30b0de0b72b3707c4fc0547d1",
+    "results/p8-g08-96nOtS/network/egress-demo.apply.json": "30eec8b5810f0e629deaa9a1a8ebc0cf44b6ab9ec5eeb31796229351a3fe02a2",
+    "results/p8-g08-96nOtS/network/egress-demo.inspect.json": "9a26d435fd40c20c82c7bb9a9332423a1442dc1bd8adac8015bc5fd1cca2b46c",
+    "results/p8-g08-96nOtS/network/error-apply.log": "5d132f2c1e41d560962812061ff33fe693613a55af0d2abcd6a6f7a5400b1bc2",
+    "results/p8-g08-96nOtS/network/error-cleared.json": "cab7af4fc4f23c019f7f42b16e91b2a8337a7f462409930302be535fd654ee22",
+    "results/p8-g08-96nOtS/network/explicit.clear.json": "8152102edfb325fc3c4b91264353199e56a224445a05dc50c11ec10405a96d3c",
+    "results/p8-g08-96nOtS/network/idempotent.clear.json": "f05367b69037a5cb4f249ade26fc73c7c847af00b421d796719586eb029cec9a",
+    "results/p8-g08-96nOtS/network/ingress-again.apply.json": "72dc0ae25de4c77a00240c6b0d8b2029b019449176a7e941f10bac5779e88127",
+    "results/p8-g08-96nOtS/network/ingress-again.inspect.json": "8d1211aee8d00f56943a0f1aa8064228c1fe9ac519bb66a3645c559e1bd8c31c",
+    "results/p8-g08-96nOtS/network/rtt50-loss0-probe.after.json": "51a60fadf36133287fa4298437a6ebc88559f13fb664b91b47a6f0628b7338dc",
+    "results/p8-g08-96nOtS/network/rtt50-loss0-probe.apply.json": "26d6036abbf70b7dea62bb9f9884d8625547009c83d4c2399c663eaa324f3e7e",
+    "results/p8-g08-96nOtS/network/rtt50-loss0-probe.before.json": "e02bbb04305806e7a20d20f09962c7b2f97c3126cf6d9fff0687a9a00f148cd9",
+    "results/p8-g08-96nOtS/network/rtt50-loss0-quic.after.json": "5e1b036842f401e9d2c99ddab5d3d4ef047d3308932d2286bd20aba8bfa5bffa",
+    "results/p8-g08-96nOtS/network/rtt50-loss0-quic.after.json.check.json": "5b5e0fdfdd67b5fa1ab655c3e1d64ac3a375351c36383dffd3f08e3d277cdae6",
+    "results/p8-g08-96nOtS/network/rtt50-loss0-quic.apply.json": "2b2b928ffc16c2a34f7fe6226eb3654bc1ce8b2328e90646d58b32aceb5dba2e",
+    "results/p8-g08-96nOtS/network/rtt50-loss0-quic.before.json": "82b0dcf6699d9f15f495220c3bb9257221383960f54b53b4d0042db4ec518061",
+    "results/p8-g08-96nOtS/network/rtt50-loss0-tcp.after.json": "e3d3374f595986612a0ebaab6d403fe2c2406a0fe02160cc7a24086fe841cd36",
+    "results/p8-g08-96nOtS/network/rtt50-loss0-tcp.after.json.check.json": "751100c50b686f424fecb324dd74ef3b25b840d4d3a8d0da4948e6cf4942220f",
+    "results/p8-g08-96nOtS/network/rtt50-loss0-tcp.apply.json": "e90096ada919046f6ed2744a431c690e8e20a13c29b383c83ac6842273b115b7",
+    "results/p8-g08-96nOtS/network/rtt50-loss0-tcp.before.json": "2b496cab08dfdbfec4123b142cda0dcc0aab2d39feb985253244a6466f1d522c",
+    "results/p8-g08-96nOtS/network/rtt50-loss1-quic.after.json": "e1dd4b9cdcdf1bb5c3a5a86ba63012f18ca02dc442806bec8efdb70d646c3b6e",
+    "results/p8-g08-96nOtS/network/rtt50-loss1-quic.after.json.check.json": "a1eaa44d16f796d8d21ab0fc22efb570af7f965dabaf2e463d704827b1a69fe4",
+    "results/p8-g08-96nOtS/network/rtt50-loss1-quic.apply.json": "1dff2effb4a87feccacf5eae79df354bc3694fa47e72cab768f9fab4e989ffad",
+    "results/p8-g08-96nOtS/network/rtt50-loss1-quic.before.json": "e27054f1c86b47667b7684bbba70c5a388241e0038023f8409bfa8acc2166d96",
+    "results/p8-g08-96nOtS/network/rtt50-loss1-tcp.after.json": "ef8af81156cff97fcc5d109797dbb0bfa7309f523349069b2517a7bdbec7c5ca",
+    "results/p8-g08-96nOtS/network/rtt50-loss1-tcp.after.json.check.json": "259560bf937f3c810c90c39cf90a06150717f044d4f713b4908fc4afcaf84ac3",
+    "results/p8-g08-96nOtS/network/rtt50-loss1-tcp.apply.json": "97f322121d33e84fa730f7d00e57a5aabee703902dd51d1fc760e41e7a4e346c",
+    "results/p8-g08-96nOtS/network/rtt50-loss1-tcp.before.json": "d3eab2b1b819add8e976bfaa9d74f87034d9a43607a1b6fa05ae6c35621a2f53",
+    "results/p8-g08-96nOtS/network/rtt50-loss3-quic.after.json": "9511c8107ca242879b96e146088a87e428534261af59126908aa0af25e838d29",
+    "results/p8-g08-96nOtS/network/rtt50-loss3-quic.after.json.check.json": "3a5f8cb27fe71db06a1130e4c17314022d97dc91ba4a4a6558ba40f5c9a1a75c",
+    "results/p8-g08-96nOtS/network/rtt50-loss3-quic.apply.json": "506bc3e977afc907638e0c78e11e8a31f3c531af2725d8b98141c2a8da396250",
+    "results/p8-g08-96nOtS/network/rtt50-loss3-quic.before.json": "a612d8266e716e23aaac59666f4cf2392a78c70c2485a3dbfc616569efcf321b",
+    "results/p8-g08-96nOtS/network/rtt50-loss3-tcp.after.json": "9371116996d95ab7f356cea479f6c7833d8cd0de0a06148b83931c2bd73fd0af",
+    "results/p8-g08-96nOtS/network/rtt50-loss3-tcp.after.json.check.json": "61ec5fc802cabb149631fe86b9f30387305f4589378dcfb54ddc27d9895d3189",
+    "results/p8-g08-96nOtS/network/rtt50-loss3-tcp.apply.json": "9a1bf6f03483354e772c81de50f4f4ae915ee75ea953e741a80e8c0e2e1f3f64",
+    "results/p8-g08-96nOtS/network/rtt50-loss3-tcp.before.json": "48964ab11faabee69b3cc0472bcc9d8c19592f7f4e21ef38c47fbddb06996cff",
+    "results/p8-g08-96nOtS/probes/baseline-qclient.log": "edb7f603a1fe6bde228691a16d49377ebc88a1870dea387d3808f87d01c34574",
+    "results/p8-g08-96nOtS/probes/baseline-qclient.log.json": "8e6dc22d883b6c5898964dbf02786bf7e02a2a1ec5d53dd99a34eb34eabecefa",
+    "results/p8-g08-96nOtS/probes/baseline-qserver.log": "e3210da680f3460559336ba10652a38f44bd0d380573d6e7044b63bce0cbf203",
+    "results/p8-g08-96nOtS/probes/baseline-qserver.log.json": "aa760bcabf6892bac05054d79bbaee8b784404dc46bed762da07e7aee17a49e0",
+    "results/p8-g08-96nOtS/probes/rtt50-loss0-qclient.log": "714abe00c04157745420bba3b042c8daf5d34fb6e86bf97b1b527406f5ff01e4",
+    "results/p8-g08-96nOtS/probes/rtt50-loss0-qclient.log.json": "3609fba56dda7a11404b65088f4b92c2f83e6b5a058b2b9072f3475a79d31f31",
+    "results/p8-g08-96nOtS/probes/rtt50-loss0-qserver.log": "a3d8282064a002253a021e6dd7b4924dd46d50b780c0209d3fd85000f3714198",
+    "results/p8-g08-96nOtS/probes/rtt50-loss0-qserver.log.json": "819ca0c0ee4a5be29a147c0254c0da99573bffee855d26cf979c2113755ee1e6",
+    "results/p8-g08-96nOtS/rtt50-loss0-quic/raw/rtt50-loss0-quic.json": "2f382189bdc828a235b37b8786918afd92e4bd1e52cb066c07df409fc6f096a4",
+    "results/p8-g08-96nOtS/rtt50-loss0-quic/runs.csv": "3b3f7bdc19d5b28301fae09bf5ebc203e4609372e1f90521fd540effb44b735d",
+    "results/p8-g08-96nOtS/rtt50-loss0-quic/streams.csv": "39dfe0ebbb84218ac25245e571fabba86755d1e335dbf607d27acec7e6f985b2",
+    "results/p8-g08-96nOtS/rtt50-loss0-tcp/raw/rtt50-loss0-tcp.json": "e6e051771a13f073edcc821e7262deadca7cd27ec625ffa919caf10d1e212ea9",
+    "results/p8-g08-96nOtS/rtt50-loss0-tcp/runs.csv": "d645ad3fe16aeea8784e616064e44dd65712cb776373a8705bd00385c0ce06e3",
+    "results/p8-g08-96nOtS/rtt50-loss0-tcp/streams.csv": "f490402eab727df406b5875ce5a429869775dda3cc048feb56da55b36e907577",
+    "results/p8-g08-96nOtS/rtt50-loss1-quic/raw/rtt50-loss1-quic.json": "9cc9246e44209fe98e1da9f742ee0e348341524f5eb1966ea9a6a7b31922d465",
+    "results/p8-g08-96nOtS/rtt50-loss1-quic/runs.csv": "4b97966d23966a004fd78c098e94067046a473ea1b43ea0b92282438c89e5393",
+    "results/p8-g08-96nOtS/rtt50-loss1-quic/streams.csv": "ff4bcac2b31fc9f4eaed670e61f7d6e8c7be43741b3afc4e23ea7e661b9c516f",
+    "results/p8-g08-96nOtS/rtt50-loss1-tcp/raw/rtt50-loss1-tcp.json": "883e220e1fb396fab0d46ba43fa79c80e5cf8f287ea037cb2e21d629e1dd24c7",
+    "results/p8-g08-96nOtS/rtt50-loss1-tcp/runs.csv": "7c0fc20e17572968d58673f3afc1174f99a61f8ee8b08dbb1698dfd955de6d84",
+    "results/p8-g08-96nOtS/rtt50-loss1-tcp/streams.csv": "fc455b52dace53135aca90b5f55a27bee8900027c4f3045964370596e49ad9df",
+    "results/p8-g08-96nOtS/rtt50-loss3-quic/raw/rtt50-loss3-quic.json": "5f3c599bbcb600e85350114fd5140be62c72c949741f00f2e06526b116d049ca",
+    "results/p8-g08-96nOtS/rtt50-loss3-quic/runs.csv": "9e49b3514620c0367face83d00221394a0ef316ab9d86253042d50b01be01a5c",
+    "results/p8-g08-96nOtS/rtt50-loss3-quic/streams.csv": "45c0985963aa6b20d843d6a44ce287d39c854f684f52b48ff2a27d5fb37bf3dd",
+    "results/p8-g08-96nOtS/rtt50-loss3-tcp/raw/rtt50-loss3-tcp.json": "5e254d3763ae663ce1409a6e9838db111813ad04f30b8fffcd0a32c0731a4915",
+    "results/p8-g08-96nOtS/rtt50-loss3-tcp/runs.csv": "327bb7b5f61f83c69dd345f7a41e7a95a174536d4ea1d4552226d4001fd0afce",
+    "results/p8-g08-96nOtS/rtt50-loss3-tcp/streams.csv": "5a6d86a28259441c845881800022da8641c859f6f246ea2a9507c2b0e7bc4246",
+    "results/p8-g08-96nOtS/tc-version.txt": "951827f600e5f9e57460719b2394bbcdf27bce30c0e37ab77e81342e664d68d9",
+    "results/p8-g08-qOYl2H/gate-summary.json": "e791cbed028fe58d04d68807473b1a599d8c1d93043c59b1f6e678ff8cc13389",
+    "results/p8-g08-qOYl2H/host/address.before.json": "4eeaa1b90b9ec8c8cc2a743b50cb5bffc5204de98e81817917312f813121e9a2",
+    "results/p8-g08-qOYl2H/host/address.final.json": "4eeaa1b90b9ec8c8cc2a743b50cb5bffc5204de98e81817917312f813121e9a2",
+    "results/p8-g08-qOYl2H/host/link.before.json": "4a10cbb212db75ab47dc961a20e4bd0ddde17554201764a6dfacf5f7297af4f1",
+    "results/p8-g08-qOYl2H/host/link.final.json": "4a10cbb212db75ab47dc961a20e4bd0ddde17554201764a6dfacf5f7297af4f1",
+    "results/p8-g08-qOYl2H/host/route.before.json": "6ef3db3eada1fd03b7b371a8103510e7a5a248fc1d5b4597c359254a6a149c01",
+    "results/p8-g08-qOYl2H/host/route.final.json": "6ef3db3eada1fd03b7b371a8103510e7a5a248fc1d5b4597c359254a6a149c01",
+    "results/p8-g08-qOYl2H/kernel.txt": "bce5ad030043c3bd71afa60524ca2ddb05241bf585ec1b5146a0914d51813ffe",
+    "results/p8-g08-qOYl2H/network/cleanup.json": "ca74efe10e2e0ecbc599bad8de836afa48b99ebc05d1131656ca2dedd1f70814",
+    "results/p8-g08-qOYl2H/network/interrupt.apply.json": "172c0ebc23767c34093f463f98b80d09d322811f0eb86c91a524c9147f43219c",
+    "results/p8-g08-qOYl2H/tc-version.txt": "951827f600e5f9e57460719b2394bbcdf27bce30c0e37ab77e81342e664d68d9",
+    "docs/evidence/p8/g08-system-rerun.log": "7d9cb7ab06229be77fcdd5841b8a0d3057618a81e2e7f528efda2ec3f41949d0"
+  },
+  "limitations": [
+    "One evidence trial per transport/scenario; no main statistical cohort or HOL causality",
+    "Same seed is not identical packet loss trace",
+    "Downstream includes control/ACK; drops not all attributable to random loss",
+    "Snapshot is not continuous kernel-state locking",
+    "Fresh-boot first IFB module load unverified",
+    "Human P8 code review not confirmed"
+  ]
+}

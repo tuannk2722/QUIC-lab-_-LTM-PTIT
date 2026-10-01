@@ -1,0 +1,2 @@
+network: run through sudo; network setup/entry requires root
+wrapper_nonroot_exit=3
