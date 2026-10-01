@@ -100,6 +100,8 @@ Evidence mode ghi khi vượt mốc 16KiB hoặc chunk cuối, append in-memory 
 
 ## 5. Manifest bắt buộc
 
+D24: `make build` tạo receipt hash app source inputs và server/client/bench binaries. Plan lưu `build.json`, hash và nội dung receipt trong manifest; inventory source được đối chiếu với receipt. Entry xác minh current bench image/binaries/source trước t0, wrapper thực thi descriptor đã hash. Không dùng source tree hiện tại thay bằng chứng binary đã build. Legacy evidence được đọc theo metadata lịch sử, không bổ sung receipt giả.
+
 Host OS, execution environment/virtualization layer (ví dụ WSL2), Linux distribution/release và kernel, allocated logical CPU/RAM/swap, WSL/VM version nếu áp dụng (hypervisor nếu xác định được), Go/quic-go version, build flags, git commit hoặc `uncommitted`, dirty flag, ngày UTC, CLI, workload checksum/generator version, TLS/ALPN/version/cipher, TCP CC từ kernel, QUIC CC/default có bằng chứng phiên bản, QUIC flow-control/stream limits, MTU, socket buffer settings, offload state, network placement và qdisc/filter output, configured/measured RTT, seeds, timeout, trace state, config/schema hash, runner order và failure policy.
 
 Không biết field nào ghi `unknown` kèm lý do, không bịa “CUBIC giống nhau” khi chưa xác minh. Hai CC cùng tên vẫn khác implementation. Manifest phản ánh cấu hình thực, không chỉ copy desired JSON.
@@ -115,6 +117,8 @@ Không biết field nào ghi `unknown` kèm lý do, không bịa “CUBIC giốn
 - Chart HOL phải kèm run_id và lời giải thích evidence; không dùng bar completion để tuyên bố stream cụ thể là stream duy nhất mất packet. Qlog có thể cho thấy packet chứa nhiều streams.
 
 ## 7. Kiểm tra dữ liệu
+
+D24: claim `logs/<run_id>.claim.json` phải được publish nguyên tử trước transfer, giữ sau crash để ngăn invocation trùng. Successful shard cần journal đã kết thúc với exit0; thiếu journal → runner_error, chưa có completion → interrupted; malformed completion bị reject. Giữ raw gốc và N resource rows, loại trial này khỏi successful aggregate. Finalization độc lập stdout terminal và giữ log riêng cho merge/validate/summary/plot.
 
 Schemas trong `schemas/` định nghĩa header/field type, enums, nullability; chưa có result rows. Agent implement validation: unique run_id, streams FK, N rows/trial, metrics đúng công thức với tolerance floating, totals không âm, success yêu cầu bytes/hash đúng, main cohorts đúng count/config, không trộn trace mode. JSON schema định nghĩa record; validator CSV chuyển kiểu theo mapping rồi validate.
 

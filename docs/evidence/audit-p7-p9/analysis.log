@@ -1,0 +1,25 @@
+python3 -m unittest discover -s analysis -p 'test_stats.py' -v
+test_failures_warmups_and_outliers (test_stats.StatisticsTests.test_failures_warmups_and_outliers) ... ok
+test_nearest_rank_even_median_and_sample_stddev (test_stats.StatisticsTests.test_nearest_rank_even_median_and_sample_stddev) ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.006s
+
+OK
+python3 tests/system/test_bench.py -v
+test_idle_requires_drained_queues_and_quiet_counters (__main__.NetworkChecks.test_idle_requires_drained_queues_and_quiet_counters) ... ok
+test_matching_and_config_or_counter_change (__main__.NetworkChecks.test_matching_and_config_or_counter_change) ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.016s
+
+OK
+python3 tests/system/test_audit_p7_p9.py -v
+test_build_receipt_rejects_stale_source_and_binaries (__main__.AuditTests.test_build_receipt_rejects_stale_source_and_binaries) ... ok
+test_experiment_lock_excludes_second_runner_and_releases (__main__.AuditTests.test_experiment_lock_excludes_second_runner_and_releases) ... ok
+test_signal_cleanup_with_closed_output_keeps_all_artifacts (__main__.AuditTests.test_signal_cleanup_with_closed_output_keeps_all_artifacts) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 2.240s
+
+OK

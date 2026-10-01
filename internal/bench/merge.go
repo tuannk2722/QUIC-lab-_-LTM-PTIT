@@ -87,8 +87,17 @@ func Merge(root string) (Counts, error) {
 			if inv.SchemaVersion != 1 || inv.RunID != e.RunID {
 				return counts, fmt.Errorf("invalid invocation record")
 			}
-			if _, err := time.Parse(time.RFC3339Nano, inv.StartedUTC); err != nil {
+			start, err := time.Parse(time.RFC3339Nano, inv.StartedUTC)
+			if err != nil {
 				return counts, err
+			}
+			if inv.ExitCode != nil {
+				end, err := time.Parse(time.RFC3339Nano, inv.EndedUTC)
+				if err != nil || end.Before(start) || *inv.ExitCode < 0 || *inv.ExitCode > 255 {
+					return counts, fmt.Errorf("invalid invocation completion: %s", e.RunID)
+				}
+			} else if inv.EndedUTC != "" {
+				return counts, fmt.Errorf("invocation end without exit code: %s", e.RunID)
 			}
 			invoked = true
 			counts.Invoked++
@@ -117,7 +126,13 @@ func Merge(root string) (Counts, error) {
 			} else if !os.IsNotExist(err) {
 				return counts, err
 			}
-			if inv.ExitCode != nil && *inv.ExitCode != 0 && record.Run.Success {
+			if record.Run.ErrorCode == "result_write_error" {
+				// Preserve the more specific incomplete-publication diagnosis.
+			} else if !invoked {
+				record = failRecord(record, "runner_error", "shard has no invocation journal; original shard retained")
+			} else if inv.ExitCode == nil {
+				record = failRecord(record, "interrupted", "invocation completion unavailable; original shard retained")
+			} else if *inv.ExitCode != 0 && record.Run.Success {
 				record = failRecord(record, "runner_error", "invocation exited nonzero; original shard retained")
 			}
 		} else if os.IsNotExist(statErr) {

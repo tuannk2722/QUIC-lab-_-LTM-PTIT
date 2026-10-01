@@ -53,6 +53,9 @@ func ExecuteEntry(ctx context.Context, path, out, profiles, scenarios, ca, netwo
 	} else if !os.IsNotExist(err) {
 		return metrics.TrialRecord{}, err
 	}
+	if _, err := VerifyBuild(filepath.Join(root, "build.json")); err != nil {
+		return metrics.TrialRecord{}, err
+	}
 	if s.Execution == "ingress-ifb" {
 		n, err := config.LoadNetworkState(networkPath)
 		if err != nil {
@@ -75,6 +78,11 @@ func ExecuteEntry(ctx context.Context, path, out, profiles, scenarios, ca, netwo
 	if err != nil {
 		return metrics.TrialRecord{}, err
 	}
+	// A permanent, atomic claim precedes all network activity. Keep it after
+	// errors / process death: a scheduled observation must never be replayed.
+	if err := claimEntry(root, e); err != nil {
+		return metrics.TrialRecord{}, err
+	}
 	results, transferErr := RunCold(ctx, e.Transport, s.Addr, cfg, store, time.Duration(s.TimeoutNS))
 	record, err := metrics.NewTrial(s.Meta(e), results, transferErr)
 	if err != nil {
@@ -89,6 +97,18 @@ func ExecuteEntry(ctx context.Context, path, out, profiles, scenarios, ca, netwo
 		}
 	}
 	return record, transferErr
+}
+
+func claimEntry(root string, e Entry) error {
+	if _, err := os.Lstat(filepath.Join(root, "raw")); err == nil {
+		return fmt.Errorf("aggregate already started; refusing trial")
+	} else if !os.IsNotExist(err) {
+		return err
+	}
+	if err := WriteJSON(filepath.Join(root, "logs", e.RunID+".claim.json"), e); err != nil {
+		return fmt.Errorf("cannot claim scheduled entry (already claimed or unavailable): %w", err)
+	}
+	return nil
 }
 
 // Missing represents absent/incomplete output, not a measured transfer. The

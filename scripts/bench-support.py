@@ -12,8 +12,10 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO / 'analysis'))
 sys.path.insert(0, str(REPO / 'tests/system'))
+sys.path.insert(0, str(REPO / 'scripts'))
 from cohort import digest
 from check_g08 import netem, probe
+from build import load_verified, launch_verified
 
 
 def now():
@@ -143,6 +145,7 @@ def main():
     if os.getuid() == 0:
         raise ValueError('metadata/check/analysis must run unprivileged')
     if op == 'preflight':
+        load_verified(REPO / 'bin/build.json')
         pinned()
         if read(REPO / 'docs/evidence/p8/g08-status.json')['status'] != 'PASS':
             raise ValueError('actual G08 must be PASS before main cohort')
@@ -162,6 +165,9 @@ def main():
         for e in read(Path(args[0]) / 'schedule.json')['entries']:
             seed = str(e['netem_seed']) if e['netem_seed'] is not None else 'none'
             print(f"{e['run_id']}\t{e['scenario']}\t{seed}")
+    elif op == 'launch-verified':
+        log, root, name, *argv = args
+        launch_verified(log, root, name, argv)
     elif op == 'launch-log':
         log, program, *argv = args
         with open(log, 'x') as target:

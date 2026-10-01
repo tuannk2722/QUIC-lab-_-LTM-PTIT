@@ -1,0 +1,41 @@
+{
+  "scope": "five P7-P9 architecture/concurrency audit fixes; no P10",
+  "software_status": "PASS",
+  "actual_G09_regression": "BLOCKED",
+  "blocker": "sudo: interactive authentication is required; exit 1 before runner",
+  "historical_G09": "PASS for original source/evidence only",
+  "local_result": "results/p9-software-jf1ghox3",
+  "tests": {
+    "make build": 0,
+    "make test": 0,
+    "make test-race": 0,
+    "make test-network": 0,
+    "make test-analysis": 0,
+    "python3 tests/system/test_audit_p7_p9.py -v": 0,
+    "python3 tests/system/run_g09_software.py": 0,
+    "static checks": 0
+  },
+  "limitations": [
+    "no actual namespace or main performance rerun for patch",
+    "terminal process-group Ctrl+C through tee still needs actual verification",
+    "closed-pipe unit exercises real cleanup with mocked process/network sides",
+    "manual network mutation during benchmark remains forbidden",
+    "SIGKILL wrapper cannot trap"
+  ],
+  "evidence_sha256": {
+    "go-race.log": "2449f7db839d1d09f0186375e1877c77e384b4bf08013bb75891f58fbdbe3732",
+    "README.md": "5e7463c33c77224cdfa4ed947e2be66492a3bc339e1a1ddad8d0a195b2db93de",
+    "localhost-review.json": "2fc7551a1a2a12db66755d4e3ff26d75b1aeef640c8714eaa19db1caa27b5fb9",
+    "analysis.log": "e3fea6758e3d504437b5509873b95d042b453a02e2fe3bed836247d2b4116820",
+    "static.log": "6729a3f03888a462f0780cb5391a8625c645b95691db0bb895b91c4d40f9a618",
+    "system-attempt.log": "22ec28b719ddc7acd09a592c9aea4f348617380367a144e71fc120cc9bbb4f37",
+    "software.log": "177e68cf9982bad113cc84742436c732d5ec07d7aa6998b335e81106c071ed57",
+    "lifecycle-final.log": "4db86404a59183d4576f0712aeb16b1190f62ac442642910b2654b5f6984c731",
+    "software-first-attempt.log": "acd8a7cbcb11f1adf188c0b30d63be456cf1412815cc1bf374314d435e842c2c",
+    "network-unit.log": "3510d0c8ab3c4c5e87ab52a58e1868c73a935510892216aaef73c1170f3909d3",
+    "build.log": "09b820a746b77edbdeba572a8266485f63bca62c9e58548617f9932add6bfd0c",
+    "go-suite.log": "dad4934574f378cbbdcb83eac1f893b3b0eb0107ac0896fe87e6cba1fc0539e2",
+    "localhost-artifacts.tar.gz": "de7c81e2f9e71151ed8c0d48eba7bd65c98b9c9c4d5ea23f7d4f9fe701f19183",
+    "bench-unit.log": "006bd4e2686721caed0e85539cb1ab0ff69f54c286dba5494ba4f1cbf6309d77"
+  }
+}

@@ -26,6 +26,15 @@ def load(directory, main=False):
     manifest = json.loads((directory / 'manifest.json').read_text())
     require(manifest['experiment_id'] == plan['experiment_id'], 'manifest experiment mismatch')
     require(manifest['hashes']['schedule.json'] == digest(directory / 'schedule.json'), 'schedule hash differs')
+    # Historical P9 artifacts predate build receipts. New receipts are bound
+    # to both the manifest and the saved source inventory, not today's tree.
+    if 'build.json' in manifest['hashes']:
+        receipt = json.loads((directory / 'build.json').read_text())
+        require(digest(directory / 'build.json') == manifest['hashes']['build.json'], 'build receipt hash differs')
+        require(receipt == manifest['build_provenance'], 'manifest/build receipt differs')
+        sources = json.loads((directory / 'source-hashes.json').read_text())
+        require(receipt['schema_version'] == 1 and set(receipt['binaries']) == {'server', 'client', 'bench'}, 'invalid build receipt')
+        require(all(sources.get(k) == v for k, v in receipt['inputs'].items()), 'build/source inventory differs')
     for name, field, embedded in [('workloads.json', 'workloads_sha256', 'workloads'),
                                    ('scenarios.json', 'scenarios_sha256', 'scenarios'), ('ca.crt', 'ca_sha256', None)]:
         path = directory / 'config' / name

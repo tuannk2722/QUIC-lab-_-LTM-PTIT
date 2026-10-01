@@ -6,7 +6,10 @@ export LC_ALL=C
 cd "$(dirname "$0")/.."
 repo=$(pwd -P)
 source scripts/network/common.sh
+source scripts/bench-lifecycle.sh
 require_sudo_caller
+# Terminal output is best effort; artifact finalization never uses this pipe.
+trap '' PIPE
 out=
 interrupt_case=false
 plan_args=()
@@ -21,9 +24,9 @@ while (( $# )); do
     esac
     shift
 done
-run_user() { setpriv --reuid "$SUDO_UID" --regid "$SUDO_GID" --init-groups -- "$@"; }
+run_user() { setpriv --reuid "$SUDO_UID" --regid "$SUDO_GID" --init-groups -- "$@" 8>&-; }
 support() { run_user python3 scripts/bench-support.py "$@"; }
-say() { printf 'P9: %s\n' "$*"; }
+say() { printf 'P9: %s\n' "$*" 2>/dev/null || true; }
 active=false
 server_pid=
 trial_pid=
@@ -58,26 +61,15 @@ host_compare() {
 snapshot() { bash scripts/network/inspect.sh | run_user tee "$1" >/dev/null; }
 apply() { bash scripts/network/netem.sh --scenario="$1" --profile=ingress-ifb --seed="$2" | run_user tee "$3" >/dev/null; }
 infra_fail() { environment_failed=true; echo "P9 environment failure: $*" >&2; exit 3; }
-merge() {
-    local rc=0
-    run_user "$repo/bin/bench" --merge="$out" || rc=$?
-    (( rc <= 1 )) || return "$rc"
-    [[ -f $out/merge.json && ! -e $out/INCOMPLETE ]] || return 1
-    merged=true
-    run_user python3 analysis/validate.py "$out" || return 1
-    run_user python3 analysis/summarize.py "$out" || return 1
-    run_user python3 analysis/plot.py "$out" || return 1
-    analyzed=true
-    return "$rc"
-}
 cleanup() {
     local original=$? clean_rc=0 rc
-    trap - EXIT INT TERM
+    trap - EXIT
+    trap '' INT TERM PIPE
     set +e
     if [[ -n $trial_pid ]]; then
         stop_process "$trial_pid"; rc=$?
         # TERM from our cleanup is expected, while inability to stop is not.
-        (( rc == 0 || rc == 143 || rc == 124 || rc == 1 )) || clean_rc=1
+        (( rc == 0 || rc == 130 || rc == 143 || rc == 124 || rc == 1 )) || clean_rc=1
         [[ $forced_stop == false ]] || clean_rc=1
         if [[ -n $trial_id ]]; then support invocation "$out" "$trial_id" "$original" || clean_rc=1; fi
         trial_pid=
@@ -86,7 +78,7 @@ cleanup() {
     server_pid=
     if [[ $active == true ]]; then
         bash scripts/network/clear-netem.sh | run_user tee "$out/network/cleanup.json" >/dev/null || clean_rc=1
-        bash scripts/network/teardown.sh || clean_rc=1
+        bash scripts/network/teardown.sh | run_user tee "$out/logs/teardown.log" >/dev/null || clean_rc=1
         if namespace_exists qclient || namespace_exists qserver || [[ -e $LAB_MARKER ]]; then clean_rc=1; fi
     fi
     if [[ $planned == true ]]; then
@@ -103,6 +95,7 @@ trap cleanup EXIT
 trap 'exit 130' INT
 trap 'exit 143' TERM
 for tool in ip tc ethtool ping python3 setpriv flock sysctl modprobe timeout ss; do command -v "$tool" >/dev/null || lab_die "missing $tool"; done
+acquire_experiment_lock
 [[ $(uname -r) == *microsoft*WSL2* && $repo == /home/* ]] || lab_die 'Ubuntu WSL2/native Linux /home is required'
 [[ $(. /etc/os-release; printf '%s' "$ID") == ubuntu ]] || lab_die 'Ubuntu is required'
 [[ -x bin/server && -x bin/bench ]] || lab_die 'run make build as normal user first'
@@ -134,8 +127,8 @@ for scenario in baseline rtt50-loss0; do
 done
 host_compare active || infra_fail 'host state changed during setup'
 ready="$out/ready"
-bash scripts/run-in-netns.sh qserver -- /usr/bin/python3 "$repo/scripts/bench-support.py" launch-log \
-    "$out/logs/server.log" "$repo/bin/server" --transport=both --profile=bulk --listen=10.10.0.2:4433 --ready-file="$ready" &
+bash scripts/run-in-netns.sh qserver -- /usr/bin/python3 "$repo/scripts/bench-support.py" launch-verified \
+    "$out/logs/server.log" "$out" server --transport=both --profile=bulk --listen=10.10.0.2:4433 --ready-file="$ready" 8>&- &
 server_pid=$!
 for ((i=0;i<100;i++)); do [[ -s $ready ]] && break; is_running "$server_pid" || infra_fail 'server exited before readiness'; sleep 0.1; done
 [[ -s $ready && $(stat -c '%u:%g' "/proc/$server_pid") == "$SUDO_UID:$SUDO_GID" ]] || infra_fail 'server readiness/UID failed'
@@ -149,10 +142,17 @@ while IFS=$'\t' read -r rid scenario seed; do
     trial_id=$rid
     say "trial=$rid scenario=$scenario seed=$seed"
     timeout --signal=TERM --kill-after=5s "${trial_timeout}s" bash scripts/run-in-netns.sh qclient -- \
-        /usr/bin/python3 "$repo/scripts/bench-support.py" launch-log "$out/logs/$rid.log" "$repo/bin/bench" \
-        --schedule-entry="$out/entries/$rid.json" --out="$out/shards/$rid" --network-state="$out/network/$rid.before.json" &
+        /usr/bin/python3 "$repo/scripts/bench-support.py" launch-verified "$out/logs/$rid.log" "$out" bench \
+        --schedule-entry="$out/entries/$rid.json" --out="$out/shards/$rid" --network-state="$out/network/$rid.before.json" 8>&- &
     trial_pid=$!
-    if [[ $interrupt_case == true ]]; then sleep 0.2; kill -INT "$$"; fi
+    if [[ $interrupt_case == true ]]; then
+        sleep 0.2
+        contender_rc=0
+        bash scripts/bench.sh --out="$out-contender" 8>&- 2>&1 |
+            run_user tee "$out/logs/contender.log" >/dev/null || contender_rc=$?
+        [[ $contender_rc == 3 && ! -e $out-contender ]] || infra_fail 'competing runner was not refused before planning'
+        kill -INT "$$"
+    fi
     trial_rc=0
     wait "$trial_pid" || trial_rc=$?
     trial_pid=

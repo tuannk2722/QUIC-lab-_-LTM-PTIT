@@ -1,5 +1,7 @@
 # Kết quả nghiệm thu — P0/G00 đến P9/G09
 
+**Audit fix P7–P9 (D24, 2026-10-01):** đã sửa năm findings lifecycle/concurrency/provenance. G00-build, G06/G09 journal/claim/provenance/localhost và G07/G08 lifecycle/network software regressions PASS; actual G09 của bản sửa **BLOCKED** bởi sudo authentication trước runner. Closed-pipe cleanup regression PASS không thay actual Ctrl+C terminal trong namespace. [Evidence, logs và lệnh rerun](evidence/audit-p7-p9/README.md). PASS của actual dataset cũ bên dưới là lịch sử, không chứng minh source mới đã qua system gate; không P10.
+
 Ngày cập nhật: 2026-10-01 UTC. Baseline: `7e54ad654b14b8eb38b0db369203df4d34f003d7`; đầu P4 ở commit `65d5a7b`. Người dùng đã human-review/approve P0/G00 và P4/G04; cho phép P5→G05→P6→G06 tuần tự. Môi trường: Ubuntu 26.04.1 LTS trong WSL2, UID 1000.
 
 **P0/G00 đến P8/G08 PASS.** User chạy G08 rerun UTC02:57:20Z main exit0/cleanup0, tám successful bulk evidence trials/48 hashes, bốn RTT probes và expected SIGINT child130/cleanup0. Agent đối chiếu 35 verified snapshots, five clear snapshots, 15 equal host comparisons; [review/hash](evidence/p8/g08-rerun-review.json). Giữ failure/blocked logs lịch sử. User xác nhận P8 PASS và cho phép riêng P9. P9 code/software và full G09 actual user rerun PASS tại results/p9-g09-8dFdkj: main256 success/1536 rows, controlled child130/cleanup0; agent audit3695 hashes. Terminal Ctrl+C qua tee141/cleanup1 còn issue riêng; dừng human review P9, không P10. Chưa tự nhận human review code P9.

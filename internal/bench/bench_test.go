@@ -4,12 +4,108 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
+	"sync"
+	"sync/atomic"
 	"testing"
 	"time"
 
 	"quic-performance-lab/internal/config"
 	"quic-performance-lab/internal/metrics"
 )
+
+func TestEntryClaimIsAtomicAndPermanent(t *testing.T) {
+	root := t.TempDir()
+	if err := os.Mkdir(filepath.Join(root, "logs"), 0700); err != nil {
+		t.Fatal(err)
+	}
+	entry := Entry{RunID: "same_entry"}
+	var wins atomic.Int32
+	var workers sync.WaitGroup
+	start := make(chan struct{})
+	for range 32 {
+		workers.Go(func() {
+			<-start
+			if claimEntry(root, entry) == nil {
+				wins.Add(1)
+			}
+		})
+	}
+	close(start)
+	workers.Wait()
+	if wins.Load() != 1 {
+		t.Fatalf("concurrent claims won %d times", wins.Load())
+	}
+	if claimEntry(root, entry) == nil {
+		t.Fatal("claim can be replayed without a shard")
+	}
+	if err := os.Mkdir(filepath.Join(root, "raw"), 0700); err != nil {
+		t.Fatal(err)
+	}
+	if claimEntry(root, Entry{RunID: "new_entry"}) == nil {
+		t.Fatal("entry started after aggregate freeze")
+	}
+}
+
+func TestMergeRequiresFinishedInvocation(t *testing.T) {
+	for _, journal := range []string{"absent", "unfinished", "complete", "bad_end"} {
+		t.Run(journal, func(t *testing.T) {
+			s := scheduleFixture(t)
+			s.Runs, s.Warmups, s.ScenarioNames, s.Execution = 1, 0, []string{"baseline"}, "loopback-test"
+			root := filepath.Join(t.TempDir(), "plan")
+			if err := WritePlan(root, s); err != nil {
+				t.Fatal(err)
+			}
+			s, _ = LoadSchedule(root)
+			e := s.Entries[0]
+			// Synthetic unit record only; no benchmark result is published.
+			r := Missing(s, e, "", "", s.CreatedUTC)
+			one, ok := 1.0, true
+			r.Run.Success, r.Run.BytesReceived = true, r.Run.BytesExpected
+			r.Run.TotalMS, r.Run.TransferMS = &one, &one
+			for i := range r.Streams {
+				r.Streams[i].Success, r.Streams[i].ChecksumOK = true, &ok
+				r.Streams[i].BytesReceived, r.Streams[i].CompleteMS = r.Streams[i].BytesExpected, &one
+				if e.Transport == "quic" {
+					id := int64(i * 4)
+					r.Streams[i].TransportStreamID = &id
+				}
+			}
+			if err := metrics.WriteTrial(filepath.Join(root, "shards", e.RunID), r); err != nil {
+				t.Fatal(err)
+			}
+			if journal != "absent" {
+				inv := Invocation{SchemaVersion: 1, RunID: e.RunID, StartedUTC: s.CreatedUTC}
+				if journal == "complete" || journal == "bad_end" {
+					code := 0
+					inv.ExitCode, inv.EndedUTC = &code, s.CreatedUTC
+					if journal == "bad_end" {
+						inv.EndedUTC = ""
+					}
+				}
+				if err := WriteJSON(filepath.Join(root, "logs", e.RunID+".invocation.json"), inv); err != nil {
+					t.Fatal(err)
+				}
+			}
+			counts, err := Merge(root)
+			if journal == "bad_end" {
+				if err == nil {
+					t.Fatal("invalid completion accepted")
+				}
+				return
+			}
+			if err != nil {
+				t.Fatal(err)
+			}
+			want := 0
+			if journal == "complete" {
+				want = 1
+			}
+			if counts.Success != want || counts.Attempted != 2 || counts.Failed != 2-want {
+				t.Fatalf("journal=%s counts=%+v", journal, counts)
+			}
+		})
+	}
+}
 
 func scheduleFixture(t *testing.T) Schedule {
 	t.Helper()

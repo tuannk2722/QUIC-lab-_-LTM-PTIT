@@ -3,6 +3,7 @@
 import csv
 import json
 import sys
+from datetime import datetime
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
@@ -21,6 +22,7 @@ def check(root, interrupted=False):
     runs, streams, plan, result = load(root, main=not interrupted)
     merge = read(root / 'merge.json')['counts']
     cleanup = read(root / 'cleanup.json')
+    require((root / 'build.json').is_file(), 'build provenance receipt missing')
     require(cleanup['cleanup_exit'] == 0 and all(cleanup['host_unchanged'].values()), 'cleanup/host state failed')
     require(not cleanup['environment_failed'], 'environment failed')
     require(merge['n_success']+merge['n_failed'] == merge['n_attempted'] == len(runs), 'failure denominator differs')
@@ -30,6 +32,7 @@ def check(root, interrupted=False):
         require(cleanup['original_exit'] == 130 and merge['n_failed'] >= 1 and merge['n_invoked'] < merge['n_planned'],
                 'interrupt/missing representation failed')
         require(any(r['error_code'] in ('interrupted', 'cancelled', 'not_started', 'missing_shard') for r in runs), 'no interrupt failure row')
+        require('experiment lock' in (root / 'logs/contender.log').read_text(), 'competing runner was not rejected by experiment lock')
     else:
         require(cleanup['original_exit'] in (0, 1) and merge['n_invoked'] == 256 and merge['n_missing_shards'] == 0,
                 'full main invocations/shards missing')
@@ -41,7 +44,11 @@ def check(root, interrupted=False):
             for side in ('before', 'after'):
                 snap = read(root / 'network' / f'{rid}.{side}.json')
                 require(snap['verified'] and snap['netem_seed'] == r['netem_seed'] and snap['scenario'] == r['scenario'], 'snapshot differs')
-            require((root / 'logs' / f'{rid}.invocation.json').exists(), 'invocation journal missing')
+            inv = read(root / 'logs' / f'{rid}.invocation.json')
+            require(inv['run_id'] == rid and type(inv['exit_code']) is int and
+                    datetime.fromisoformat(inv['ended_utc']) >= datetime.fromisoformat(inv['started_utc']),
+                    'invocation completion missing/invalid')
+            require(not r['success'] or inv['exit_code'] == 0, 'successful trial has nonzero process exit')
             if r['success']:
                 info = read(root / 'shards' / rid / 'connection.json')
                 require(info['tls_version'] == 'TLS 1.3' and info['alpn'] == 'quicbench/1' and not info['did_resume'], 'actual TLS differs')

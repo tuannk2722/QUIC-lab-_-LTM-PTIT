@@ -26,10 +26,7 @@ check-go:
 	@test "$$($(GO) version | awk '{print $$3}')" = "go$(GO_VERSION)" || { echo 'Expected Go $(GO_VERSION); see README.md' >&2; exit 3; }
 
 build: check-go
-	@mkdir -p bin
-	$(GO) build -mod=readonly -trimpath -ldflags '-X quic-performance-lab/internal/cli.Build=$(BUILD)' -o bin/server ./cmd/server
-	$(GO) build -mod=readonly -trimpath -ldflags '-X quic-performance-lab/internal/cli.Build=$(BUILD)' -o bin/client ./cmd/client
-	$(GO) build -mod=readonly -trimpath -ldflags '-X quic-performance-lab/internal/cli.Build=$(BUILD)' -o bin/bench ./cmd/bench
+	python3 scripts/build.py "$(GO)" "$(BUILD)"
 
 test: check-go
 	$(GO) test -mod=readonly ./...
@@ -72,6 +69,7 @@ analysis-deps:
 test-analysis:
 	python3 -m unittest discover -s analysis -p 'test_stats.py' -v
 	python3 tests/system/test_bench.py -v
+	python3 tests/system/test_audit_p7_p9.py -v
 
 benchmark: build
 	@bench_args=(); \

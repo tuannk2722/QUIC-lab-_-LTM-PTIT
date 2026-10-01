@@ -62,6 +62,8 @@ def main():
         _, _, _, counts = load(success)
         assert counts['attempted'] == counts['success'] == 6 and counts['failed'] == 0
         assert counts['measured_trials'] == 4 and counts['warmup_trials_excluded'] == 2
+        run([sys.executable, 'scripts/bench-support.py', 'launch-verified', str(root / 'verified-exec-output.log'),
+             str(success), 'bench', '--version'], name='verified-exec')
         failure = root / 'tls-failure'
         run(common + ['--server-name=wrong.invalid', '--runs=1', '--warmups=0', '--scenario=baseline', f'--out={failure}'], expected=1, name='tls-failure')
         _, _, _, counts = load(failure)
@@ -83,6 +85,30 @@ def main():
         udp = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         udp.bind(('127.0.0.1', port))
         try:
+            duplicate = root / 'duplicate'
+            run(common + ['--plan', '--network-profile=loopback-test', '--runs=1', '--warmups=0',
+                          '--scenario=baseline', f'--out={duplicate}'], name='duplicate-plan')
+            dplan = json.loads((duplicate / 'schedule.json').read_text())
+            de = next(e for e in dplan['entries'] if e['transport'] == 'tcp')
+            dcmd = ['bin/bench', f'--schedule-entry={duplicate / "entries" / (de["run_id"] + ".json")}']
+            with (root / 'duplicate-first.log').open('w') as log:
+                process = subprocess.Popen(dcmd, stdout=log, stderr=subprocess.STDOUT)
+                try:
+                    tcp.settimeout(5)
+                    conn, _ = tcp.accept()  # First trial has actually dialed.
+                    with conn:
+                        run(dcmd, expected=1, name='duplicate-refused')
+                        tcp.settimeout(.2)
+                        try:
+                            extra, _ = tcp.accept()
+                        except socket.timeout:
+                            pass
+                        else:
+                            extra.close()
+                            raise AssertionError('duplicate entry opened a second connection')
+                finally:
+                    process.kill()
+                    process.wait(timeout=5)
             entry = plan['entries'][1]
             run([sys.executable, 'scripts/bench-support.py', 'invocation', str(partial), entry['run_id']], name='partial-start-killed')
             with (root / 'killed-process.log').open('w') as log:

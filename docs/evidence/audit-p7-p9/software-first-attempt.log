@@ -1,0 +1,13 @@
+Traceback (most recent call last):
+  File "/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/tests/system/run_g09_software.py", line 147, in <module>
+    main()
+    ~~~~^^
+  File "/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/tests/system/run_g09_software.py", line 65, in main
+    run([sys.executable, 'scripts/bench-support.py', 'launch-verified', str(root / 'verified-exec.log'),
+    ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+         str(success), 'bench', '--version'], name='verified-exec')
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/tests/system/run_g09_software.py", line 31, in run
+    raise AssertionError(f'{args}: exit {p.returncode} expected {expected}; {log.read_text()}')
+AssertionError: ['/usr/bin/python3', 'scripts/bench-support.py', 'launch-verified', '/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p9-software-38kkob8m/verified-exec.log', '/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p9-software-38kkob8m/success', 'bench', '--version']: exit 1 expected 0; bench support FAIL: [Errno 17] File exists: '/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p9-software-38kkob8m/verified-exec.log'
+

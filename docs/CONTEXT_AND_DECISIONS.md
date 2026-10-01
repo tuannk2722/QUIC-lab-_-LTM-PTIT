@@ -1,5 +1,14 @@
 # Context và quyết định
 
+### D24 — 2026-10-01: sửa audit lifecycle/concurrency/provenance P7–P9
+
+- User cho phép sửa đúng năm findings audit; không mở P10. Wrapper giữ exclusive `experiment.lock` từ trước preflight topology đến hết cleanup; lock này riêng với lock thao tác qdisc, không giữ global QUIC response lock. Runner cạnh tranh bị từ chối exit3 trước plan. Các thao tác mạng thủ công vẫn không được chạy đồng thời với benchmark.
+- Finalize merge/validate/summarize/plot ghi log bằng UID thường vào `logs/`; không phụ thuộc stdout của terminal/tee. Cleanup bỏ qua signal lặp trong lúc dọn hữu hạn, giữ exit130/143 gốc; trial đã dừng bởi SIGINT không bị xem là cleanup failure. Không trap được SIGKILL.
+- Entry claim bằng hard-link publish nguyên tử tại `logs/<run_id>.claim.json` trước t0. Claim giữ sau crash/lỗi để không replay cùng scheduled observation. Merge chỉ nhận successful raw khi có invocation hoàn tất, exit0 và timestamps hợp lệ; missing journal → runner_error, unfinished → interrupted. INCOMPLETE giữ result_write_error; source raw không bị sửa.
+- `make build` chạy Python helper bằng user, khóa build riêng, hash Go app inputs/mod/sum/Make/helper trước và sau build, publish ba binaries và `bin/build.json` sau cùng. Plan lưu receipt vào `build.json` và manifest; kiểm input inventory/binary hashes/current bench image. Entry kiểm lại receipt trước t0. Wrapper launch server/bench bằng file descriptor đã hash, không tra lại pathname sau verify; replacement/rebuild khác receipt làm nonzero trước transfer tiếp theo. Đây là reproducibility guard, không chống user cố ý sửa toàn bộ artifacts.
+- Giữ schema kết quả v1, protocol, workload, timing và denominator. Analysis đọc legacy evidence không có receipt, nhưng checker G09 hiện tại yêu cầu receipt và completed journals, thêm actual competing-runner refusal trong interrupt case. Software checks không thay actual G09; evidence và trạng thái bản sửa tại `evidence/audit-p7-p9/`.
+- Requirements: NETWORK§6/§10, METRICS§3–7, CLI bench/exit codes, PLAN P7–P9, ACCEPTANCE G06–G09; TRACEABILITY rows21–24/28/29. Không sửa evidence G09 đã thu hoặc tự nhận human review.
+
 ## 1. Nguồn và mức độ xác nhận
 
 - Người dùng học môn Lập trình mạng; topic T03. Nhóm **3 người**; người dùng phụ trách **Phần 1 Tổng quan QUIC và demo**.

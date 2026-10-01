@@ -109,6 +109,8 @@ Gate G08: rtt50-loss0 đo theo tolerance; counters direction đúng; server→cl
 
 ## P9 — Runner, benchmark và thống kê
 
+Audit fix 2026-10-01 (D24): năm findings lifecycle/concurrency/provenance được user cho phép sửa trong P7–P9. Regression và evidence tại [audit-p7-p9](evidence/audit-p7-p9/README.md); actual G09 của bản sửa cần rerun, không kế thừa PASS của source cũ. Không mở P10.
+
 Implement schedule plan/entry/merge, shell orchestrator, 30 trials/transport/scenario +2 warmups, balanced AB/BA, seed schedule, trial deadline và failures. Pin analysis dependencies. `analysis/summarize.py` đúng stats. Thu main performance dataset **thật** khi testbed sẵn sàng.
 
 Gate G09: 240 measured +16 warmup raw rows cho suite mặc định; stream rows đầy đủ; interrupted/missing shard có failed representation; n_success+n_failed=n_attempted; same cohort config; CSV-derived charts/summary. Performance proof có thể chờ P11/P12 bổ sung nhưng raw đã đủ.

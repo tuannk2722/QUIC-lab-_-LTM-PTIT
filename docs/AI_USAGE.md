@@ -1,5 +1,7 @@
 # Khai báo sử dụng AI
 
+- 2026-10-01, Codex: user cho phép sửa năm findings audit P7–P9. Agent sửa finalization khi pipe đóng, completed invocation validation, experiment lock, atomic entry claim và build/source/binary receipts; thêm Go/Python/lifecycle và actual localhost regressions. Build/suite/race, network/statistics regressions và runner localhost được kiểm; actual G09 attempt bị sudo authentication chặn trước runner. Evidence riêng `docs/evidence/audit-p7-p9/`, giữ nguyên raw/logs lịch sử. Chưa human review bản sửa, không P10 hoặc commit; không claim localhost là network performance.
+
 Tài liệu technical topics yêu cầu công khai phần nào được AI hỗ trợ và nhóm phải giải thích/bảo vệ được code.
 
 ## Tình trạng ban đầu

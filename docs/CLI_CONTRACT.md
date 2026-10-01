@@ -81,6 +81,8 @@ Merge chạy một lần, không append/overwrite aggregate. Giữ source shards
 
 ## 2. Exit codes và output
 
+Refinement D24 (audit P7–P9): chạy `make build` bằng user tạo `bin/build.json`; bench plan/entry từ chối source hoặc binaries không khớp receipt, cần rebuild trước lần chạy mới. Experiment lưu `build.json` và manifest hashes; entry claim nguyên tử trước network, giữ claim sau lỗi/SIGKILL, không xóa claim để chạy lại cùng run ID. Raw chỉ được aggregate thành success khi journal có exit0 và thời điểm kết thúc hợp lệ. Wrapper từ chối runner cạnh tranh bằng experiment lock trước preflight topology (exit3); giữ lock qua cleanup. Merge/analysis logs nằm ở `logs/{merge,validate,summarize,plot}.log`, teardown log ở `logs/teardown.log`, nên vẫn có artifact khi terminal pipe đóng. Chạy `make build` trước `make test-analysis` vì lifecycle regression dùng binary thật và pinned plotting dependencies. Bản sửa có software regression; actual rerun xem `evidence/audit-p7-p9/`.
+
 - 0: thao tác yêu cầu thành công; client full data + hash pass. Early demo yêu cầu “prove accepted early” thêm gate riêng, không coi fallback success là proof.
 - 1: runtime/transfer/checksum/result write failure, hoặc benchmark có trial failed (vẫn hoàn thành những entry còn lại nếu testbed còn hợp lệ).
 - 2: input/config/protocol setup không hợp lệ.

@@ -1,5 +1,7 @@
 # Bắt đầu — QUIC Performance Lab / T03
 
+Current D24 audit fix P7–P9: 5 findings đã sửa, software/race/localhost PASS; actual G09 bản sửa BLOCKED ở sudo authentication. [Evidence và next commands](docs/evidence/audit-p7-p9/README.md). Trạng thái dataset PASS bên dưới là lịch sử của source cũ, không là gate bản sửa.
+
 Bộ bàn giao dành cho Codex trong IDE, phiên bản 1.0, ngày 28/09/2026 (Asia/Ho_Chi_Minh).
 Bản gốc là **đặc tả + cấu trúc khởi đầu**. Cập nhật 2026-10-01: P0/G00 đến P8/G08 PASS; cold TCP/QUIC, metrics/CSV, topology và impairment receiver IFB đã chạy thật. G08 rerun exit0/cleanup0 với tám successful evidence trials; [Evidence P8](docs/evidence/p8/README.md) có log và artifact review. P9 runner/manifest/stats/plots và software checks đã xong; G09 actual user rerun PASS tại results/p9-g09-8dFdkj, đủ main240+16; controlled interrupt/cleanup verified. Interactive terminal Ctrl+C qua tee còn issue141/cleanup1 đã ghi evidence. Dừng human review P9; 0-RTT/qlog thuộc phase sau.
 

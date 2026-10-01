@@ -1,0 +1,218 @@
+{
+  "scope": "actual localhost correctness, no main network cohort",
+  "source": "/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p9-software-jf1ghox3",
+  "archive": "localhost-artifacts.tar.gz",
+  "archive_sha256": "de7c81e2f9e71151ed8c0d48eba7bd65c98b9c9c4d5ea23f7d4f9fe701f19183",
+  "verified_source_artifacts": 440,
+  "cases": {
+    "success": {
+      "status": "PASS",
+      "attempted": 6,
+      "success": 6,
+      "failed": 0,
+      "measured_trials": 4,
+      "warmup_trials_excluded": 2,
+      "evidence_trials_excluded": 0
+    },
+    "tls-failure": {
+      "status": "PASS",
+      "attempted": 2,
+      "success": 0,
+      "failed": 2,
+      "measured_trials": 2,
+      "warmup_trials_excluded": 0,
+      "evidence_trials_excluded": 0
+    },
+    "interrupted": {
+      "status": "PASS",
+      "attempted": 4,
+      "success": 1,
+      "failed": 3,
+      "measured_trials": 4,
+      "warmup_trials_excluded": 0,
+      "evidence_trials_excluded": 0
+    }
+  },
+  "commands": [
+    {
+      "argv": [
+        "bin/bench",
+        "--addr=127.0.0.1:37737",
+        "--server-name=localhost",
+        "--profile=bulk",
+        "--plan",
+        "--out=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p9-software-jf1ghox3/default-plan"
+      ],
+      "exit_code": 0,
+      "log": "/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p9-software-jf1ghox3/default-plan.log"
+    },
+    {
+      "argv": [
+        "bin/bench",
+        "--addr=127.0.0.1:37737",
+        "--server-name=localhost",
+        "--profile=bulk",
+        "--runs=2",
+        "--warmups=1",
+        "--scenario=baseline",
+        "--out=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p9-software-jf1ghox3/success"
+      ],
+      "exit_code": 0,
+      "log": "/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p9-software-jf1ghox3/success.log"
+    },
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "scripts/bench-support.py",
+        "launch-verified",
+        "/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p9-software-jf1ghox3/verified-exec-output.log",
+        "/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p9-software-jf1ghox3/success",
+        "bench",
+        "--version"
+      ],
+      "exit_code": 0,
+      "log": "/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p9-software-jf1ghox3/verified-exec.log"
+    },
+    {
+      "argv": [
+        "bin/bench",
+        "--addr=127.0.0.1:37737",
+        "--server-name=localhost",
+        "--profile=bulk",
+        "--server-name=wrong.invalid",
+        "--runs=1",
+        "--warmups=0",
+        "--scenario=baseline",
+        "--out=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p9-software-jf1ghox3/tls-failure"
+      ],
+      "exit_code": 1,
+      "log": "/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p9-software-jf1ghox3/tls-failure.log"
+    },
+    {
+      "argv": [
+        "bin/bench",
+        "--addr=127.0.0.1:37737",
+        "--server-name=localhost",
+        "--profile=bulk",
+        "--plan",
+        "--network-profile=loopback-test",
+        "--runs=2",
+        "--warmups=0",
+        "--scenario=baseline",
+        "--out=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p9-software-jf1ghox3/interrupted"
+      ],
+      "exit_code": 0,
+      "log": "/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p9-software-jf1ghox3/partial-plan.log"
+    },
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "scripts/bench-support.py",
+        "invocation",
+        "/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p9-software-jf1ghox3/interrupted",
+        "c0_measured_0000_tcp"
+      ],
+      "exit_code": 0,
+      "log": "/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p9-software-jf1ghox3/partial-start-success.log"
+    },
+    {
+      "argv": [
+        "bin/bench",
+        "--schedule-entry=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p9-software-jf1ghox3/interrupted/entries/c0_measured_0000_tcp.json"
+      ],
+      "exit_code": 0,
+      "log": "/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p9-software-jf1ghox3/partial-success.log"
+    },
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "scripts/bench-support.py",
+        "invocation",
+        "/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p9-software-jf1ghox3/interrupted",
+        "c0_measured_0000_tcp",
+        "0"
+      ],
+      "exit_code": 0,
+      "log": "/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p9-software-jf1ghox3/partial-end-success.log"
+    },
+    {
+      "argv": [
+        "bin/bench",
+        "--addr=127.0.0.1:37737",
+        "--server-name=localhost",
+        "--profile=bulk",
+        "--plan",
+        "--network-profile=loopback-test",
+        "--runs=1",
+        "--warmups=0",
+        "--scenario=baseline",
+        "--out=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p9-software-jf1ghox3/duplicate"
+      ],
+      "exit_code": 0,
+      "log": "/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p9-software-jf1ghox3/duplicate-plan.log"
+    },
+    {
+      "argv": [
+        "bin/bench",
+        "--schedule-entry=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p9-software-jf1ghox3/duplicate/entries/c0_measured_0000_tcp.json"
+      ],
+      "exit_code": 1,
+      "log": "/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p9-software-jf1ghox3/duplicate-refused.log"
+    },
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "scripts/bench-support.py",
+        "invocation",
+        "/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p9-software-jf1ghox3/interrupted",
+        "c0_measured_0000_quic"
+      ],
+      "exit_code": 0,
+      "log": "/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p9-software-jf1ghox3/partial-start-killed.log"
+    },
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "scripts/bench-support.py",
+        "invocation",
+        "/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p9-software-jf1ghox3/interrupted",
+        "c0_measured_0000_quic",
+        "137"
+      ],
+      "exit_code": 0,
+      "log": "/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p9-software-jf1ghox3/partial-end-killed.log"
+    },
+    {
+      "argv": [
+        "bin/bench",
+        "--merge=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p9-software-jf1ghox3/interrupted"
+      ],
+      "exit_code": 1,
+      "log": "/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p9-software-jf1ghox3/partial-merge.log"
+    },
+    {
+      "argv": [
+        "bin/bench",
+        "--merge=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p9-software-jf1ghox3/success"
+      ],
+      "exit_code": 1,
+      "log": "/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p9-software-jf1ghox3/success-overwrite-refused.log"
+    },
+    {
+      "argv": [
+        "bin/bench",
+        "--merge=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p9-software-jf1ghox3/tls-failure"
+      ],
+      "exit_code": 1,
+      "log": "/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p9-software-jf1ghox3/tls-failure-overwrite-refused.log"
+    },
+    {
+      "argv": [
+        "bin/bench",
+        "--merge=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p9-software-jf1ghox3/interrupted"
+      ],
+      "exit_code": 1,
+      "log": "/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p9-software-jf1ghox3/interrupted-overwrite-refused.log"
+    }
+  ]
+}

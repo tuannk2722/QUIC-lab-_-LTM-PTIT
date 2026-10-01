@@ -89,6 +89,8 @@ Các con số terminal/CSV trong chat là giả lập minh họa. Gói không gi
 
 ## 5. Kiểm soát hoàn thành
 
+D24 audit P7–P9 gắn rows21–24/28/29 với experiment ownership, atomic claim, completed invocation, pipe-independent finalization và build/source/binary receipt. Evidence bản sửa tách tại `evidence/audit-p7-p9/`; không thay hash, raw hoặc trạng thái lịch sử của actual G09 cũ.
+
 Mỗi row coding map tới gate; mỗi concept lý thuyết map tới source/defense. Nội dung optional được nêu rõ chứ không biến mất. Agent trước final phải đọc lại bảng này, kiểm acceptance evidence và ghi deviations vào CONTEXT. Không coi “đã copy file nguồn” là “agent đã hiểu”; cần đọc đủ nguồn liên quan khi giải quyết ambiguity/conflict/provenance hoặc final traceability và có explanation/code tests tương ứng khi triển khai; không bắt đọc lại toàn bộ originals mỗi phiên thường lệ.
 
 P9 checkpoint 2026-10-01: rows1/19/21–24/29 được triển khai trong bench plan/entry/merge + shell orchestrator + cohort/stats/plots/manifest (D23). Software/actual localhost tests có evidence/p9; **G09 actual main240+16 và namespace interruption/cleanup còn BLOCKED** do sudo authentication trước runner. Không map plan256 hoặc localhost plots thành main performance evidence; không đánh dấu rows25/26 hoặc 0-RTT/HOL proof hoàn tất.

@@ -4,6 +4,16 @@ LAB_STATE_DIR=/run/quic-performance-lab
 LAB_MARKER=$LAB_STATE_DIR/topology-v1
 LAB_NETNS_DIR=/run/netns
 
+# Separate from the short-lived topology/qdisc lock (fd 9). The runner owns
+# fd 8 until after cleanup; two experiments must never share the fixed network.
+acquire_experiment_lock() {
+    require_sudo_caller
+    mkdir -p -m 0700 -- "$LAB_STATE_DIR"
+    check_state_dir
+    exec 8>"$LAB_STATE_DIR/experiment.lock"
+    flock -n -x 8 || lab_die 'another benchmark owns the lab experiment lock'
+}
+
 lab_error() { printf 'network: %s\n' "$*" >&2; }
 lab_die() { lab_error "$*"; exit 3; }
 

@@ -29,12 +29,19 @@ func contents(path string) string {
 // Immutable manifest records facts and paths to per-trial actual observations.
 // It distinguishes unknown facts from defaults and from user-reported facts.
 func WriteManifest(root string, s Schedule, version string, args []string) error {
+	receipt, err := VerifyBuild("bin/build.json")
+	if err != nil {
+		return err
+	}
+	if err := WriteJSON(filepath.Join(root, "build.json"), receipt); err != nil {
+		return err
+	}
 	store, err := workload.NewStore(s.Workloads.Profiles[s.Profile], s.Workloads.Limits)
 	if err != nil {
 		return err
 	}
 	hashes := map[string]string{}
-	for _, path := range []string{"schedule.json"} {
+	for _, path := range []string{"schedule.json", "build.json"} {
 		h, err := HashFile(filepath.Join(root, path))
 		if err != nil {
 			return err
@@ -85,7 +92,7 @@ func WriteManifest(root string, s Schedule, version string, args []string) error
 		"host_os":            map[string]string{"value": "Windows 11", "source": "user-reported D13; not queried from Linux"},
 		"execution_layer":    map[string]string{"requested": "Ubuntu WSL2", "observed_kernel": command("uname", "-r"), "wsl_version": "unknown: Windows WSL CLI not queried"},
 		"linux_distribution": contents("/etc/os-release"), "kernel": command("uname", "-a"), "logical_cpu": runtime.NumCPU(), "memory_swap": contents("/proc/meminfo"),
-		"go_version": runtime.Version(), "build_info": buildInfo, "build_flags": "Make: -mod=readonly -trimpath; ldflags build revision; GOMAXPROCS=2",
+		"go_version": runtime.Version(), "build_info": buildInfo, "build_flags": receipt.BuildFlags, "build_provenance": receipt,
 		"git_commit": command("git", "rev-parse", "HEAD"), "git_status": command("git", "status", "--porcelain"), "git_diff_sha256_note": "source file hashes in source-hashes.json; uncommitted source is part of experiment provenance",
 		"hashes": hashes, "config_hashes": map[string]string{"workloads": s.WorkloadsSHA256, "scenarios": s.ScenariosSHA256, "ca": s.CASHA256},
 		"workload": store.Manifest(), "profile": s.Profile, "trace_mode": "performance", "traces": map[string]bool{"qlog": false, "pcap": false, "keylog": false, "progress": false},

@@ -2,6 +2,8 @@
 
 T03 — QUIC Protocol Implementation and Performance, môn Lập trình mạng, PTIT.
 
+**Bản sửa audit P7–P9 (D24):** 5 findings đã sửa; build/suite/race và software/localhost regressions PASS. Actual G09 của bản sửa **BLOCKED** do sudo cần xác thực; [evidence và lệnh rerun](docs/evidence/audit-p7-p9/README.md). PASS dataset bên dưới thuộc source cũ. Không mở P10.
+
 **Trạng thái hiện tại:** P0/G00 đến P8/G08 PASS. P9 runner/plan/merge, manifest, thống kê và plots đã triển khai; build/tests/race và actual CLI localhost PASS. Full G09 user rerun **PASS**: main240 measured+16 warmup, 256 success/0 failure, 1536 resource rows và controlled interrupt/cleanup verified. Interactive terminal Ctrl+C qua tee từng exit141/cleanup1 còn là issue riêng. Xem [ACCEPTANCE_RESULTS](docs/ACCEPTANCE_RESULTS.md) và [P9 evidence/runbook](docs/evidence/p9/README.md). Dừng human review P9, không P10.
 
 Thiết kế: cùng bộ resource trong RAM được phục vụ bởi TCP/TLS trên TCP và raw QUIC trên UDP cùng số port 4433. Hai namespace chạy trong Ubuntu WSL2; P8 cấu hình impairment phía nhận qua IFB. P9 orchestrator quản lý benchmark tuần tự; qlog/packet capture thuộc P11.

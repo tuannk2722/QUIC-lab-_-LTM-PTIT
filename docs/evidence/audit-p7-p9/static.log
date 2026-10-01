@@ -1,0 +1,1 @@
+PASS: Python/shell syntax, gofmt, build source+binary receipt verification, git diff --check
