@@ -2,13 +2,13 @@
 
 T03 — QUIC Protocol Implementation and Performance, môn Lập trình mạng, PTIT.
 
-**Trạng thái hiện tại:** P0/G00 đến P8/G08 PASS. P8 actual rerun exit0: RTT, receiver IFB, counters/rate/loss, seed/offloads, transitions và error/SIGINT cleanup đã được kiểm chứng. Eight evidence trials thành công, chưa main benchmark cohort/P9 hoặc human review P8. Xem [ACCEPTANCE_RESULTS](docs/ACCEPTANCE_RESULTS.md) và [evidence P8](docs/evidence/p8/README.md).
+**Trạng thái hiện tại:** P0/G00 đến P8/G08 PASS. P9 runner/plan/merge, manifest, thống kê và plots đã triển khai; build/tests/race và actual CLI localhost PASS. Full G09 user rerun **PASS**: main240 measured+16 warmup, 256 success/0 failure, 1536 resource rows và controlled interrupt/cleanup verified. Interactive terminal Ctrl+C qua tee từng exit141/cleanup1 còn là issue riêng. Xem [ACCEPTANCE_RESULTS](docs/ACCEPTANCE_RESULTS.md) và [P9 evidence/runbook](docs/evidence/p9/README.md). Dừng human review P9, không P10.
 
-Thiết kế: cùng bộ resource trong RAM được phục vụ bởi TCP/TLS trên TCP và raw QUIC trên UDP cùng số port 4433. Hai namespace chạy trong Ubuntu WSL2; P8 cấu hình impairment phía nhận qua IFB. Benchmark và qlog/packet capture thuộc các phase sau.
+Thiết kế: cùng bộ resource trong RAM được phục vụ bởi TCP/TLS trên TCP và raw QUIC trên UDP cùng số port 4433. Hai namespace chạy trong Ubuntu WSL2; P8 cấu hình impairment phía nhận qua IFB. P9 orchestrator quản lý benchmark tuần tự; qlog/packet capture thuộc P11.
 
 [Đặc tả](docs/DEMO_SPEC.md) · [Kế hoạch triển khai](docs/IMPLEMENTATION_PLAN.md) · [Nghiệm thu](docs/ACCEPTANCE.md) · [Kịch bản demo](docs/DEMO_SCRIPT.md)
 
-Repo phải nằm trong filesystem Linux native, ưu tiên `/home/<user>/...`, không `/mnt/c/...` hoặc `/mnt/d/...`. Mở Windows VS Code bằng Remote WSL, workspace `WSL: Ubuntu`. Implementation mặc định human-gated: chỉ phase được người dùng cho phép, chạy gate rồi cập nhật TASK và dừng review. Người dùng đã cho phép riêng P8/G08; xem [bằng chứng acceptance](docs/ACCEPTANCE_RESULTS.md) để biết trạng thái gate mới nhất.
+Repo phải nằm trong filesystem Linux native, ưu tiên `/home/<user>/...`, không `/mnt/c/...` hoặc `/mnt/d/...`. Mở Windows VS Code bằng Remote WSL, workspace `WSL: Ubuntu`. Implementation mặc định human-gated: chỉ phase được người dùng cho phép, chạy gate rồi cập nhật TASK và dừng review. Người dùng đã cho phép riêng P9/G09; xem [bằng chứng acceptance](docs/ACCEPTANCE_RESULTS.md) để biết trạng thái gate mới nhất.
 
 ## Tái lập P0 (chạy bên trong Ubuntu WSL2)
 
@@ -36,7 +36,7 @@ Makefile tự chọn Go local nếu có, nếu không dùng PATH và kiểm đú
 
 `make certs` tạo cert local hạn 30 ngày, SAN localhost/127.0.0.1/10.10.0.2, key 0600; từ chối ghi đè. Chỉ khi chủ động thay identity và đã dừng mọi server, dùng `make certs CERT_FORCE=--force`. Test tạo identity riêng trong thư mục tạm, không sửa cert đang dùng.
 
-`bin/bench` và client `--mode=resumed|early` còn trả **exit 1 / not implemented**; cold TCP/QUIC được hỗ trợ. Input/config không hợp lệ trả **2**. `--help`/`--version` trả 0. Defaults workload/scenario/timeouts được đọc từ configs; `--profiles` và `--scenarios` cho phép chọn tệp rõ ràng.
+Client `--mode=resumed|early` và bench handshake suite còn trả **exit 1 / not implemented**; cold TCP/QUIC và bulk bench P9 được hỗ trợ. Input/config không hợp lệ trả **2**. `--help`/`--version` trả 0. Defaults workload/scenario/timeouts được đọc từ configs; `--profiles` và `--scenarios` cho phép chọn tệp rõ ràng.
 
 `make doctor` chỉ inventory, không tạo namespace hoặc cấp quyền cho Go. Nếu sandbox chặn netlink, chạy lệnh ở terminal Ubuntu WSL bình thường. Để tái lập primitive preflight (đã PASS trong hồ sơ P0), chạy:
 
@@ -108,7 +108,7 @@ python3 analysis/validate.py results/<p6-g06-dir>/quic_success
 python3 analysis/validate.py results/<p6-g06-dir>/tcp_failure
 ```
 
-`docs/REPORT.md` hiện là template, chưa có manifest thí nghiệm đầy đủ, schedule, summary/plots hay benchmark. `bin/bench` và resumption/0-RTT vẫn thuộc phase sau.
+`docs/REPORT.md` ghi trạng thái dataset; P9 sinh manifest/schedule/summary/plots/report trong thư mục experiment. Main dataset thật tại `results/p9-g09-8dFdkj/main/`; resumption/0-RTT thuộc P10.
 
 ## P7: topology namespace và tách quyền
 
@@ -171,7 +171,34 @@ sudo bash tests/system/run.sh --gate G08 2>&1 | tee docs/evidence/p8/g08-system.
 g08_status=${PIPESTATUS[0]}; printf 'g08_exit=%s\n' "$g08_status" | tee -a docs/evidence/p8/g08-system.log
 ```
 
-Runner giữ network/probes/raw/CSV và gate-summary tại `results/p8-g08-96nOtS/`; actual rerun exit0/cleanup0 đã PASS RTT/counters/rate/loss, profile switch, tc-error và SIGINT cleanup. Agent đối chiếu tám successful trials/48 hashes và host snapshots, review ở [evidence P8](docs/evidence/p8/README.md). Dừng human review P8; chưa mở P9.
+Runner giữ network/probes/raw/CSV và gate-summary tại `results/p8-g08-96nOtS/`; actual rerun exit0/cleanup0 đã PASS RTT/counters/rate/loss, profile switch, tc-error và SIGINT cleanup. Agent đối chiếu tám successful trials/48 hashes và host snapshots, review ở [evidence P8](docs/evidence/p8/README.md). P8 đã PASS; người dùng đã cho phép riêng P9 theo runbook bên dưới.
+
+## P9: runner, thống kê và G09
+
+Chuẩn bị bằng user thường, từ repo root; dependencies đã được pin toàn bộ trong analysis/requirements.txt (Python3.14.4 / Matplotlib3.10.8 đã kiểm). Cài vào .tools/analysis, không cần venv/sudo pip:
+
+```bash
+make build
+make analysis-deps
+make test-analysis
+test -r certs/server.crt && test -r certs/server.key || make certs
+# Main benchmark: topology/server ban đầu absent, tự setup/probe/start/stop/cleanup.
+make benchmark
+# Dùng results_dir wrapper in ra:
+make analyze RESULTS=results/<experiment-id>
+```
+
+Bench main dùng config defaults: 4 scenarios × 2 transports × (30 measured +2 warmups) =256 rows, 1536 resource rows. Schedule immutable, balanced AB/BA; fresh cold connection mỗi trial, qdisc reset/actual inspect trước và sau, seed khác mỗi pair. Performance traces tắt. Output gồm manifest/schedule/config/entries/shards/raw/runs.csv/streams.csv/network/probes/journals/merge.json, summary/resource-summary và PNG/SVG plots. Warmups không vào summary; failure rate luôn đi cùng latency, không bỏ outliers. Dataset nhỏ/WSL2/kernel-userspace/CC khác nhau nên kết luận chỉ cho testbed/workload này; plots không chứng minh HOL.
+
+Lưu ý `make benchmark RUNS=... WARMUPS=... SEED=...` là override exploratory khi counts khác defaults; default đọc configs, không hardcode số thứ hai. `NETEM_SEED=none` chỉ chọn khi chủ động chấp nhận limitation seed=null. G09 đầy đủ kiểm actual interrupt/missing shard và main cohort:
+
+```bash
+set -o pipefail
+sudo bash tests/system/run.sh --gate G09 2>&1 | tee docs/evidence/p9/g09-system.log
+g09_status=${PIPESTATUS[0]}; printf 'g09_exit=%s\n' "$g09_status" | tee -a docs/evidence/p9/g09-system.log
+```
+
+G09 attempt của agent bị chặn trước runner bởi sudo xác thực tương tác. Chạy command trên trong terminal Ubuntu WSL2 của người dùng để thu actual dataset; gate_root chứa main/ và interrupt/ cùng checker hashes/cleanup. Software evidence chỉ localhost correctness, **không thay G09**, xem [P9 runbook](docs/evidence/p9/README.md) để review files/failure policy và tái lập. P10–P12 chưa được mở.
 
 ## Hợp đồng README sau triển khai đầy đủ
 
@@ -186,4 +213,4 @@ Agent phải thay mục này bằng các bước **đã kiểm tra thực tế**
 7. Chỉ rõ lệnh chạy ở host Windows hay bên trong Ubuntu WSL2; mọi build/test/network/benchmark chạy trong Ubuntu WSL2.
 8. Liên kết provenance, disclosure AI và giới hạn kết luận.
 
-Hiện có targets build/test/test-race/certs/doctor và P7/P8 setup-network/server/netem/inspect-network/clear-netem/clean-network/test-network. Các targets demo, benchmark, analyze vẫn để các phase sau.
+Hiện có targets build/test/test-race/certs/doctor và P7/P8 setup-network/server/netem/inspect-network/clear-netem/clean-network/test-network. P9 bổ sung benchmark/analyze/analysis-deps/test-analysis; các targets demo/handshake/capture thuộc P10–P12.

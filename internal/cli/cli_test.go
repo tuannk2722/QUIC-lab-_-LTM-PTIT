@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"os"
 	"path/filepath"
-	"strings"
 	"testing"
 )
 
@@ -32,10 +31,10 @@ func TestCommandContract(t *testing.T) {
 				base = append(base, "--transport=quic", "--ca=/nonexistent")
 			}
 			if name == "bench" {
-				base = append(base, "--scenarios=../../configs/scenarios.json")
+				base = append(base, "--scenarios=../../configs/scenarios.json", "--ca=/nonexistent")
 			}
 			var out, errs bytes.Buffer
-			if code := Run(name, base, &out, &errs); code != 1 || out.Len() != 0 || (name == "bench" && !strings.Contains(errs.String(), "not implemented")) {
+			if code := Run(name, base, &out, &errs); code != 1 || out.Len() != 0 {
 				t.Fatalf("fake success: %d %s %s", code, &out, &errs)
 			}
 			cases := [][]string{{"--transport=http3"}, {"--profile=missing"}}

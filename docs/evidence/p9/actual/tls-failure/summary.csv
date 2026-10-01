@@ -1,0 +1,11 @@
+scenario,transport,mode,network_profile,trace_mode,resource_count,resource_size_bytes,chunk_bytes,metric,n_attempted,n_success,n_failed,failure_rate,n_values,mean,median,p95,sample_stddev,n_timeout,failure_codes
+loopback-test,quic,cold,loopback-test,performance,6,1048576,16384,total_ms,1,0,1,1.0,0,,,,,0,"{""transfer_error"": 1}"
+loopback-test,quic,cold,loopback-test,performance,6,1048576,16384,ttfa_ms,1,0,1,1.0,0,,,,,0,"{""transfer_error"": 1}"
+loopback-test,quic,cold,loopback-test,performance,6,1048576,16384,goodput_mbps,1,0,1,1.0,0,,,,,0,"{""transfer_error"": 1}"
+loopback-test,quic,cold,loopback-test,performance,6,1048576,16384,e2e_goodput_mbps,1,0,1,1.0,0,,,,,0,"{""transfer_error"": 1}"
+loopback-test,quic,cold,loopback-test,performance,6,1048576,16384,handshake_ms,1,0,1,1.0,0,,,,,0,"{""transfer_error"": 1}"
+loopback-test,tcp,cold,loopback-test,performance,6,1048576,16384,total_ms,1,0,1,1.0,0,,,,,0,"{""transfer_error"": 1}"
+loopback-test,tcp,cold,loopback-test,performance,6,1048576,16384,ttfa_ms,1,0,1,1.0,0,,,,,0,"{""transfer_error"": 1}"
+loopback-test,tcp,cold,loopback-test,performance,6,1048576,16384,goodput_mbps,1,0,1,1.0,0,,,,,0,"{""transfer_error"": 1}"
+loopback-test,tcp,cold,loopback-test,performance,6,1048576,16384,e2e_goodput_mbps,1,0,1,1.0,0,,,,,0,"{""transfer_error"": 1}"
+loopback-test,tcp,cold,loopback-test,performance,6,1048576,16384,handshake_ms,1,0,1,1.0,0,,,,,0,"{""transfer_error"": 1}"

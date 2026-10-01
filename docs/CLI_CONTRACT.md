@@ -1,6 +1,6 @@
 # CLI và Make contract
 
-Các lệnh dưới đây là **hợp đồng cuối cùng**. P0 đã có help/version, parse/validate flags/config, build/test/certs/doctor. P2 có TCP/TLS một resource với `--profile=handshake`; P3 có bulk multiplex 6 resource với `--profile=bulk`; P4 hỗ trợ cold batch qua TCP/TLS hoặc raw QUIC. P5/P6 đã thêm metrics client và canonical raw JSON/runs.csv/streams.csv cho mỗi cold client trial. P7 topology/entry có G07 rerun PASS. P8 đã thêm impairment/inspect/clear, client network-state và G08 runner; G08 actual BLOCKED tại sudo tương tác, static/regression PASS. `bin/bench`, client resumed/early, plan/merge/benchmark vẫn chưa triển khai và phải trả nonzero. Defaults phải dùng chung config loader. Không dùng command string eval từ input; subprocess dùng argument list.
+Các lệnh dưới đây là **hợp đồng cuối cùng**. P0–P8/G00–G08 đã PASS, gồm cold TCP/QUIC, canonical metrics/results và receiver IFB thực. P9 có bulk bench plan/entry/merge, orchestrator, manifest và CSV-derived stats/plots; software checks và full G09 actual user rerun PASS; main240+16/1536 rows, controlled SIGINT/cleanup verified. Interactive terminal Ctrl+C qua tee từng exit141/cleanup1 vẫn là limitation riêng. Client resumed/early và handshake suite còn thuộc P10; traces thuộc P11. Defaults dùng chung config loader. Không dùng command string eval từ input; subprocess dùng argument list.
 
 ## 1. Binaries
 
@@ -21,6 +21,7 @@ Các lệnh dưới đây là **hợp đồng cuối cùng**. P0 đã có help/v
 | bench | `--schedule-entry=PATH --out=DIR --network-state=PATH` | Đường main wrapper: chạy entry với metadata thực, output shard |
 | bench | `--merge=DIR` | Đọc schedule+shards, tạo runs/streams, failed rows cho entry thiếu |
 | bench | `--plan --suite=bulk --seed=SEED --out=DIR` | Xuất schedule immutable, chưa chạy network/trials |
+| bench | `--plan --network-profile=ingress-ifb\|loopback-test --disable-netem-seed` | Main hoặc correctness plan; seed=null chỉ khi chọn explicit limitation |
 
 Các flags môi trường dùng chung (addr/ca/profile/timeout) của client phải dùng được ở bench. `--mode=resumed` tạo prior connection + ticket rồi Dial thường, không gửi early. `--mode=cold` fresh cache. Bench direct không có network-state chỉ được label loopback-test/exploratory, không tự gán configured loss thành applied loss.
 
@@ -32,13 +33,13 @@ Schedule entry tối thiểu: schema_version, experiment_id, run_id, scenario, p
 
 `bin/client --mode=cold --transport=quic` dùng một QUIC v1 connection, một bidirectional stream/resource và cùng QB01; `--transport=tcp` giữ một TLS connection và scheduler round-robin. Client QUIC gửi các REQUEST mà không chờ response của resource trước; mỗi stream gửi request rồi đóng send-half. Output JSON trên stdout vẫn có `resource_id`, `transport_stream_id` thực cho QUIC, `bytes`, `checksum_ok`, `elapsed_ms`, thêm object `metrics` P5; TCP bỏ `transport_stream_id`. Với profile bulk, 6 resource nằm trong mảng `resources`. Canonical typed record/CSV P6 nằm trong thư mục kết quả mới; stdout localhost chỉ là correctness output.
 
-QUIC P4 cho phép server nhận 64 incoming bidirectional streams, còn client từ chối stream do server tự mở; hai phía tắt incoming unidirectional streams. Receive credits ban đầu/tối đa: 512 KiB/2 MiB mỗi stream và 2 MiB/16 MiB mỗi connection; đây là flow-control credits của quic-go, không phải kích thước resource buffer. `--allow-0rtt` vẫn là flag cho P10 và chưa kích hoạt early path; client `--mode=resumed|early` và `bin/bench` trả exit 1 / not implemented. `--qlog-dir`, `--keylog`, `--progress` và network benchmark thuộc phase sau; topology P7 được mô tả bên dưới.
+QUIC P4 cho phép server nhận 64 incoming bidirectional streams, còn client từ chối stream do server tự mở; hai phía tắt incoming unidirectional streams. Receive credits ban đầu/tối đa: 512 KiB/2 MiB mỗi stream và 2 MiB/16 MiB mỗi connection; đây là flow-control credits của quic-go, không phải kích thước resource buffer. `--allow-0rtt` vẫn là flag cho P10 và chưa kích hoạt early path; client `--mode=resumed|early` trả exit 1 / not implemented. `--qlog-dir`, `--keylog`, `--progress` thuộc P11; P9 performance bench từ chối bật các flags này.
 
 ### Hiện trạng P5/P6
 
 Cold client tính các mốc client monotonic theo METRICS: first DATA byte khi Read trả n>0, total_ms đến FIN cuối, elapsed_ms đến kết thúc trial và goodput chỉ khi success. Không ép request_end trước first_byte. TCP dial thành công vẫn ghi tcp_connect_ms khi TLS handshake fail; các mốc chưa có là null/ô CSV rỗng. Chưa có 0-RTT actual state nên tls_resumed/used_0rtt/early_rejected nullable, attempted_0rtt=false cho cold.
 
-Mỗi invocation client tạo thư mục mới `results/<experiment_id>/` hoặc `--out=DIR`; ID tự sinh khi thiếu, ID chỉ gồm 1..128 ASCII chữ/số/`_`/`-`. Trong đó có `raw/<run_id>.json`, `runs.csv`, `streams.csv`; validator: `python3 analysis/validate.py DIR`. Failure sau khi trial bắt đầu vẫn ghi run và N resource rows trước khi trả exit 1. Directory đã tồn tại bị từ chối để không append/overwrite. Result write failure trả exit 1; raw đã ghi giữ lại nếu lỗi CSV và file `INCOMPLETE` còn hiện diện cho đến khi ghi đủ. Nếu không có `--network-state`, cold CLI giữ `network_profile=loopback-test` cho correctness/exploratory. P8 flag nhận snapshot đã verify, đúng namespace và mới trong 5 phút; gắn network fields và phase/trace_mode=evidence, không đưa G08 vào main cohort. Full manifest và schedule/merge thuộc P9.
+Mỗi invocation client tạo thư mục mới `results/<experiment_id>/` hoặc `--out=DIR`; ID tự sinh khi thiếu, ID chỉ gồm 1..128 ASCII chữ/số/`_`/`-`. Trong đó có `raw/<run_id>.json`, `runs.csv`, `streams.csv`; validator: `python3 analysis/validate.py DIR`. Failure sau khi trial bắt đầu vẫn ghi run và N resource rows trước khi trả exit 1. Directory đã tồn tại bị từ chối để không append/overwrite. Result write failure trả exit 1; raw đã ghi giữ lại nếu lỗi CSV và file `INCOMPLETE` còn hiện diện cho đến khi ghi đủ. Nếu không có `--network-state`, cold CLI giữ `network_profile=loopback-test` cho correctness/exploratory. P8 flag nhận snapshot đã verify, đúng namespace và mới trong 5 phút; gắn network fields và phase/trace_mode=evidence, không đưa G08 vào main cohort. P9 bench entry nhận cùng snapshot nhưng phase warmup/measured và trace_mode=performance đến từ schedule.
 
 ### Hiện trạng P7/G07
 
@@ -66,7 +67,17 @@ G07 đầy đủ dùng `sudo bash tests/system/run.sh` từ trạng thái qclien
 
 `client --network-state=PATH` là metadata handoff từ wrapper, không tự cấp quyền hoặc truy vấn tc; snapshot không bảo đảm kernel không đổi sau khi đọc. Wrapper phải inspect trước/sau mỗi trial và apply/reset khi idle, sau probes. P8 gắn phase/trace_mode=evidence vì đây là gate validation trials, chưa có benchmark schedule P9. Input snapshot lỗi/stale/wrong namespace exit 2 trước t0. Trial failure giữ cùng network metadata trong raw/CSV. Schema kết quả vẫn v1.
 
-`make netem SCENARIO=rtt50-loss0 NETWORK_PROFILE=ingress-ifb NETEM_SEED=default`; `make -s inspect-network` xuất JSON sạch; `make clear-netem` gỡ qdisc/filter giữ namespaces và offload OFF; teardown xóa toàn topology và impairment metadata. Clear không restore offloads của disposable veth/IFB; không sửa host NIC. `make test-network` chạy Python negative tests UID thường. Actual G08: `sudo bash tests/system/run.sh --gate G08` (không args vẫn G07); gate cần topology ban đầu absent, server/client unprivileged, output user-owned. Test-only `QUICLAB_FAIL_NETEM_AFTER=client` cố ý gây tc parser error sau qclient apply để kiểm rollback; không dùng trong benchmark. Gate actual hiện BLOCKED tại sudo, không thay bằng static tests.
+`make netem SCENARIO=rtt50-loss0 NETWORK_PROFILE=ingress-ifb NETEM_SEED=default`; `make -s inspect-network` xuất JSON sạch; `make clear-netem` gỡ qdisc/filter giữ namespaces và offload OFF; teardown xóa toàn topology và impairment metadata. Clear không restore offloads của disposable veth/IFB; không sửa host NIC. `make test-network` chạy Python negative tests UID thường. Actual G08: `sudo bash tests/system/run.sh --gate G08` (không args vẫn G07); gate cần topology ban đầu absent, server/client unprivileged, output user-owned. Test-only `QUICLAB_FAIL_NETEM_AFTER=client` cố ý gây tc parser error sau qclient apply để kiểm rollback; không dùng trong benchmark. Actual G08 rerun đã PASS; evidence/p8 giữ lịch sử và review.
+
+### Hiện trạng P9/G09
+
+`bench --plan` mặc định chọn mọi main scenario, counts/seed từ configs; `--scenario=NAME` chọn một scenario. Schedule v1 nhúng validated configs/hash, endpoint/CA hash/timeout và entries. SplitMix64 v1 tạo starting AB/BA order rồi alternate từng pair, balanced khi repeats chẵn; seed riêng mỗi pair, reset cùng seed trước từng transport. `--seed=0` là explicit seed hợp lệ. Schedule tối đa4096 entries/JSON8MiB, không có shell command. `entries/<run_id>.json` gắn schedule hash và exact entry; không nhận override transport/scenario/order/run ID hoặc chạy lại shard có sẵn.
+
+`bench --schedule-entry=PATH` chạy đúng một cold trial trong qclient sau config/CA hash và snapshot/namespace checks; output mặc định `shards/<run_id>/`. Cùng RunCold codepath với client, không gọi sudo/tc. `connection.json` ghi actual TLS/ALPN/cipher/resumption, QUIC version/Used0RTT và client socket buffers trong cleanup sau FIN; không đổi schema canonical v1. Bench direct chạy TCP/QUIC tuần tự của một scenario và luôn loopback-test; configured losses không được gán là đã apply. Network-state direct bị từ chối vì reset phải qua wrapper.
+
+`scripts/bench.sh` yêu cầu topology ban đầu absent, G08 PASS và pinned analysis packages; tạo plan bằng user, setup/RTT probes, server managed PID UID thường, reset/apply/inspect mỗi entry, watchdog timeout+15s/KILL grace5s, check after/counters/direction/rate. Transfer fail có raw hợp lệ được giữ và tiếp tục sau full server deadline/queue drain/quiet path; lỗi infra hoặc missing/incomplete output dừng cohort. Trap giữ130/143, dừng đúng PID do wrapper tạo, clear/teardown và compare host. Wrapper actual main và controlled SIGINT đã PASS ở user rerun results/p9-g09-8dFdkj; terminal Ctrl+C qua tee trước đó exit141/cleanup1, chưa sửa/kiểm lại đường tương tác này.
+
+Merge chạy một lần, không append/overwrite aggregate. Giữ source shards; failed representation cho entry thiếu với N rows, null latency/hash và explicit code. `n_attempted` là full scheduled denominator, `n_invoked` riêng; unobserved elapsed=0 sentinel được ghi ở merge.json, không là latency đo. Raw có before/after network check thiếu/lỗi bị đánh dấu environment_error trong aggregate, source không đổi. Summary/plots chỉ successful measured latency, luôn kèm failures; warmups riêng. Full G09: `sudo bash tests/system/run.sh --gate G09`, gồm actual interrupted trial và main256 rows/1536 resource rows; software/local correctness không thay gate.
 
 ## 2. Exit codes và output
 
@@ -104,10 +115,14 @@ Bench summary có attempted/success/failed; có failures thì CSV vẫn giữ đ
 | `make netem` | Apply scenario/profile/seed P8, clear cũ và verify kernel |
 | `make inspect-network` | Actual JSON; dùng make -s để không lẫn recipe echo |
 | `make test-network` | Python negative tests P8 unprivileged; không thay G08 |
+| `make analysis-deps` | Cài pinned plotting packages vào .tools/analysis bằng user, trước benchmark/live |
+| `make test-analysis` | Unit formulas/failure denominator/warmup/outliers; không tạo main benchmark |
 | `make clear-netem` | Gỡ qdisc/filter trong lab; giữ namespace và offload OFF |
 | `make clean-network` | Stop owned processes rồi teardown tài nguyên lab |
 
 `SCENARIO`, `RUNS`, `RESULTS`, `PROFILE` nếu hỗ trợ phải document/validate, không eval. P7 hỗ trợ `PROFILE` cho `make server`; P8 hỗ trợ `SCENARIO`, `NETWORK_PROFILE`, `NETEM_SEED` cho apply, truyền qua environment thành arguments, parser kiểm input; không eval. `NETEM_SEED=none` là explicit limitation. Không target `clean` xóa source hoặc raw results. Live wrappers hoàn thành phải clear-netem, nhưng giữ artifacts. Nếu server foreground do người dùng chạy với profile khác, wrapper báo conflict hoặc hướng dẫn stop; không kill không rõ ownership.
+
+P9 `make benchmark` nhận optional RUNS/WARMUPS/SEED (mặc định trống, Go đọc configs); thay counts là exploratory, không G09 default. Main luôn bulk/ingress-ifb/mọi main scenario; dùng scripts/bench.sh --scenario=NAME cho subset. NETEM_SEED=none là explicit limitation, không dùng một fixed seed thay seed schedule. `make analyze RESULTS=DIR` validate → summary → plots/report, không sửa raw. Các biến thành argument arrays, không eval.
 
 ## 4. Usage flow sau implementation
 

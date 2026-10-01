@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "schedule_sha256": "57aa7adcb034cf983fbf8ecb21d72c0aaa5297ca9adcfbed1234cebb8193a7fd",
+  "entry": {
+    "schema_version": 1,
+    "experiment_id": "bulk_20261001T040343_aba00c8f14659393",
+    "run_id": "c0_measured_0000_quic",
+    "scenario": "baseline",
+    "phase": "measured",
+    "repeat_index": 0,
+    "pair_id": "c0_measured_0000",
+    "order_index": 0,
+    "transport": "quic",
+    "mode": "cold",
+    "workload_profile": "bulk",
+    "netem_seed": 6421382841831682002,
+    "trace_mode": "performance",
+    "index": 2
+  }
+}

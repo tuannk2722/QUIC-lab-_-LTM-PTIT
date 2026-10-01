@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "default_network_profile": "ingress-ifb",
+  "mtu": 1500,
+  "queue_limit_packets": 1000,
+  "main_runs_per_transport": 30,
+  "warmups_per_transport": 2,
+  "base_seed": 20260928,
+  "scenarios": [
+    {
+      "name": "baseline",
+      "main_suite": true,
+      "delay_each_way_ms": 0,
+      "loss_downstream_pct": 0,
+      "loss_upstream_pct": 0,
+      "rate_mbps": 20
+    },
+    {
+      "name": "rtt50-loss0",
+      "main_suite": true,
+      "delay_each_way_ms": 25,
+      "loss_downstream_pct": 0,
+      "loss_upstream_pct": 0,
+      "rate_mbps": 20
+    },
+    {
+      "name": "rtt50-loss1",
+      "main_suite": true,
+      "delay_each_way_ms": 25,
+      "loss_downstream_pct": 1,
+      "loss_upstream_pct": 0,
+      "rate_mbps": 20
+    },
+    {
+      "name": "rtt50-loss3",
+      "main_suite": true,
+      "delay_each_way_ms": 25,
+      "loss_downstream_pct": 3,
+      "loss_upstream_pct": 0,
+      "rate_mbps": 20
+    },
+    {
+      "name": "rtt100-loss3",
+      "main_suite": false,
+      "delay_each_way_ms": 50,
+      "loss_downstream_pct": 3,
+      "loss_upstream_pct": 0,
+      "rate_mbps": 20
+    }
+  ]
+}

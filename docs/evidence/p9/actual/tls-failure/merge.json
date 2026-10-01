@@ -1,0 +1,24 @@
+{
+  "counts": {
+    "n_planned": 2,
+    "n_invoked": 2,
+    "n_attempted": 2,
+    "n_success": 0,
+    "n_failed": 2,
+    "n_missing_shards": 0,
+    "measured_trials": 2,
+    "warmup_trials": 0
+  },
+  "failure_policy": "scheduled denominator; original shards retained; missing elapsed=0 is unobserved sentinel; success-only latency with failures reported",
+  "schema_version": 1,
+  "sources": {
+    "c0_measured_0000_quic": {
+      "raw": "shards/c0_measured_0000_quic/raw/c0_measured_0000_quic.json",
+      "sha256": "8cf29f98475134469c62cca8cb7aa667abed4606180fcbabcb5157615cad3d9c"
+    },
+    "c0_measured_0000_tcp": {
+      "raw": "shards/c0_measured_0000_tcp/raw/c0_measured_0000_tcp.json",
+      "sha256": "807aa18cd5f1acbd6e741dad9ee88c32ec32bfa5e08dcb7c7cf383d5084f52e9"
+    }
+  }
+}

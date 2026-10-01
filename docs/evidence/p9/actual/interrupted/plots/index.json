@@ -1,0 +1,18 @@
+{
+  "source": [
+    "runs.csv",
+    "streams.csv"
+  ],
+  "files": [
+    "plots/total_ms.svg",
+    "plots/total_ms.png",
+    "plots/ttfa_ms.svg",
+    "plots/ttfa_ms.png",
+    "plots/goodput_mbps.svg",
+    "plots/goodput_mbps.png",
+    "plots/resource-completion.svg",
+    "plots/resource-completion.png"
+  ],
+  "matplotlib": "3.10.8",
+  "scope": "successful measured trials with failures labeled; no HOL causal claim; progress evidence belongs to P11"
+}

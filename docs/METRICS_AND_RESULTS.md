@@ -59,6 +59,9 @@ Mỗi invocation có thư mục mới `results/<experiment_id>/`; không append 
 | progress.csv | Chỉ evidence: tiến độ payload tích lũy của từng resource |
 | qlog/, pcap/, keylog/ | Chỉ evidence, mapping cụ thể ở manifest |
 | network/ | Trạng thái thực tế, qdisc counters trước/sau và offload/config |
+| schedule.json, entries/, config/ | P9 immutable plan, hash-bound entries, bản sao config/CA public (không private key) |
+| shards/, logs/, merge.json | Shards gốc, invocation exit journal, full denominator và provenance/failure policy |
+| shards/<run_id>/connection.json | Actual TLS/ALPN/cipher/QUIC state và client socket buffers, quan sát trong cleanup sau FIN |
 | summary.csv, plots/, report.md | Sinh từ CSV thật; không sửa raw input |
 
 Client và server qlog có connection ID, perspective và run mapping. Một server phục vụ nhiều run phải map connection qua endpoint/time/correlation file đã kiểm tra, không suy ra filename thứ tự. TLS key log chỉ local cho demo, gitignore, không commit mặc định.
@@ -116,6 +119,10 @@ Không biết field nào ghi `unknown` kèm lý do, không bịa “CUBIC giốn
 Schemas trong `schemas/` định nghĩa header/field type, enums, nullability; chưa có result rows. Agent implement validation: unique run_id, streams FK, N rows/trial, metrics đúng công thức với tolerance floating, totals không âm, success yêu cầu bytes/hash đúng, main cohorts đúng count/config, không trộn trace mode. JSON schema định nghĩa record; validator CSV chuyển kiểu theo mapping rồi validate.
 
 CSV write failure làm command nonzero; raw output đã ghi giữ lại với trạng thái incomplete. Writer flush/close error phải được kiểm. Timeout process phải tạo failed row từ runner, không im lặng thiếu run.
+
+P9 refinement D23: aggregate có một row mỗi planned entry, N resource rows. `merge.json.n_invoked` đếm invocation journal; `n_attempted` trong summary là scheduled denominator, gồm entry không bắt đầu nếu cohort bị ngắt. Missing output giữ latency milestones/goodput/checksum null; `elapsed_ms=0` chỉ là sentinel của non-nullable schema v1 khi không có clock observation, với error_code/message và `elapsed_observed=false` ở merge sources. Không dùng sentinel trong successful latency aggregate. Nguồn raw/shard cũ giữ nguyên và hash; network check thiếu/fail làm aggregate environment_error, total/transfer/goodput null. Không đổi result schema v1.
+
+`analysis/cohort.py` bổ sung schedule/FK/config hashes/AB–BA/pair seed/workload/trace/count checks trên CSV đã validate; `--main` yêu cầu đúng240+16/1536 rows và scenario defaults. `summarize.py` ghi summary.csv/resource-summary.csv/summary.json/report.md. Resource distribution tách từng ID với tối đa một sample/run, không pooling siblings thành independent trials. `plot.py` Matplotlib Agg xuất total_ms/ttfa_ms/goodput/per-resource points+box và PNG/SVG; units/n/failures hiện trên axes. Performance plot không có progress timeline; P11 mới thu evidence progress.
 
 ## P8 metadata handoff
 

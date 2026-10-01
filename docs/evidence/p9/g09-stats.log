@@ -1,0 +1,16 @@
+python3 -m unittest discover -s analysis -p 'test_stats.py' -v
+test_failures_warmups_and_outliers (test_stats.StatisticsTests.test_failures_warmups_and_outliers) ... ok
+test_nearest_rank_even_median_and_sample_stddev (test_stats.StatisticsTests.test_nearest_rank_even_median_and_sample_stddev) ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.019s
+
+OK
+python3 tests/system/test_bench.py -v
+test_idle_requires_drained_queues_and_quiet_counters (__main__.NetworkChecks.test_idle_requires_drained_queues_and_quiet_counters) ... ok
+test_matching_and_config_or_counter_change (__main__.NetworkChecks.test_matching_and_config_or_counter_change) ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.051s
+
+OK

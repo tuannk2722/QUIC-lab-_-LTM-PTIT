@@ -1,0 +1,19 @@
+{
+  "counts": {
+    "status": "PASS",
+    "attempted": 4,
+    "success": 1,
+    "failed": 3,
+    "measured_trials": 4,
+    "warmup_trials_excluded": 0,
+    "evidence_trials_excluded": 0
+  },
+  "scheduled_denominator": true,
+  "latency_policy": "successful measured runs only; all failures reported",
+  "warmups_excluded": 0,
+  "p95": "nearest-rank ceil(.95*n)-1",
+  "stddev": "sample n-1; null for n<2",
+  "resource_policy": "separate distribution per resource_id; correlated siblings are not independent trials",
+  "main_checked": false,
+  "experiment_id": "bulk_20261001T040344_ef7dd5f26aa35ec1"
+}

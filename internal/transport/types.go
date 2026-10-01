@@ -9,6 +9,7 @@ type Timing struct {
 }
 
 type Result struct {
+	Connection *ConnectionInfo
 	ResourceID uint32
 	// StreamID is the native QUIC stream ID. It is nil for TCP.
 	StreamID        *int64

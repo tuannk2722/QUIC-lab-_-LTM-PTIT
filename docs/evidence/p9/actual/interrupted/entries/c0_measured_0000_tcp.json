@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "schedule_sha256": "7a9a8a10bf9a961707af8fcc87a394f459b7358020ac2ab3e2140554fefe4acf",
+  "entry": {
+    "schema_version": 1,
+    "experiment_id": "bulk_20261001T040344_ef7dd5f26aa35ec1",
+    "run_id": "c0_measured_0000_tcp",
+    "scenario": "baseline",
+    "phase": "measured",
+    "repeat_index": 0,
+    "pair_id": "c0_measured_0000",
+    "order_index": 0,
+    "transport": "tcp",
+    "mode": "cold",
+    "workload_profile": "bulk",
+    "netem_seed": 4752083080733148189,
+    "trace_mode": "performance",
+    "index": 0
+  }
+}

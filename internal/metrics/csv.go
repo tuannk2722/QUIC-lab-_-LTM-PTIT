@@ -154,3 +154,20 @@ func WriteTrial(dir string, record TrialRecord) error {
 	}
 	return os.Remove(marker)
 }
+
+// WriteAggregate is called once by merge. Raw files are already published;
+// INCOMPLETE remains if any CSV flush/sync/close or finalization fails.
+func WriteAggregate(dir string, records []TrialRecord) error {
+	runs := make([]any, len(records))
+	streams := []any{}
+	for i, r := range records {
+		runs[i] = r.Run
+		for _, s := range r.Streams {
+			streams = append(streams, s)
+		}
+	}
+	if err := writeCSV(filepath.Join(dir, "runs.csv"), RunColumns, runs); err != nil {
+		return err
+	}
+	return writeCSV(filepath.Join(dir, "streams.csv"), StreamColumns, streams)
+}

@@ -91,6 +91,11 @@ Các con số terminal/CSV trong chat là giả lập minh họa. Gói không gi
 
 Mỗi row coding map tới gate; mỗi concept lý thuyết map tới source/defense. Nội dung optional được nêu rõ chứ không biến mất. Agent trước final phải đọc lại bảng này, kiểm acceptance evidence và ghi deviations vào CONTEXT. Không coi “đã copy file nguồn” là “agent đã hiểu”; cần đọc đủ nguồn liên quan khi giải quyết ambiguity/conflict/provenance hoặc final traceability và có explanation/code tests tương ứng khi triển khai; không bắt đọc lại toàn bộ originals mỗi phiên thường lệ.
 
+P9 checkpoint 2026-10-01: rows1/19/21–24/29 được triển khai trong bench plan/entry/merge + shell orchestrator + cohort/stats/plots/manifest (D23). Software/actual localhost tests có evidence/p9; **G09 actual main240+16 và namespace interruption/cleanup còn BLOCKED** do sudo authentication trước runner. Không map plan256 hoặc localhost plots thành main performance evidence; không đánh dấu rows25/26 hoặc 0-RTT/HOL proof hoàn tất.
+
 ## 6. Superseding runtime/workflow decision — 2026-09-30
 
 D13 thay môi trường ban đầu bằng Ubuntu WSL2 trên Windows 11 sau preflight netns/veth/netem/IFB/mirred thành công do người dùng cung cấp; tcpdump available. Chi tiết quan sát ở VERSIONS. Giữ nguyên conversation/handoff provenance 2026-09-28, originals và source manifests. Không coi preflight là G07/G08; topology, ingress IFB/mirred, protocol/metrics/CSV/evidence/demo và acceptance giữ nguyên. D14 thay mặc định autonomous bằng human-gated theo phase. Lượt này chỉ migration tài liệu, không thực thi P0–P12.
+
+
+Closure actual P9/G09: User full G09 rerun 2026-10-01 tại results/p9-g09-8dFdkj PASS (g09_exit=0): main256 invoked/256 success/0 failure/0 missing, 240 measured+16 warmup/1536 resource rows; controlled SIGINT child130/cleanup0. Agent read-only audit/hash tại docs/evidence/p9/g09-rerun-review.json; không tự nhận chạy sudo. Dừng human review P9, không P10. Interactive terminal Ctrl+C qua tee từng exit141/cleanup1 vẫn là issue riêng, không được coi đã sửa bởi controlled child PASS.

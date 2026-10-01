@@ -1,0 +1,11 @@
+scenario,transport,mode,network_profile,trace_mode,resource_count,resource_size_bytes,chunk_bytes,metric,n_attempted,n_success,n_failed,failure_rate,n_values,mean,median,p95,sample_stddev,n_timeout,failure_codes
+loopback-test,quic,cold,loopback-test,performance,6,1048576,16384,total_ms,2,2,0,0.0,2,79.134021,79.134021,116.208748,52.43158174467997,0,{}
+loopback-test,quic,cold,loopback-test,performance,6,1048576,16384,ttfa_ms,2,2,0,0.0,2,5.2292875,5.2292875,6.418815,1.6822459233157618,0,{}
+loopback-test,quic,cold,loopback-test,performance,6,1048576,16384,goodput_mbps,2,2,0,0.0,2,874.9749874141615,874.9749874141615,1294.6231813043291,593.4721672248492,0,{}
+loopback-test,quic,cold,loopback-test,performance,6,1048576,16384,e2e_goodput_mbps,2,2,0,0.0,2,814.8986228824783,814.8986228824783,1196.6831397597875,539.9248416719504,0,{}
+loopback-test,quic,cold,loopback-test,performance,6,1048576,16384,handshake_ms,2,2,0,0.0,2,4.374314,4.374314,5.589948,1.7191660896818548,0,{}
+loopback-test,tcp,cold,loopback-test,performance,6,1048576,16384,total_ms,2,2,0,0.0,2,26.5962525,26.5962525,29.988432,4.797266254903984,0,{}
+loopback-test,tcp,cold,loopback-test,performance,6,1048576,16384,ttfa_ms,2,2,0,0.0,2,1.7419850000000001,1.7419850000000001,1.7916,0.07016620589714122,0,{}
+loopback-test,tcp,cold,loopback-test,performance,6,1048576,16384,goodput_mbps,2,2,0,0.0,2,2045.5131433201086,2045.5131433201086,2317.4293574383523,384.5475978351666,0,{}
+loopback-test,tcp,cold,loopback-test,performance,6,1048576,16384,e2e_goodput_mbps,2,2,0,0.0,2,1923.7277797924594,1923.7277797924594,2169.086780583736,346.9900265693343,0,{}
+loopback-test,tcp,cold,loopback-test,performance,6,1048576,16384,handshake_ms,2,2,0,0.0,2,1.546902,1.546902,1.609246,0.08816773033258818,0,{}

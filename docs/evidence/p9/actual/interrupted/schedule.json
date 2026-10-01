@@ -1,0 +1,168 @@
+{
+  "schema_version": 1,
+  "experiment_id": "bulk_20261001T040344_ef7dd5f26aa35ec1",
+  "created_utc": "2026-10-01T04:03:44.136462077Z",
+  "suite": "bulk",
+  "profile": "bulk",
+  "scenario_names": [
+    "baseline"
+  ],
+  "runs": 2,
+  "warmups": 0,
+  "seed": 20260928,
+  "seed_disabled": false,
+  "execution": "loopback-test",
+  "addr": "127.0.0.1:36831",
+  "server_name": "localhost",
+  "timeout_ns": 60000000000,
+  "workloads": {
+    "schema_version": 1,
+    "generator": "byte((resource_id + offset) % 256)",
+    "checksum": "sha256",
+    "profiles": {
+      "bulk": {
+        "resource_count": 6,
+        "resource_size_bytes": 1048576,
+        "chunk_bytes": 16384
+      },
+      "handshake": {
+        "resource_count": 1,
+        "resource_size_bytes": 1024,
+        "chunk_bytes": 1024
+      }
+    },
+    "limits": {
+      "max_resources": 64,
+      "max_resource_size_bytes": 16777216,
+      "max_total_bytes": 67108864,
+      "max_chunk_bytes": 65536,
+      "max_active_connections": 8
+    },
+    "timeouts": {
+      "handshake_seconds": 10,
+      "batch_seconds": 5,
+      "trial_seconds": 60,
+      "ticket_wait_seconds": 5
+    }
+  },
+  "scenarios": {
+    "schema_version": 1,
+    "default_network_profile": "ingress-ifb",
+    "mtu": 1500,
+    "queue_limit_packets": 1000,
+    "main_runs_per_transport": 30,
+    "warmups_per_transport": 2,
+    "base_seed": 20260928,
+    "scenarios": [
+      {
+        "name": "baseline",
+        "main_suite": true,
+        "delay_each_way_ms": 0,
+        "loss_downstream_pct": 0,
+        "loss_upstream_pct": 0,
+        "rate_mbps": 20
+      },
+      {
+        "name": "rtt50-loss0",
+        "main_suite": true,
+        "delay_each_way_ms": 25,
+        "loss_downstream_pct": 0,
+        "loss_upstream_pct": 0,
+        "rate_mbps": 20
+      },
+      {
+        "name": "rtt50-loss1",
+        "main_suite": true,
+        "delay_each_way_ms": 25,
+        "loss_downstream_pct": 1,
+        "loss_upstream_pct": 0,
+        "rate_mbps": 20
+      },
+      {
+        "name": "rtt50-loss3",
+        "main_suite": true,
+        "delay_each_way_ms": 25,
+        "loss_downstream_pct": 3,
+        "loss_upstream_pct": 0,
+        "rate_mbps": 20
+      },
+      {
+        "name": "rtt100-loss3",
+        "main_suite": false,
+        "delay_each_way_ms": 50,
+        "loss_downstream_pct": 3,
+        "loss_upstream_pct": 0,
+        "rate_mbps": 20
+      }
+    ]
+  },
+  "workloads_sha256": "748a551a8e7c1a641dc77605119ea3e8c7fa18de24c734e1b6e89697fb4dc002",
+  "scenarios_sha256": "72ad7e70a4a18fa2699235c91eacfb3d96b47077c6f448c0e8325572eb275ca0",
+  "ca_sha256": "4622fba9901bf6fe41f8c1564b8bc0ca9543f84d622e97bf271fb94aaefc5bd3",
+  "entries": [
+    {
+      "schema_version": 1,
+      "experiment_id": "bulk_20261001T040344_ef7dd5f26aa35ec1",
+      "run_id": "c0_measured_0000_tcp",
+      "scenario": "baseline",
+      "phase": "measured",
+      "repeat_index": 0,
+      "pair_id": "c0_measured_0000",
+      "order_index": 0,
+      "transport": "tcp",
+      "mode": "cold",
+      "workload_profile": "bulk",
+      "netem_seed": 4752083080733148189,
+      "trace_mode": "performance",
+      "index": 0
+    },
+    {
+      "schema_version": 1,
+      "experiment_id": "bulk_20261001T040344_ef7dd5f26aa35ec1",
+      "run_id": "c0_measured_0000_quic",
+      "scenario": "baseline",
+      "phase": "measured",
+      "repeat_index": 0,
+      "pair_id": "c0_measured_0000",
+      "order_index": 1,
+      "transport": "quic",
+      "mode": "cold",
+      "workload_profile": "bulk",
+      "netem_seed": 4752083080733148189,
+      "trace_mode": "performance",
+      "index": 1
+    },
+    {
+      "schema_version": 1,
+      "experiment_id": "bulk_20261001T040344_ef7dd5f26aa35ec1",
+      "run_id": "c0_measured_0001_quic",
+      "scenario": "baseline",
+      "phase": "measured",
+      "repeat_index": 1,
+      "pair_id": "c0_measured_0001",
+      "order_index": 0,
+      "transport": "quic",
+      "mode": "cold",
+      "workload_profile": "bulk",
+      "netem_seed": 6421382841831682002,
+      "trace_mode": "performance",
+      "index": 2
+    },
+    {
+      "schema_version": 1,
+      "experiment_id": "bulk_20261001T040344_ef7dd5f26aa35ec1",
+      "run_id": "c0_measured_0001_tcp",
+      "scenario": "baseline",
+      "phase": "measured",
+      "repeat_index": 1,
+      "pair_id": "c0_measured_0001",
+      "order_index": 1,
+      "transport": "tcp",
+      "mode": "cold",
+      "workload_profile": "bulk",
+      "netem_seed": 6421382841831682002,
+      "trace_mode": "performance",
+      "index": 3
+    }
+  ]
+}

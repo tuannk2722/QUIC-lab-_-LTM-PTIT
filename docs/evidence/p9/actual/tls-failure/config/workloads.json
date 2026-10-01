@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "generator": "byte((resource_id + offset) % 256)",
+  "checksum": "sha256",
+  "profiles": {
+    "bulk": {
+      "resource_count": 6,
+      "resource_size_bytes": 1048576,
+      "chunk_bytes": 16384
+    },
+    "handshake": {
+      "resource_count": 1,
+      "resource_size_bytes": 1024,
+      "chunk_bytes": 1024
+    }
+  },
+  "limits": {
+    "max_resources": 64,
+    "max_resource_size_bytes": 16777216,
+    "max_total_bytes": 67108864,
+    "max_chunk_bytes": 65536,
+    "max_active_connections": 8
+  },
+  "timeouts": {
+    "handshake_seconds": 10,
+    "batch_seconds": 5,
+    "trial_seconds": 60,
+    "ticket_wait_seconds": 5
+  }
+}

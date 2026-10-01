@@ -1,0 +1,40 @@
+{
+  "counts": {
+    "n_planned": 6,
+    "n_invoked": 6,
+    "n_attempted": 6,
+    "n_success": 6,
+    "n_failed": 0,
+    "n_missing_shards": 0,
+    "measured_trials": 4,
+    "warmup_trials": 2
+  },
+  "failure_policy": "scheduled denominator; original shards retained; missing elapsed=0 is unobserved sentinel; success-only latency with failures reported",
+  "schema_version": 1,
+  "sources": {
+    "c0_measured_0000_quic": {
+      "raw": "shards/c0_measured_0000_quic/raw/c0_measured_0000_quic.json",
+      "sha256": "1484970ec1e5d7fd90b2b27b06e6881988b2e2a85a7d7380fb6eed264ef44bbd"
+    },
+    "c0_measured_0000_tcp": {
+      "raw": "shards/c0_measured_0000_tcp/raw/c0_measured_0000_tcp.json",
+      "sha256": "21aed8c341b173d2ef9b64759737c5b6d9a56c374aa9032be8eada1eb6f5f181"
+    },
+    "c0_measured_0001_quic": {
+      "raw": "shards/c0_measured_0001_quic/raw/c0_measured_0001_quic.json",
+      "sha256": "0dcef27fa128b118f9aed93b36e407ee2594242bb72872f1c8d5223d1c18bf4b"
+    },
+    "c0_measured_0001_tcp": {
+      "raw": "shards/c0_measured_0001_tcp/raw/c0_measured_0001_tcp.json",
+      "sha256": "0aebe635757be478f01dfa956b5c86e7c365066fa4155e299dbe644bee6a8cee"
+    },
+    "c0_warmup_0000_quic": {
+      "raw": "shards/c0_warmup_0000_quic/raw/c0_warmup_0000_quic.json",
+      "sha256": "cd2f960f2442d51c883a19c6e386b3952623f9ccb99f38082a62c1614cc34b11"
+    },
+    "c0_warmup_0000_tcp": {
+      "raw": "shards/c0_warmup_0000_tcp/raw/c0_warmup_0000_tcp.json",
+      "sha256": "1d13e330becbeef705db5923c2d17410d191f19e18bacd5bbe137786cc83e0b0"
+    }
+  }
+}

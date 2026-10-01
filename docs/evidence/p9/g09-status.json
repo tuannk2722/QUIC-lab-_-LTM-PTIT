@@ -1,0 +1,174 @@
+{
+  "updated_utc": "2026-10-01",
+  "phase": "P9",
+  "gate": "G09",
+  "status": "PASS",
+  "authorized_scope": "P9/G09 only; stop for human review; no P10/commit",
+  "environment": "Ubuntu WSL2 native /home repo; software/app checks UID1000 outside sandbox for localhost sockets",
+  "checks": [
+    {
+      "id": "G09-code/build/suite/race",
+      "status": "PASS",
+      "commands": [
+        "make build",
+        "make test",
+        "make test-race"
+      ],
+      "exit_codes": [
+        0,
+        0,
+        0
+      ],
+      "evidence": [
+        "g09-build.log",
+        "g09-suite.log",
+        "g09-race.log"
+      ]
+    },
+    {
+      "id": "G09-plan/config/order/seed/merge",
+      "status": "PASS",
+      "scope": "software; default256 planned entries were not executed",
+      "evidence": [
+        "g09-suite.log",
+        "actual/default-plan/schedule.json",
+        "g09-software-review.json"
+      ]
+    },
+    {
+      "id": "G09-stats/checker-regression",
+      "status": "PASS",
+      "command": "make test-analysis",
+      "exit_code": 0,
+      "tests": 4,
+      "evidence": "g09-stats.log"
+    },
+    {
+      "id": "G09-P8-network-regression",
+      "status": "PASS",
+      "command": "make test-network",
+      "exit_code": 0,
+      "tests": 9,
+      "evidence": "g09-network-regression.log"
+    },
+    {
+      "id": "G09-actual-software-localhost",
+      "status": "PASS",
+      "command": "python3 tests/system/run_g09_software.py",
+      "exit_code": 0,
+      "actual_source_root": "results/p9-software-6011935o/",
+      "cases": {
+        "success": {
+          "attempted": 6,
+          "success": 6,
+          "failed": 0,
+          "measured": 4,
+          "warmup": 2
+        },
+        "tls-failure": {
+          "attempted": 2,
+          "success": 0,
+          "failed": 2
+        },
+        "interrupted": {
+          "scheduled": 4,
+          "invoked": 2,
+          "success": 1,
+          "failed": 3,
+          "killed_missing": 1,
+          "not_started": 2
+        }
+      },
+      "aggregate_rows": 12,
+      "resource_rows": 72,
+      "archived_files_sha256_verified": 140,
+      "evidence": [
+        "g09-software.log",
+        "g09-software-review.json",
+        "archive-provenance.json",
+        "actual/"
+      ]
+    },
+    {
+      "id": "G09-main-actual",
+      "status": "PASS",
+      "source_root": "results/p9-g09-8dFdkj/main",
+      "invoked": 256,
+      "success": 256,
+      "failed": 0,
+      "measured": 240,
+      "warmup": 16,
+      "resource_rows": 1536,
+      "kernel_snapshots_reviewed": 1286,
+      "network_checks_recomputed": 256,
+      "evidence": [
+        "g09-system-run2.log",
+        "g09-rerun-review.json"
+      ]
+    },
+    {
+      "id": "G09-actual-controlled-interruption/cleanup/UID/host",
+      "status": "PASS",
+      "interrupt_exit": 130,
+      "main_cleanup": 0,
+      "interrupt_cleanup": 0,
+      "evidence": "g09-rerun-review.json"
+    }
+  ],
+  "historical_checks": [
+    {
+      "status": "BLOCKED",
+      "scope": "sandbox socket suite",
+      "reason": "EPERM on localhost sockets; final suite/race rerun successfully outside sandbox",
+      "evidence": "g09-suite-sandbox.log"
+    },
+    {
+      "status": "PASS",
+      "scope": "first software correctness pass before journal/provenance refinement",
+      "result_root": "results/p9-software-yo27jxcr/",
+      "evidence": "g09-software-first.log"
+    },
+    {
+      "id": "G09-main-actual",
+      "status": "BLOCKED",
+      "command": "sudo -n bash tests/system/run.sh --gate G09",
+      "exit_code": 1,
+      "started_runner": false,
+      "reason": "sudo: interactive authentication is required",
+      "actual_main_rows": 0,
+      "actual_gate_root": null,
+      "evidence": "g09-system-attempt.log"
+    },
+    {
+      "id": "G09-actual-namespace-interruption/cleanup/UID/host",
+      "status": "BLOCKED",
+      "reason": "Same sudo block before runner; software process-kill fixture does not prove namespace signal cleanup",
+      "evidence": "g09-system-attempt.log"
+    },
+    {
+      "status": "FAIL",
+      "scope": "interactive terminal Ctrl+C main incomplete, not current full rerun",
+      "root": "results/p9-g09-qvyXOw/main",
+      "pipeline_exit": 141,
+      "cleanup_exit": 1,
+      "host_unchanged": true,
+      "note": "raw/CSV retained; no summary/plots. SIGPIPE suspected, full cause not established; code unchanged."
+    }
+  ],
+  "limitations": [
+    "Interactive terminal Ctrl+C through tee earlier141/cleanup1 remains unfixed; controlled child PASS is separate",
+    "No HOL causal or universal transport superiority claim; TCP CUBIC vs QUIC Reno/userspace differs",
+    "Snapshots are observations, not a continuous network lock; wrapper SIGKILL cannot trap cleanup",
+    "Server per-socket buffers and Windows WSL app version unknown with manifest reasons",
+    "P10-P12 NOT_RUN; human review P9 not yet confirmed"
+  ],
+  "next_exact_action": "User review P9 patch + real artifacts/evidence, especially terminal Ctrl+C pipeline limitation; no redundant G09 rerun needed and no P10 unless explicitly authorized.",
+  "actual_gate_root": "results/p9-g09-8dFdkj",
+  "user_exit_codes": {
+    "g09": 0,
+    "main": 0,
+    "interrupt": 130
+  },
+  "actual_review": "g09-rerun-review.json",
+  "actual_archive": "g09-user-run-artifacts.tar.gz"
+}

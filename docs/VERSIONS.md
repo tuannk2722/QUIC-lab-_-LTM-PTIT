@@ -12,7 +12,7 @@ Status P0 (2026-09-30): **toolchain/API/build VERIFIED; primitive probe PASS; G0
 | quic-go minimum Go | **1.26.0** theo go.mod đúng tag | [go.mod chính thức](https://github.com/quic-go/quic-go/blob/v0.63.0/go.mod) |
 | iproute2 / netem / IFB / mirred / ethtool | ip/tc 6.19.0; ethtool 6.19; sch_netem/ifb/act_mirred hiện diện | doctor-host.txt; network-probe.log: người dùng chạy thành công ngày 2026-09-30, kèm provenance/hash |
 | Git / make / OpenSSL | 2.53.0 / 4.4.1 / 3.5.5 | doctor-host.txt |
-| Python / plotting | 3.14.4; matplotlib/numpy/pandas chưa cài, để P9 | doctor-host.txt |
+| Python / plotting | P0: 3.14.4/chưa plotting. P9: Python3.14.4, Matplotlib3.10.8 và toàn bộ transitive versions pinned trong analysis/requirements.txt, installed .tools/analysis UID thường | doctor-host.txt; evidence/p9/g09-analysis-install.log; actual software plots |
 | tcpdump / Wireshark / qvis | tcpdump 4.99.6; decode/viewer chưa kiểm chứng, để P11 | doctor-host.txt |
 
 Nguồn tải [Go 1.27.1](https://go.dev/dl/#go1.27.1), [quic-go v0.63.0](https://github.com/quic-go/quic-go/releases/tag/v0.63.0). SHA-256 archive Linux amd64 được đối chiếu metadata chính thức trước giải nén: `63d339f0da5ab53635a56f2490a7984dfe12dfcff22ad749f63edaf590168445`. Makefile ép đúng Go 1.27.1, GOTOOLCHAIN=local, build/test -mod=readonly; go.mod/go.sum pin dependency. Không tạo commit trong lượt P0 này. Lệnh tái lập ở README.

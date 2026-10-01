@@ -1,0 +1,40 @@
+{
+  "scope": "P9 software and actual localhost correctness; no applied impairment or main cohort",
+  "status": "PASS",
+  "result_root": "/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p9-software-yo27jxcr",
+  "cases": {
+    "success": {
+      "status": "PASS",
+      "attempted": 6,
+      "success": 6,
+      "failed": 0,
+      "measured_trials": 4,
+      "warmup_trials_excluded": 2,
+      "evidence_trials_excluded": 0
+    },
+    "tls-failure": {
+      "status": "PASS",
+      "attempted": 2,
+      "success": 0,
+      "failed": 2,
+      "measured_trials": 2,
+      "warmup_trials_excluded": 0,
+      "evidence_trials_excluded": 0
+    },
+    "interrupted": {
+      "status": "PASS",
+      "attempted": 4,
+      "success": 1,
+      "failed": 3,
+      "measured_trials": 4,
+      "warmup_trials_excluded": 0,
+      "evidence_trials_excluded": 0
+    }
+  },
+  "default_plan": {
+    "entries": 256,
+    "measured_planned": 240,
+    "warmup_planned": 16,
+    "executed": false
+  }
+}

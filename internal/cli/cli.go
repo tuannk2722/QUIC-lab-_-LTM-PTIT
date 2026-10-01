@@ -21,6 +21,7 @@ import (
 	"syscall"
 	"time"
 
+	"quic-performance-lab/internal/bench"
 	"quic-performance-lab/internal/config"
 	"quic-performance-lab/internal/metrics"
 	"quic-performance-lab/internal/tlsconfig"
@@ -71,7 +72,7 @@ func Run(name string, args []string, out, errOut io.Writer) int {
 	fs := flag.NewFlagSet(name, flag.ContinueOnError)
 	fs.SetOutput(errOut)
 	fs.Usage = func() {
-		fmt.Fprintf(errOut, "Usage: %s [flags]\nP4: TCP/TLS and QUIC cold batch transfer; benchmark and 0-RTT modes report not implemented.\n", name)
+		fmt.Fprintf(errOut, "Usage: %s [flags]\nP9: cold TCP/QUIC trials and bulk plan/entry/merge; resumption/0-RTT requires P10.\n", name)
 		fs.PrintDefaults()
 	}
 	version := fs.Bool("version", false, "print build, commit and toolchain versions")
@@ -82,6 +83,9 @@ func Run(name string, args []string, out, errOut io.Writer) int {
 	var networkStatePath string
 	var runs, warmups int
 	var plan bool
+	var scheduleSeed uint64
+	var execution string
+	var seedDisabled bool
 	fs.String("qlog-dir", "", "qlog directory (future evidence mode)")
 	fs.String("keylog", "", "TLS secrets file (future evidence mode)")
 	if name == "server" {
@@ -114,11 +118,13 @@ func Run(name string, args []string, out, errOut io.Writer) int {
 		fs.StringVar(&scenario, "scenario", "rtt50-loss3", "scenario name")
 		fs.IntVar(&runs, "runs", 0, "measured repeats (default: scenario config)")
 		fs.IntVar(&warmups, "warmups", 0, "warmups (default: scenario config)")
-		fs.BoolVar(&plan, "plan", false, "schedule planning (future phase)")
+		fs.BoolVar(&plan, "plan", false, "create immutable bulk schedule and manifest")
 		fs.StringVar(&suite, "suite", "bulk", "bulk or handshake")
-		fs.Uint64("seed", 0, "schedule seed (default: scenario config; planning in future phase)")
-		fs.StringVar(&entry, "schedule-entry", "", "entry JSON path (future phase)")
-		fs.StringVar(&merge, "merge", "", "shard directory (future phase)")
+		fs.Uint64Var(&scheduleSeed, "seed", 0, "schedule seed (default: scenario config)")
+		fs.BoolVar(&seedDisabled, "disable-netem-seed", false, "explicit seed=null limitation; retain deterministic order")
+		fs.StringVar(&execution, "network-profile", "ingress-ifb", "plan execution: ingress-ifb or loopback-test")
+		fs.StringVar(&entry, "schedule-entry", "", "immutable entry JSON path")
+		fs.StringVar(&merge, "merge", "", "experiment directory to merge once")
 	}
 	if err := fs.Parse(args); err != nil {
 		if errors.Is(err, flag.ErrHelp) {
@@ -221,6 +227,22 @@ func Run(name string, args []string, out, errOut io.Writer) int {
 		if n > 1 {
 			return bad("plan, schedule-entry and merge are mutually exclusive")
 		}
+		if !seen["seed"] {
+			scheduleSeed = s.BaseSeed
+		}
+		if execution != "ingress-ifb" && execution != "loopback-test" {
+			return bad("invalid plan network-profile")
+		}
+		if fs.Lookup("qlog-dir").Value.String() != "" || fs.Lookup("keylog").Value.String() != "" || fs.Lookup("progress").Value.String() == "true" {
+			return bad("P9 performance bench requires traces off; P11 implements evidence collection")
+		}
+		if suite != "bulk" || mode != "cold" {
+			fmt.Fprintln(errOut, "not implemented: handshake/resumption/early suite requires P10")
+			return 1
+		}
+		return runBench(benchOptions{plan: plan, entry: entry, merge: merge, out: outDir, experimentID: experimentID, profile: *profile,
+			profiles: *profiles, scenarios: scenarios, scenario: scenario, runs: runs, warmups: warmups, seed: scheduleSeed, seedDisabled: seedDisabled,
+			execution: execution, addr: addr, ca: ca, serverName: serverName, timeout: timeout, network: networkStatePath, seen: seen, args: args}, w, s, out, errOut)
 	}
 	if name == "server" {
 		store, err := workload.NewStore(w.Profiles[*profile], w.Limits)
@@ -283,12 +305,7 @@ func Run(name string, args []string, out, errOut io.Writer) int {
 		if outDir == "" {
 			outDir = filepath.Join("results", experimentID)
 		}
-		var results []transport.Result
-		if transportName == "tcp" {
-			results, err = tcptransport.RunBatch(context.Background(), addr, cfg, expected, timeout)
-		} else {
-			results, err = quictransport.RunBatch(context.Background(), addr, cfg, expected, timeout)
-		}
+		results, err := bench.RunCold(context.Background(), transportName, addr, cfg, expected, timeout)
 		meta := metrics.TrialMeta{ExperimentID: experimentID, RunID: runID, Phase: "measured", Scenario: "loopback-test",
 			Transport: transportName, Mode: mode, TraceMode: "performance", NetworkProfile: "loopback-test",
 			ResourceCount: expected.Count(), ResourceSizeBytes: uint64(expected.Profile().ResourceSizeBytes), ChunkBytes: uint32(expected.Profile().ChunkBytes)}

@@ -28,7 +28,8 @@ Mỗi phase: đọc hợp đồng → inspect code → implement → chạy gate
 | internal/tlsconfig/sessioncache.go | Thread-safe cache + ticket signal | P10 |
 | internal/metrics/timer.go, result.go, csv.go, json.go | Monotonic record, export, null/errors | P5/P6 |
 | internal/metrics/progress.go | Evidence in-memory event collection | P11 |
-| internal/bench/runner.go, schedule.go, merge.go | Fresh trials, seeds/order, failure rows | P9 |
+| internal/bench/runner.go, schedule.go, merge.go, manifest.go | Shared cold trials, immutable hash-bound seeds/order, failure rows, provenance/host metadata | P9 |
+| internal/cli/bench.go, internal/transport/connection.go | Bench flags/lifecycle, actual post-FIN TLS/socket sidecars | P9 |
 | internal/observability/qlog.go, keylog.go | Optional traces và mapping, flush | P11 |
 | scripts/gen-cert.sh | Local cert/key SAN, secure file permissions | P0 |
 | scripts/doctor.sh, preflight-network.sh | Inventory không root; primitive probe đặc quyền tách riêng, namespace tạm | P0/P7/P8 |
@@ -37,9 +38,10 @@ Mỗi phase: đọc hợp đồng → inspect code → implement → chạy gate
 | scripts/network/netem.sh, clear-netem.sh, inspect.sh, state.py | Apply/clear profiles, verify kernel/offload/seed actual state | P8 |
 | internal/config/network.go | Read bounded recent network snapshot, check client namespace identity | P8 |
 | tests/system/g08.sh, check_g08.py, test_network.py | G08 traffic gate/checker and unprivileged negative tests | P8 |
-| scripts/bench.sh | Privileged network orchestration around unprivileged bench | P9 |
+| scripts/bench.sh, bench-support.py | Privileged network orchestration; unprivileged checks/journals/metadata/analysis | P9 |
 | scripts/capture.sh, demo.sh | Evidence capture và managed live lifecycle | P11/P12 |
-| analysis/validate.py, summarize.py, plot.py | Results contract, stats, charts | P6/P9/P12 |
+| analysis/validate.py, cohort.py, summarize.py, plot.py | Results/cohort contract, stats, charts | P6/P9/P12 |
+| tests/system/g09.sh, check_g09.py, run_g09_software.py, test_bench.py | Actual default+interrupt gate; software localhost and checker unit regression | P9 |
 | analysis/requirements.txt | Pin thư viện plotting nếu dùng ngoài stdlib | P9 |
 | tests/integration/*_test.go | Transport/TLS/error/early functional tests | P2–P10 |
 | tests/system/run.sh | Namespace/impairment/cleanup acceptance | P7–P12 |
@@ -110,6 +112,11 @@ Gate G08: rtt50-loss0 đo theo tolerance; counters direction đúng; server→cl
 Implement schedule plan/entry/merge, shell orchestrator, 30 trials/transport/scenario +2 warmups, balanced AB/BA, seed schedule, trial deadline và failures. Pin analysis dependencies. `analysis/summarize.py` đúng stats. Thu main performance dataset **thật** khi testbed sẵn sàng.
 
 Gate G09: 240 measured +16 warmup raw rows cho suite mặc định; stream rows đầy đủ; interrupted/missing shard có failed representation; n_success+n_failed=n_attempted; same cohort config; CSV-derived charts/summary. Performance proof có thể chờ P11/P12 bổ sung nhưng raw đã đủ.
+
+Checkpoint P9 2026-10-01: code/software/build/suite/race và actual localhost runner success/TLS failure/SIGKILL reconstruction PASS; main plan256 entries chưa execute. Actual G09 attempt bị sudo authentication chặn trước runner, **BLOCKED**, chưa main raw240+16. D23 mô tả immutable plan/hash, bounded4096 entries, scheduled denominator/n_invoked riêng, elapsed0 unobserved sentinel và original shards retained. Full runner `sudo bash tests/system/run.sh --gate G09` có separate actual interrupt + main dataset/checker/cleanup. Evidence/manual commands: evidence/p9/README.md. Dừng review P9, không mở P10.
+
+
+Closure actual P9/G09: User full G09 rerun 2026-10-01 tại results/p9-g09-8dFdkj PASS (g09_exit=0): main256 invoked/256 success/0 failure/0 missing, 240 measured+16 warmup/1536 resource rows; controlled SIGINT child130/cleanup0. Agent read-only audit/hash tại docs/evidence/p9/g09-rerun-review.json; không tự nhận chạy sudo. Dừng human review P9, không P10. Interactive terminal Ctrl+C qua tee từng exit141/cleanup1 vẫn là issue riêng, không được coi đã sửa bởi controlled child PASS.
 
 ## P10 — Resumption và 0-RTT
 

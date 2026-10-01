@@ -102,6 +102,12 @@ func RunBatch(parent context.Context, addr string, cfg *tls.Config, expected *wo
 	if conn.ConnectionState().NegotiatedProtocol != "quicbench/1" {
 		return out, fmt.Errorf("unexpected ALPN")
 	}
+	defer func() {
+		info := transport.ObserveConnection(conn.ConnectionState(), raw)
+		for i := range out {
+			out[i].Connection = info
+		}
+	}()
 	for i := range out {
 		out[i].Timing.Handshake = handshake
 	}

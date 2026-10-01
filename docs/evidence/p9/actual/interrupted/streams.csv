@@ -1,0 +1,25 @@
+schema_version,experiment_id,run_id,resource_id,transport_stream_id,attempt_index,request_start_ms,request_end_ms,first_byte_ms,ttfb_request_ms,payload_done_ms,complete_ms,completion_request_ms,bytes_expected,bytes_received,checksum_ok,success,error_code,error_message
+1,bulk_20261001T040344_ef7dd5f26aa35ec1,c0_measured_0000_tcp,1,,0,1.384434,1.40607,1.683832,0.299398,16.574262,16.575179,15.190745,1048576,1048576,true,true,,
+1,bulk_20261001T040344_ef7dd5f26aa35ec1,c0_measured_0000_tcp,2,,0,1.406237,1.413485,1.741533,0.335296,16.591696,16.592,15.185763,1048576,1048576,true,true,,
+1,bulk_20261001T040344_ef7dd5f26aa35ec1,c0_measured_0000_tcp,3,,0,1.413573,1.420131,1.758968,0.345395,16.604421,16.604712,15.191139,1048576,1048576,true,true,,
+1,bulk_20261001T040344_ef7dd5f26aa35ec1,c0_measured_0000_tcp,4,,0,1.420238,1.425058,1.782899,0.362661,16.621059,16.621402,15.201164,1048576,1048576,true,true,,
+1,bulk_20261001T040344_ef7dd5f26aa35ec1,c0_measured_0000_tcp,5,,0,1.425144,1.428884,1.799769,0.374625,16.633726,16.634025,15.208881,1048576,1048576,true,true,,
+1,bulk_20261001T040344_ef7dd5f26aa35ec1,c0_measured_0000_tcp,6,,0,1.429029,1.430805,1.8304,0.401371,16.666585,16.667098,15.238069,1048576,1048576,true,true,,
+1,bulk_20261001T040344_ef7dd5f26aa35ec1,c0_measured_0000_quic,1,,0,,,,,,,,1048576,0,,false,interrupted,invocation produced no completed raw shard; no latency observation
+1,bulk_20261001T040344_ef7dd5f26aa35ec1,c0_measured_0000_quic,2,,0,,,,,,,,1048576,0,,false,interrupted,invocation produced no completed raw shard; no latency observation
+1,bulk_20261001T040344_ef7dd5f26aa35ec1,c0_measured_0000_quic,3,,0,,,,,,,,1048576,0,,false,interrupted,invocation produced no completed raw shard; no latency observation
+1,bulk_20261001T040344_ef7dd5f26aa35ec1,c0_measured_0000_quic,4,,0,,,,,,,,1048576,0,,false,interrupted,invocation produced no completed raw shard; no latency observation
+1,bulk_20261001T040344_ef7dd5f26aa35ec1,c0_measured_0000_quic,5,,0,,,,,,,,1048576,0,,false,interrupted,invocation produced no completed raw shard; no latency observation
+1,bulk_20261001T040344_ef7dd5f26aa35ec1,c0_measured_0000_quic,6,,0,,,,,,,,1048576,0,,false,interrupted,invocation produced no completed raw shard; no latency observation
+1,bulk_20261001T040344_ef7dd5f26aa35ec1,c0_measured_0001_quic,1,,0,,,,,,,,1048576,0,,false,not_started,scheduled entry was not invoked; no latency observation
+1,bulk_20261001T040344_ef7dd5f26aa35ec1,c0_measured_0001_quic,2,,0,,,,,,,,1048576,0,,false,not_started,scheduled entry was not invoked; no latency observation
+1,bulk_20261001T040344_ef7dd5f26aa35ec1,c0_measured_0001_quic,3,,0,,,,,,,,1048576,0,,false,not_started,scheduled entry was not invoked; no latency observation
+1,bulk_20261001T040344_ef7dd5f26aa35ec1,c0_measured_0001_quic,4,,0,,,,,,,,1048576,0,,false,not_started,scheduled entry was not invoked; no latency observation
+1,bulk_20261001T040344_ef7dd5f26aa35ec1,c0_measured_0001_quic,5,,0,,,,,,,,1048576,0,,false,not_started,scheduled entry was not invoked; no latency observation
+1,bulk_20261001T040344_ef7dd5f26aa35ec1,c0_measured_0001_quic,6,,0,,,,,,,,1048576,0,,false,not_started,scheduled entry was not invoked; no latency observation
+1,bulk_20261001T040344_ef7dd5f26aa35ec1,c0_measured_0001_tcp,1,,0,,,,,,,,1048576,0,,false,not_started,scheduled entry was not invoked; no latency observation
+1,bulk_20261001T040344_ef7dd5f26aa35ec1,c0_measured_0001_tcp,2,,0,,,,,,,,1048576,0,,false,not_started,scheduled entry was not invoked; no latency observation
+1,bulk_20261001T040344_ef7dd5f26aa35ec1,c0_measured_0001_tcp,3,,0,,,,,,,,1048576,0,,false,not_started,scheduled entry was not invoked; no latency observation
+1,bulk_20261001T040344_ef7dd5f26aa35ec1,c0_measured_0001_tcp,4,,0,,,,,,,,1048576,0,,false,not_started,scheduled entry was not invoked; no latency observation
+1,bulk_20261001T040344_ef7dd5f26aa35ec1,c0_measured_0001_tcp,5,,0,,,,,,,,1048576,0,,false,not_started,scheduled entry was not invoked; no latency observation
+1,bulk_20261001T040344_ef7dd5f26aa35ec1,c0_measured_0001_tcp,6,,0,,,,,,,,1048576,0,,false,not_started,scheduled entry was not invoked; no latency observation

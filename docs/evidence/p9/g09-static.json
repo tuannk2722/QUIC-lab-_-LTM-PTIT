@@ -1,0 +1,64 @@
+{
+  "status": "PASS",
+  "checks": [
+    {
+      "argv": [
+        "bash",
+        "-n",
+        "scripts/bench.sh",
+        "tests/system/g09.sh",
+        "tests/system/run.sh"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "python3",
+        "-m",
+        "py_compile",
+        "scripts/bench-support.py",
+        "analysis/cohort.py",
+        "analysis/summarize.py",
+        "analysis/plot.py",
+        "analysis/test_stats.py",
+        "tests/system/check_g09.py",
+        "tests/system/test_bench.py",
+        "tests/system/run_g09_software.py"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        ".tools/go1.27.1/bin/gofmt",
+        "-l",
+        "internal/bench",
+        "internal/cli",
+        "internal/config/config.go",
+        "internal/metrics/csv.go",
+        "internal/transport",
+        "tests/integration/bench_test.go"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "check": "140 archived artifact SHA256 + status/review/provenance JSON",
+      "exit_code": 0
+    }
+  ]
+}

@@ -84,6 +84,16 @@ func RunBatch(parent context.Context, addr string, cfg *tls.Config, expected *wo
 		return out, fmt.Errorf("unexpected QUIC ALPN/version")
 	}
 	handshake := time.Now() // Dial returns after the secure handshake in cold mode.
+	defer func() {
+		state := conn.ConnectionState()
+		info := transport.ObserveConnection(state.TLS, packet)
+		info.QUICVersion = state.Version.String()
+		used := state.Used0RTT
+		info.Used0RTT = &used
+		for i := range out {
+			out[i].Connection = info
+		}
+	}()
 	for i := range out {
 		out[i].Timing.Handshake = handshake
 	}

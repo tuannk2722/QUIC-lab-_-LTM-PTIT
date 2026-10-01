@@ -15,9 +15,13 @@ PROFILE ?= bulk
 SCENARIO ?= rtt50-loss0
 NETWORK_PROFILE ?= ingress-ifb
 NETEM_SEED ?= default
-export PROFILE SCENARIO NETWORK_PROFILE NETEM_SEED
+RUNS ?=
+WARMUPS ?=
+SEED ?=
+RESULTS ?=
+export PROFILE SCENARIO NETWORK_PROFILE NETEM_SEED RUNS WARMUPS SEED RESULTS
 
-.PHONY: check-go build test test-race certs doctor setup-network server clean-network netem clear-netem inspect-network test-network
+.PHONY: check-go build test test-race certs doctor setup-network server clean-network netem clear-netem inspect-network test-network benchmark analyze analysis-deps test-analysis
 check-go:
 	@test "$$($(GO) version | awk '{print $$3}')" = "go$(GO_VERSION)" || { echo 'Expected Go $(GO_VERSION); see README.md' >&2; exit 3; }
 
@@ -61,3 +65,25 @@ inspect-network:
 
 test-network:
 	python3 tests/system/test_network.py
+
+analysis-deps:
+	python3 -m pip install --only-binary=:all: --cache-dir .tools/pip-cache --target .tools/analysis -r analysis/requirements.txt
+
+test-analysis:
+	python3 -m unittest discover -s analysis -p 'test_stats.py' -v
+	python3 tests/system/test_bench.py -v
+
+benchmark: build
+	@bench_args=(); \
+		if [[ -n $$RUNS ]]; then bench_args+=(--runs="$$RUNS"); fi; \
+		if [[ -n $$WARMUPS ]]; then bench_args+=(--warmups="$$WARMUPS"); fi; \
+		if [[ -n $$SEED ]]; then bench_args+=(--seed="$$SEED"); fi; \
+		if [[ $$NETEM_SEED == none ]]; then bench_args+=(--disable-netem-seed); \
+		elif [[ $$NETEM_SEED != default ]]; then echo 'Use SEED for schedule seed or NETEM_SEED=none explicitly.' >&2; exit 2; fi; \
+		sudo bash scripts/bench.sh "$${bench_args[@]}"
+
+analyze:
+	@test -n "$$RESULTS" || { echo 'Use make analyze RESULTS=results/<experiment>' >&2; exit 2; }
+	python3 analysis/validate.py "$$RESULTS"
+	python3 analysis/summarize.py "$$RESULTS"
+	python3 analysis/plot.py "$$RESULTS"

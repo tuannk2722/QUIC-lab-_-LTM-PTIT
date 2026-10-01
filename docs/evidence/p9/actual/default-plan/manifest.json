@@ -1,0 +1,214 @@
+{
+  "build_flags": "Make: -mod=readonly -trimpath; ldflags build revision; GOMAXPROCS=2",
+  "build_info": {
+    "GoVersion": "go1.27.1",
+    "Path": "quic-performance-lab/cmd/bench",
+    "Main": {
+      "Path": "quic-performance-lab",
+      "Version": "v0.0.0-20261001032651-6adbcd633e1c+dirty"
+    },
+    "Deps": [
+      {
+        "Path": "github.com/quic-go/quic-go",
+        "Version": "v0.63.0",
+        "Sum": "h1:LIFGHI4PFUhhw2dDD1ARHdCff143ffMHwZtbnbuJ78A="
+      },
+      {
+        "Path": "golang.org/x/crypto",
+        "Version": "v0.54.0",
+        "Sum": "h1:YLIA59K4fiNzHzjnZt2tUJQjQtUWfWbeHBqKtk3eScw="
+      },
+      {
+        "Path": "golang.org/x/net",
+        "Version": "v0.56.0",
+        "Sum": "h1:Rw8j/hFzGvJUZwNBXnAtf5sVDVt+65SK2C7IxCxZt5o="
+      },
+      {
+        "Path": "golang.org/x/sys",
+        "Version": "v0.47.0",
+        "Sum": "h1:o7XGOvZQCADBQQ4Y7VNq2dRWQR7JmOUW8Kxx4ZsNgWs="
+      }
+    ],
+    "Settings": [
+      {
+        "Key": "-buildmode",
+        "Value": "exe"
+      },
+      {
+        "Key": "-compiler",
+        "Value": "gc"
+      },
+      {
+        "Key": "-trimpath",
+        "Value": "true"
+      },
+      {
+        "Key": "CGO_ENABLED",
+        "Value": "1"
+      },
+      {
+        "Key": "GOARCH",
+        "Value": "amd64"
+      },
+      {
+        "Key": "GOOS",
+        "Value": "linux"
+      },
+      {
+        "Key": "GOAMD64",
+        "Value": "v1"
+      },
+      {
+        "Key": "vcs",
+        "Value": "git"
+      },
+      {
+        "Key": "vcs.revision",
+        "Value": "6adbcd633e1cc1803d87efe28474aa1b8cde6f56"
+      },
+      {
+        "Key": "vcs.time",
+        "Value": "2026-10-01T03:26:51Z"
+      },
+      {
+        "Key": "vcs.modified",
+        "Value": "true"
+      }
+    ]
+  },
+  "cli": [
+    "--addr=127.0.0.1:36831",
+    "--server-name=localhost",
+    "--profile=bulk",
+    "--plan",
+    "--out=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p9-software-6011935o/default-plan"
+  ],
+  "config_hashes": {
+    "ca": "4622fba9901bf6fe41f8c1564b8bc0ca9543f84d622e97bf271fb94aaefc5bd3",
+    "scenarios": "72ad7e70a4a18fa2699235c91eacfb3d96b47077c6f448c0e8325572eb275ca0",
+    "workloads": "748a551a8e7c1a641dc77605119ea3e8c7fa18de24c734e1b6e89697fb4dc002"
+  },
+  "configured_measured_rtt": "schedule scenario delays; measured no-loss probes in probes/*.log.json; loss scenarios not separately pinged during transfer",
+  "created_utc": "2026-10-01T04:03:42.200739462Z",
+  "execution_layer": {
+    "observed_kernel": "6.18.40.1-microsoft-standard-WSL2\n",
+    "requested": "Ubuntu WSL2",
+    "wsl_version": "unknown: Windows WSL CLI not queried"
+  },
+  "experiment_id": "bulk_20261001T040342_859b061d11be4396",
+  "failure_policy": "all planned entries represented; transfer failures continue if network verified; infra failure stops; missing/incomplete output fails; original shards retained; elapsed0 for absent observation only",
+  "git_commit": "6adbcd633e1cc1803d87efe28474aa1b8cde6f56\n",
+  "git_diff_sha256_note": "source file hashes in source-hashes.json; uncommitted source is part of experiment provenance",
+  "git_status": " M .codex/TASK.md\n M Makefile\n M internal/cli/cli.go\n M internal/cli/cli_test.go\n M internal/config/config.go\n M internal/metrics/csv.go\n M internal/transport/quic/client.go\n M internal/transport/tcp/client.go\n M internal/transport/types.go\n M tests/system/run.sh\n?? analysis/cohort.py\n?? analysis/plot.py\n?? analysis/requirements.txt\n?? analysis/summarize.py\n?? analysis/test_stats.py\n?? docs/evidence/p9/\n?? internal/bench/bench_test.go\n?? internal/bench/manifest.go\n?? internal/bench/merge.go\n?? internal/bench/runner.go\n?? internal/bench/schedule.go\n?? internal/cli/bench.go\n?? internal/transport/connection.go\n?? scripts/bench-support.py\n?? scripts/bench.sh\n?? tests/integration/bench_test.go\n?? tests/system/check_g09.py\n?? tests/system/g09.sh\n?? tests/system/run_g09_software.py\n",
+  "go_version": "go1.27.1",
+  "hashes": {
+    "analysis/requirements.txt": "4ef3c0963cb467d35a2d83654f4006f0fc312aa2ab1fc3ec035ebf73c017ec26",
+    "go.mod": "12efa3fdf5749194119ede91d82be9ad78664b5924848def733198366602176f",
+    "go.sum": "b784e4c82602368b95ba925eee11c47e72f3bd4d8737d48c1797acd71452d870",
+    "schedule.json": "5ac24fc5d4596b18cd851916a62d89c4a648523cf9e26e7a12ac6cb33feba46b",
+    "schemas/result-records.schema.json": "e24c3b763758b62a11c867e69b4c5dac83dbeb9fc6cbe4d4e3e0f5cb36d78bdd"
+  },
+  "host_os": {
+    "source": "user-reported D13; not queried from Linux",
+    "value": "Windows 11"
+  },
+  "kernel": "Linux LAPTOP-MS2KV5BU 6.18.40.1-microsoft-standard-WSL2 #1 SMP PREEMPT_DYNAMIC Fri Jul 31 22:12:15 UTC 2026 x86_64 GNU/Linux\n",
+  "limitations": [
+    "shared WSL2 kernel/CPU; not isolated physical hosts",
+    "TCP kernel/TLS vs quic-go userspace/scheduler/CC differ",
+    "same netem seed is not identical packet loss trace",
+    "downstream includes handshake/control/ACK; drops may include queue overflow",
+    "30 samples per transport/scenario; p95 describes a small sample",
+    "performance dataset alone cannot prove HOL causation; P11 evidence pending"
+  ],
+  "linux_distribution": "PRETTY_NAME=\"Ubuntu 26.04.1 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"26.04\"\nVERSION=\"26.04.1 LTS (Resolute Raccoon)\"\nVERSION_CODENAME=resolute\nID=ubuntu\nID_LIKE=debian\nHOME_URL=\"https://www.ubuntu.com/\"\nSUPPORT_URL=\"https://help.ubuntu.com/\"\nBUG_REPORT_URL=\"https://bugs.launchpad.net/ubuntu/\"\nPRIVACY_POLICY_URL=\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"\nUBUNTU_CODENAME=resolute\nLOGO=ubuntu-logo\n",
+  "logical_cpu": 2,
+  "memory_swap": "MemTotal:        2981596 kB\nMemFree:          177388 kB\nMemAvailable:    1543196 kB\nBuffers:           62856 kB\nCached:          1312568 kB\nSwapCached:         4280 kB\nActive:          1113852 kB\nInactive:        1470880 kB\nActive(anon):      63624 kB\nInactive(anon):  1150112 kB\nActive(file):    1050228 kB\nInactive(file):   320768 kB\nUnevictable:           0 kB\nMlocked:               0 kB\nSwapTotal:       2097152 kB\nSwapFree:        2034200 kB\nDirty:               564 kB\nWriteback:             0 kB\nAnonPages:       1205152 kB\nMapped:           403328 kB\nShmem:              4464 kB\nKReclaimable:      85180 kB\nSlab:             126892 kB\nSReclaimable:      85180 kB\nSUnreclaim:        41712 kB\nKernelStack:        4640 kB\nPageTables:        26820 kB\nSecPageTables:         0 kB\nNFS_Unstable:          0 kB\nBounce:                0 kB\nWritebackTmp:          0 kB\nCommitLimit:     3587948 kB\nCommitted_AS:    2796736 kB\nVmallocTotal:   34359738367 kB\nVmallocUsed:       31984 kB\nVmallocChunk:          0 kB\nPercpu:              856 kB\nHardwareCorrupted:     0 kB\nAnonHugePages:         0 kB\nShmemHugePages:        0 kB\nShmemPmdMapped:        0 kB\nFileHugePages:         0 kB\nFilePmdMapped:         0 kB\nBalloon:               0 kB\nHugePages_Total:       0\nHugePages_Free:        0\nHugePages_Rsvd:        0\nHugePages_Surp:        0\nHugepagesize:       2048 kB\nHugetlb:               0 kB\nDirectMap4k:       66560 kB\nDirectMap2M:     3078144 kB\nDirectMap1G:     2097152 kB\n",
+  "mtu": 1500,
+  "network_placement": "receiver IFB root netem, eth0 ingress flower/mirred; full actual snapshots before/after each trial",
+  "network_profile": "ingress-ifb",
+  "observations": [
+    "runtime.json",
+    "network/",
+    "probes/",
+    "logs/",
+    "merge.json",
+    "source-hashes.json",
+    "cleanup.json"
+  ],
+  "offloads": "actual network snapshots offload_preparation and observation",
+  "profile": "bulk",
+  "queue_limit_packets": 1000,
+  "quic_cc": {
+    "source": "quic-go v0.63.0 internal/ackhandler/sent_packet_handler.go NewCubicSender(..., true // use Reno); docs/VERSIONS.md",
+    "value": "Reno"
+  },
+  "quic_config": {
+    "client_incoming_streams": 0,
+    "incoming_uni_streams": 0,
+    "initial_connection_credit_bytes": 2097152,
+    "initial_stream_credit_bytes": 524288,
+    "max_connection_credit_bytes": 16777216,
+    "max_stream_credit_bytes": 2097152,
+    "server_max_bidi_streams": 64,
+    "version": "v1"
+  },
+  "runner_order": "SplitMix64 v1 seeded starting AB/BA per scenario/phase, alternating pairs; sequential; netem reset after probes and before EVERY trial",
+  "schedule_seed": 20260928,
+  "schema_version": 1,
+  "seed_disabled": false,
+  "socket_buffers": "client actual getsockopt after timing in connection.json; server actual unknown: not sampled per socket; system defaults in runtime.json",
+  "tcp_cc": "network/\u003crun_id\u003e.before.json observation.qclient/qserver.tcp_cc (actual kernel setting); per-socket CC not overridden",
+  "timeout_ns": 60000000000,
+  "tls": {
+    "actual": "shards/\u003crun_id\u003e/connection.json; absent on setup failure",
+    "policy": "TLS1.3 only, explicit CA, ALPN quicbench/1"
+  },
+  "trace_mode": "performance",
+  "traces": {
+    "keylog": false,
+    "pcap": false,
+    "progress": false,
+    "qlog": false
+  },
+  "version": "bench build=6adbcd6 commit=6adbcd633e1cc1803d87efe28474aa1b8cde6f56 dirty=true Go=go1.27.1 quic-go=v0.63.0 QUIC=v1",
+  "workload": {
+    "generator": "byte((resource_id + offset) % 256)",
+    "checksum": "sha256",
+    "resource_count": 6,
+    "total_bytes": 6291456,
+    "chunk_bytes": 16384,
+    "resources": [
+      {
+        "resource_id": 1,
+        "size_bytes": 1048576,
+        "sha256": "18af9b054114c04a1eb836533a3e760dfa9dc53934ecb02fc059ff27150e77fb"
+      },
+      {
+        "resource_id": 2,
+        "size_bytes": 1048576,
+        "sha256": "c11788fa01aebe9ddeadf2d6fd661693d75a0ca28dc957a6042b5ff6d8a08e66"
+      },
+      {
+        "resource_id": 3,
+        "size_bytes": 1048576,
+        "sha256": "0617ba41432a346a81691ec75988fd9f41939e805a3d15a6edb53eba9006a6bd"
+      },
+      {
+        "resource_id": 4,
+        "size_bytes": 1048576,
+        "sha256": "0cb3cc18c426cb929543486fd600ed6df4f38bdbc3bf757d73e7b05bef85fcf7"
+      },
+      {
+        "resource_id": 5,
+        "size_bytes": 1048576,
+        "sha256": "34c9c1c0f537cbec1e94d4b9b2687aca3bb17c2e3b62574abfa92523ed55f612"
+      },
+      {
+        "resource_id": 6,
+        "size_bytes": 1048576,
+        "sha256": "37f0c973a6c2da513b2f7c1750c1b3d6c40f72f625748e4620411c7fd0aff256"
+      }
+    ]
+  }
+}
