@@ -1,0 +1,9 @@
+test "$(/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/.tools/go1.27.1/bin/go version | awk '{print $3}')" = "go1.27.1" || { echo 'Expected Go 1.27.1; see README.md' >&2; exit 3; }
+python3 scripts/build.py "/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/.tools/go1.27.1/bin/go" "781f2a4"
+bench_args=(--suite=handshake); \
+	if [[ -n $RUNS ]]; then bench_args+=(--runs="$RUNS"); fi; \
+	if [[ -n $WARMUPS ]]; then bench_args+=(--warmups="$WARMUPS"); fi; \
+	if [[ -n $SEED ]]; then bench_args+=(--seed="$SEED"); fi; \
+	if [[ $NETEM_SEED == none ]]; then bench_args+=(--disable-netem-seed); \
+	elif [[ $NETEM_SEED != default ]]; then echo 'Use SEED or explicit NETEM_SEED=none.' >&2; exit 2; fi; \
+	sudo bash scripts/bench.sh "${bench_args[@]}"

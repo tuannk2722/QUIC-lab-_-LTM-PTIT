@@ -15,6 +15,9 @@ import (
 )
 
 type ServerOptions struct {
+	Allow0RTT bool
+	// Test harness can vary acceptance per connection, keeping TLS keys stable.
+	Accept0RTT       func() bool
 	HandshakeTimeout time.Duration
 	BatchTimeout     time.Duration
 	TrialTimeout     time.Duration
@@ -22,6 +25,7 @@ type ServerOptions struct {
 	ConnectionSlots  chan struct{} // optional limiter shared with TCP
 	OnAccepted       func()        // optional integration instrumentation
 	OnStream         func(resourceID uint32, streamID quicgo.StreamID)
+	OnFailure        func(error) // optional integration instrumentation
 }
 
 func validServer(cfg *tls.Config, store *workload.Store, opts ServerOptions) error {
@@ -76,15 +80,31 @@ func servePacket(ctx context.Context, packet net.PacketConn, cfg *tls.Config, st
 }
 
 // ListenPacket completes QUIC listener setup before combined TCP/UDP readiness.
-func ListenPacket(packet net.PacketConn, cfg *tls.Config, opts ServerOptions) (*quicgo.Listener, error) {
+type Listener interface {
+	Accept(context.Context) (*quicgo.Conn, error)
+	Addr() net.Addr
+	Close() error
+}
+
+func ListenPacket(packet net.PacketConn, cfg *tls.Config, opts ServerOptions) (Listener, error) {
 	if packet == nil || cfg == nil || opts.HandshakeTimeout <= 0 || opts.TrialTimeout <= 0 {
 		return nil, fmt.Errorf("invalid QUIC listener configuration")
 	}
-	return quicgo.Listen(packet, cfg, quicConfig(opts.HandshakeTimeout, opts.TrialTimeout))
+	qcfg := quicConfig(opts.HandshakeTimeout, opts.TrialTimeout)
+	qcfg.Allow0RTT = opts.Allow0RTT
+	if opts.Accept0RTT != nil {
+		qcfg.GetConfigForClient = func(*quicgo.ClientInfo) (*quicgo.Config, error) {
+			selected := qcfg.Clone()
+			selected.GetConfigForClient = nil
+			selected.Allow0RTT = opts.Accept0RTT()
+			return selected, nil
+		}
+	}
+	return quicgo.ListenEarly(packet, cfg, qcfg)
 }
 
 // ServeListener serves a prepared listener. The caller owns listener.Close.
-func ServeListener(ctx context.Context, listener *quicgo.Listener, store *workload.Store, opts ServerOptions) error {
+func ServeListener(ctx context.Context, listener Listener, store *workload.Store, opts ServerOptions) error {
 	if listener == nil || store == nil || store.Count() < 1 || store.Count() > maxBidiStreams || opts.MaxConnections < 1 || opts.MaxConnections > 8 || opts.BatchTimeout < 0 || opts.TrialTimeout <= 0 {
 		return fmt.Errorf("invalid QUIC server configuration")
 	}
@@ -199,6 +219,9 @@ func (b *batchCoordinator) fail(err error) {
 		close(b.ready)
 	}
 	b.mu.Unlock()
+	if b.opts.OnFailure != nil {
+		b.opts.OnFailure(err)
+	}
 	b.cancel()
 	_ = b.conn.CloseWithError(appProtocolError, "QB01 batch or stream failure")
 }

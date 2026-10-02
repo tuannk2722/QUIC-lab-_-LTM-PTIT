@@ -55,7 +55,8 @@ Mỗi invocation có thư mục mới `results/<experiment_id>/`; không append 
 | runs.csv | Một dòng/mỗi trial, kể cả warm-up và failed |
 | streams.csv | N dòng/trial, kể cả tài nguyên chưa được request/không hoàn tất |
 | raw/<run_id>.json | Bản ghi typed canonical trước flatten CSV |
-| attempts/<run_id>.json | Optional: 0-RTT early/rejection/fallback events với attempt ID |
+| attempts/<run_id>.json | P10 QUIC sequence: ticket_observed/target_invoked, canonical records mỗi target attempt (0, tối đa1 replay) |
+| ticket-warmup/ hoặc shards/<run_id>/ticket-warmup/ | Prior cold connection, own t0/raw/CSV, phase=warmup; ngoài aggregate targets |
 | progress.csv | Chỉ evidence: tiến độ payload tích lũy của từng resource |
 | qlog/, pcap/, keylog/ | Chỉ evidence, mapping cụ thể ở manifest |
 | network/ | Trạng thái thực tế, qdisc counters trước/sau và offload/config |
@@ -127,6 +128,10 @@ CSV write failure làm command nonzero; raw output đã ghi giữ lại với tr
 P9 refinement D23: aggregate có một row mỗi planned entry, N resource rows. `merge.json.n_invoked` đếm invocation journal; `n_attempted` trong summary là scheduled denominator, gồm entry không bắt đầu nếu cohort bị ngắt. Missing output giữ latency milestones/goodput/checksum null; `elapsed_ms=0` chỉ là sentinel của non-nullable schema v1 khi không có clock observation, với error_code/message và `elapsed_observed=false` ở merge sources. Không dùng sentinel trong successful latency aggregate. Nguồn raw/shard cũ giữ nguyên và hash; network check thiếu/fail làm aggregate environment_error, total/transfer/goodput null. Không đổi result schema v1.
 
 `analysis/cohort.py` bổ sung schedule/FK/config hashes/AB–BA/pair seed/workload/trace/count checks trên CSV đã validate; `--main` yêu cầu đúng240+16/1536 rows và scenario defaults. `summarize.py` ghi summary.csv/resource-summary.csv/summary.json/report.md. Resource distribution tách từng ID với tối đa một sample/run, không pooling siblings thành independent trials. `plot.py` Matplotlib Agg xuất total_ms/ttfa_ms/goodput/per-resource points+box và PNG/SVG; units/n/failures hiện trên axes. Performance plot không có progress timeline; P11 mới thu evidence progress.
+
+P10/D25: handshake schedule có96 targets/96 resource rows (90 measured+6 warmups) và64 prior ticket warmups riêng. `pair_id` là triple cold/resumed/early, order_index0..2; measured30 cân bằng vị trí. `--handshake` yêu cầu full ingress cohort; direct localhost vẫn loopback-test. Raw final streams có attempt_index=fallback_count. Sidecar attempt records giữ original timestamp/t0; attempt0 khi rejected có fallback0/Used0RTT=false, final replay có fallback1. Không cộng discarded bytes vào final. Missing-ticket target có N failed slots, no transport invocation/no handshake metrics; preparation observation timestamp/elapsed riêng, không phải latency prior connection.
+
+Session state known TLSResumed/Used0RTT yêu cầu observed handshake; EarlyReady yêu cầu actual early API. Observer/timings không chứng minh packet0RTT. Early `mode_achieved` yêu cầu successful read, actual DidResume/Used0RTT, attempted=true, rejected=false, fallback0 và REQUEST end trước observed handshake; resumed cần DidResume=true/Used=false/no early; cold cần DidResume=false/Used=false/no early. Handshake summary thêm `n_mode_achieved`, `n_fallback`, `n_unachieved` bên cạnh denominator/success/failures/n_values; chỉ successful achieved rows có latency samples. Failed/fallback/unachieved raw vẫn giữ, warmup không vào measured distributions. Plots handshake gồm handshake/TTFA/total và per-resource completion, nhóm ba modes, API/P11 limitation rõ. P9 header không đổi.
 
 ## P8 metadata handoff
 

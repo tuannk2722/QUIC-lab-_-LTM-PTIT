@@ -1,0 +1,34 @@
+=== RUN   TestSessionColdResumedEarlyActualState
+=== RUN   TestSessionColdResumedEarlyActualState/cold
+    early_test.go:51: mode=cold resume=false used0rtt=false ticket=false request_minus_handshake=108.756µs bytes=1024
+=== RUN   TestSessionColdResumedEarlyActualState/resumed
+    early_test.go:51: mode=resumed resume=true used0rtt=false ticket=true request_minus_handshake=13.554µs bytes=1024
+=== RUN   TestSessionColdResumedEarlyActualState/early
+    early_test.go:51: mode=early resume=true used0rtt=true ticket=true request_minus_handshake=-1.531394ms bytes=1024
+--- PASS: TestSessionColdResumedEarlyActualState (0.19s)
+    --- PASS: TestSessionColdResumedEarlyActualState/cold (0.02s)
+    --- PASS: TestSessionColdResumedEarlyActualState/resumed (0.01s)
+    --- PASS: TestSessionColdResumedEarlyActualState/early (0.01s)
+=== RUN   TestSessionRejectedValidTicketSingleReplaySixWorkers
+    early_test.go:74: resource 1 stream 0: response before FIN: Application error 0x1 (remote): QB01 batch or stream failure
+        resource 2 stream 4: response before FIN: Application error 0x1 (remote): QB01 batch or stream failure
+        resource 3 stream 8: response before FIN: Application error 0x1 (remote): QB01 batch or stream failure
+        resource 4 stream 12: response before FIN: Application error 0x1 (remote): QB01 batch or stream failure
+        resource 5 stream 16: response before FIN: Application error 0x1 (remote): QB01 batch or stream failure
+        resource 6 stream 20: response before FIN: Application error 0x1 (remote): QB01 batch or stream failure
+--- FAIL: TestSessionRejectedValidTicketSingleReplaySixWorkers (0.07s)
+=== RUN   TestSessionTicketTimeoutHandshakeFailureAndCancel
+=== RUN   TestSessionTicketTimeoutHandshakeFailureAndCancel/missing_ticket
+    early_test.go:144: missing_ticket bounded error=ticket warm-up failed: ticket delivery: context deadline exceeded
+=== RUN   TestSessionTicketTimeoutHandshakeFailureAndCancel/target_handshake_failure
+    early_test.go:144: target_handshake_failure bounded error=resource 1 stream 0: response before FIN: CRYPTO_ERROR 0x150 (remote): tls: internal error
+        CRYPTO_ERROR 0x150 (remote): tls: internal error
+=== RUN   TestSessionTicketTimeoutHandshakeFailureAndCancel/target_cancel
+    early_test.go:144: target_cancel bounded error=context canceled
+--- PASS: TestSessionTicketTimeoutHandshakeFailureAndCancel (0.36s)
+    --- PASS: TestSessionTicketTimeoutHandshakeFailureAndCancel/missing_ticket (0.20s)
+    --- PASS: TestSessionTicketTimeoutHandshakeFailureAndCancel/target_handshake_failure (0.07s)
+    --- PASS: TestSessionTicketTimeoutHandshakeFailureAndCancel/target_cancel (0.09s)
+FAIL
+FAIL	quic-performance-lab/tests/integration	0.621s
+FAIL

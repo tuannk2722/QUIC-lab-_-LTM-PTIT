@@ -1,0 +1,127 @@
+{
+  "status": "PASS",
+  "scope": "actual localhost correctness, not IFB performance or packet0RTT proof",
+  "source_root": "/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p10-software-0dq12lsw",
+  "functional": {
+    "status": "PASS",
+    "scope": "actual localhost correctness, no performance or packet proof",
+    "cases": {
+      "cold": {
+        "status": "PASS",
+        "attempted": 1,
+        "success": 1,
+        "failed": 0,
+        "measured_trials": 1,
+        "warmup_trials_excluded": 0,
+        "evidence_trials_excluded": 0
+      },
+      "resumed": {
+        "status": "PASS",
+        "attempted": 1,
+        "success": 1,
+        "failed": 0,
+        "measured_trials": 1,
+        "warmup_trials_excluded": 0,
+        "evidence_trials_excluded": 0
+      },
+      "early": {
+        "status": "PASS",
+        "attempted": 1,
+        "success": 1,
+        "failed": 0,
+        "measured_trials": 1,
+        "warmup_trials_excluded": 0,
+        "evidence_trials_excluded": 0
+      },
+      "rejected": {
+        "status": "PASS",
+        "attempted": 1,
+        "success": 1,
+        "failed": 0,
+        "measured_trials": 1,
+        "warmup_trials_excluded": 0,
+        "evidence_trials_excluded": 0
+      },
+      "missing_ticket": {
+        "status": "PASS",
+        "attempted": 1,
+        "success": 0,
+        "failed": 1,
+        "measured_trials": 1,
+        "warmup_trials_excluded": 0,
+        "evidence_trials_excluded": 0
+      },
+      "target_handshake_failure": {
+        "status": "PASS",
+        "attempted": 1,
+        "success": 0,
+        "failed": 1,
+        "measured_trials": 1,
+        "warmup_trials_excluded": 0,
+        "evidence_trials_excluded": 0
+      },
+      "target_cancel": {
+        "status": "PASS",
+        "attempted": 1,
+        "success": 0,
+        "failed": 1,
+        "measured_trials": 1,
+        "warmup_trials_excluded": 0,
+        "evidence_trials_excluded": 0
+      }
+    }
+  },
+  "suite": {
+    "gate": "G10-suite",
+    "status": "PASS",
+    "scope": "localhost correctness",
+    "counts": {
+      "status": "PASS",
+      "attempted": 96,
+      "success": 96,
+      "failed": 0,
+      "measured_trials": 90,
+      "warmup_trials_excluded": 6,
+      "evidence_trials_excluded": 0
+    },
+    "api_qualified_measured": {
+      "cold": 30,
+      "resumed": 30,
+      "early": 29
+    },
+    "failures": {
+      "cold": 0,
+      "resumed": 0,
+      "early": 0
+    },
+    "fallback": {
+      "cold": 0,
+      "resumed": 0,
+      "early": 0
+    },
+    "ticket_warmups_separate": 64,
+    "packet_proof": "NOT_RUN: P11 required; API/timing alone is not full accepted-early evidence"
+  },
+  "summary_groups_recomputed": 15,
+  "resource_summary_groups_recomputed": 6,
+  "unachieved_successful_measured": [
+    "c0_measured_0020_quic_early"
+  ],
+  "as_run_inventory_verified": true,
+  "archive": {
+    "path": "localhost-artifacts.tar.gz",
+    "sha256": "f87f10d1ea2417c47c7342106a7bbbd26ea62e333ef592bd7fc208f910f2d93a",
+    "files": 1213,
+    "byte_verified": true
+  },
+  "current_checker_sha256": "d7c87cafe5f1a709819eee66b7aadfdc4cff2cf8774df99fefbb9105bdc4f727",
+  "source_changed_since_run": [
+    "Makefile",
+    "tests/integration/audit_test.go",
+    "tests/system/check_g10.py"
+  ],
+  "source_added_since_run": [
+    "tests/system/test_handshake.py"
+  ],
+  "provenance_note": "As-run source hashes/receipt retained. Checker hardening and test fixture refinements are reviewed separately; no as-run evidence rewritten."
+}

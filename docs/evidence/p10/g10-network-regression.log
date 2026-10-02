@@ -1,0 +1,15 @@
+python3 tests/system/test_network.py
+test_actual_units_loss_direction_and_seed (__main__.NetworkTests.test_actual_units_loss_direction_and_seed) ... ok
+test_filter_requires_lab_direction_and_redirect (__main__.NetworkTests.test_filter_requires_lab_direction_and_redirect) ... ok
+test_foreign_qdisc_refused_before_delete (__main__.NetworkTests.test_foreign_qdisc_refused_before_delete) ... ok
+test_kernel_ifb_default_survives_clear_and_checker (__main__.NetworkTests.test_kernel_ifb_default_survives_clear_and_checker) ... ok
+test_offload_fixed_on_cannot_claim_verified (__main__.NetworkTests.test_offload_fixed_on_cannot_claim_verified) ... ok
+test_rtt_gate_rejects_short_lossy_and_double_delay (__main__.NetworkTests.test_rtt_gate_rejects_short_lossy_and_double_delay) ... ok
+test_scenario_strict_bounds_and_duplicate_input (__main__.NetworkTests.test_scenario_strict_bounds_and_duplicate_input) ... ok
+test_signal_during_apply_rolls_back_without_publishing (__main__.NetworkTests.test_signal_during_apply_rolls_back_without_publishing) ... ok
+test_tc_failure_rolls_back_partial_apply_and_keeps_failure (__main__.NetworkTests.test_tc_failure_rolls_back_partial_apply_and_keeps_failure) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 0.053s
+
+OK

@@ -1,0 +1,75 @@
+/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/.tools/go1.27.1/bin/go test -mod=readonly ./...
+?   	quic-performance-lab/cmd/bench	[no test files]
+?   	quic-performance-lab/cmd/client	[no test files]
+?   	quic-performance-lab/cmd/server	[no test files]
+ok  	quic-performance-lab/internal/bench	0.086s
+ok  	quic-performance-lab/internal/cli	0.082s
+ok  	quic-performance-lab/internal/config	(cached)
+ok  	quic-performance-lab/internal/metrics	(cached)
+ok  	quic-performance-lab/internal/protocol	(cached)
+ok  	quic-performance-lab/internal/tlsconfig	0.299s
+?   	quic-performance-lab/internal/transport	[no test files]
+ok  	quic-performance-lab/internal/transport/quic	0.017s
+ok  	quic-performance-lab/internal/transport/tcp	(cached)
+ok  	quic-performance-lab/internal/workload	(cached)
+ok  	quic-performance-lab/tests/api	(cached)
+--- FAIL: TestTCPAuditChecksumAndEOFFailure (0.16s)
+    --- FAIL: TestTCPAuditChecksumAndEOFFailure/checksum (0.08s)
+        audit_test.go:22: listen tcp 127.0.0.1:0: socket: operation not permitted
+    --- FAIL: TestTCPAuditChecksumAndEOFFailure/eof_timeout (0.08s)
+        audit_test.go:22: listen tcp 127.0.0.1:0: socket: operation not permitted
+--- FAIL: TestBenchColdUsesFreshConnectionsAndActualTLS (0.07s)
+    bench_test.go:18: QUIC server setup: listen udp 127.0.0.1:0: socket: operation not permitted
+--- FAIL: TestBenchColdDeadlineAndCancelKeepFailureSlots (0.08s)
+    --- FAIL: TestBenchColdDeadlineAndCancelKeepFailureSlots/tcp/deadline (0.00s)
+        bench_test.go:47: listen tcp 127.0.0.1:0: socket: operation not permitted
+    --- FAIL: TestBenchColdDeadlineAndCancelKeepFailureSlots/tcp/cancel (0.00s)
+        bench_test.go:47: listen tcp 127.0.0.1:0: socket: operation not permitted
+    --- FAIL: TestBenchColdDeadlineAndCancelKeepFailureSlots/quic/deadline (0.00s)
+        bench_test.go:47: listen udp 127.0.0.1:0: socket: operation not permitted
+    --- FAIL: TestBenchColdDeadlineAndCancelKeepFailureSlots/quic/cancel (0.00s)
+        bench_test.go:47: listen udp 127.0.0.1:0: socket: operation not permitted
+--- FAIL: TestSessionColdResumedEarlyActualState (0.04s)
+    early_test.go:25: QUIC server setup: listen udp 127.0.0.1:0: socket: operation not permitted
+--- FAIL: TestSessionRejectedValidTicketSingleReplaySixWorkers (0.05s)
+    early_test.go:70: QUIC server setup: listen udp 127.0.0.1:0: socket: operation not permitted
+--- FAIL: TestSessionTicketTimeoutHandshakeFailureAndCancel (0.17s)
+    --- FAIL: TestSessionTicketTimeoutHandshakeFailureAndCancel/missing_ticket (0.05s)
+        early_test.go:119: QUIC server setup: listen udp 127.0.0.1:0: socket: operation not permitted
+    --- FAIL: TestSessionTicketTimeoutHandshakeFailureAndCancel/target_handshake_failure (0.06s)
+        early_test.go:119: QUIC server setup: listen udp 127.0.0.1:0: socket: operation not permitted
+    --- FAIL: TestSessionTicketTimeoutHandshakeFailureAndCancel/target_cancel (0.06s)
+        early_test.go:119: QUIC server setup: listen udp 127.0.0.1:0: socket: operation not permitted
+--- FAIL: TestQUICBulkOneConnectionSixNativeStreamsAndSharedPort (0.08s)
+    quic_test.go:166: TCP server setup: listen tcp 127.0.0.1:0: socket: operation not permitted
+--- FAIL: TestQUICBarrierAndConcurrentRequests (0.05s)
+    quic_test.go:234: QUIC server setup: listen udp 127.0.0.1:0: socket: operation not permitted
+--- FAIL: TestQUICInvalidBatchAndEOFBounded (0.04s)
+    quic_test.go:273: QUIC server setup: listen udp 127.0.0.1:0: socket: operation not permitted
+--- FAIL: TestQUICRequestRequiresSendHalfEOF (0.04s)
+    quic_test.go:324: QUIC server setup: listen udp 127.0.0.1:0: socket: operation not permitted
+--- FAIL: TestQUICExtraStreamAfterBatchAndTrustFailure (0.08s)
+    quic_test.go:345: QUIC server setup: listen udp 127.0.0.1:0: socket: operation not permitted
+--- FAIL: TestQUICServerCancelReleasesWaitingStreams (0.04s)
+    quic_test.go:393: QUIC server setup: listen udp 127.0.0.1:0: socket: operation not permitted
+--- FAIL: TestQUICClientRejectsEOFBeforeFIN (0.07s)
+    quic_test.go:422: listen udp 127.0.0.1:0: socket: operation not permitted
+--- FAIL: TestTCPRealLocalhostAndTrust (0.04s)
+    tcp_test.go:63: server setup: listen tcp 127.0.0.1:0: socket: operation not permitted
+--- FAIL: TestTCPMalformedPeersBounded (0.04s)
+    --- FAIL: TestTCPMalformedPeersBounded/truncated_frame (0.00s)
+        tcp_test.go:121: listen tcp 127.0.0.1:0: socket: operation not permitted
+    --- FAIL: TestTCPMalformedPeersBounded/bad_length (0.00s)
+        tcp_test.go:121: listen tcp 127.0.0.1:0: socket: operation not permitted
+    --- FAIL: TestTCPMalformedPeersBounded/timeout (0.00s)
+        tcp_test.go:121: listen tcp 127.0.0.1:0: socket: operation not permitted
+--- FAIL: TestTCPCancelReleasesHandler (0.05s)
+    tcp_test.go:170: server setup: listen tcp 127.0.0.1:0: socket: operation not permitted
+--- FAIL: TestTCPBulkOneConnectionSixResources (0.08s)
+    tcp_test.go:216: server setup: listen tcp 127.0.0.1:0: socket: operation not permitted
+--- FAIL: TestTCPBatchTimeoutAndCancellation (0.10s)
+    tcp_test.go:268: server setup: listen tcp 127.0.0.1:0: socket: operation not permitted
+FAIL
+FAIL	quic-performance-lab/tests/integration	1.293s
+FAIL
+make: *** [Makefile:32: test] Error 1

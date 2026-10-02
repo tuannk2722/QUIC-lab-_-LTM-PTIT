@@ -108,5 +108,10 @@ func WriteManifest(root string, s Schedule, version string, args []string) error
 		"timeout_ns": s.TimeoutNS, "failure_policy": "all planned entries represented; transfer failures continue if network verified; infra failure stops; missing/incomplete output fails; original shards retained; elapsed0 for absent observation only",
 		"observations": []string{"runtime.json", "network/", "probes/", "logs/", "merge.json", "source-hashes.json", "cleanup.json"},
 		"limitations":  []string{"shared WSL2 kernel/CPU; not isolated physical hosts", "TCP kernel/TLS vs quic-go userspace/scheduler/CC differ", "same netem seed is not identical packet loss trace", "downstream includes handshake/control/ACK; drops may include queue overflow", "30 samples per transport/scenario; p95 describes a small sample", "performance dataset alone cannot prove HOL causation; P11 evidence pending"}}
+	if s.Suite == "handshake" {
+		m["runner_order"] = "SplitMix64 v1 starting permutation; six rotating mode permutations; sequential, netem reset before each sequence, not between its ticket warm-up/target"
+		m["session_policy"] = map[string]any{"modes": []string{"cold", "resumed", "early"}, "fresh_cache_per_sequence": true, "ticket_signal": "non-nil tls.ClientSessionCache.Put with bounded Wait", "ticket_warmups": "shards/<run_id>/ticket-warmup/; separate canonical CSV/raw, excluded from aggregate", "attempts": "shards/<run_id>/attempts/<run_id>.json; original target t0 across one rejection replay", "server_allow_0rtt": true, "packet_proof": "pending P11; API state/enqueue alone is not full accepted early proof"}
+		m["limitations"] = append(m["limitations"].([]string), "1 KiB exchange includes handshake/control overhead; sustained bulk direction ratio and rate goodput bound do not apply", "fallback transfer success is reported separately and excluded from accepted early latency")
+	}
 	return WriteJSON(filepath.Join(root, "manifest.json"), m)
 }

@@ -1,0 +1,16 @@
+/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/.tools/go1.27.1/bin/go test -mod=readonly -race ./...
+?   	quic-performance-lab/cmd/bench	[no test files]
+?   	quic-performance-lab/cmd/client	[no test files]
+?   	quic-performance-lab/cmd/server	[no test files]
+ok  	quic-performance-lab/internal/bench	1.484s
+ok  	quic-performance-lab/internal/cli	1.513s
+ok  	quic-performance-lab/internal/config	(cached)
+ok  	quic-performance-lab/internal/metrics	1.032s
+ok  	quic-performance-lab/internal/protocol	(cached)
+ok  	quic-performance-lab/internal/tlsconfig	1.263s
+?   	quic-performance-lab/internal/transport	[no test files]
+ok  	quic-performance-lab/internal/transport/quic	1.031s
+ok  	quic-performance-lab/internal/transport/tcp	(cached)
+ok  	quic-performance-lab/internal/workload	(cached)
+ok  	quic-performance-lab/tests/api	(cached)
+ok  	quic-performance-lab/tests/integration	6.800s

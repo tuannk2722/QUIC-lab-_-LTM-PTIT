@@ -3,6 +3,7 @@ package integration
 import (
 	"context"
 	"crypto/tls"
+	"io"
 	"net"
 	"testing"
 	"time"
@@ -37,6 +38,12 @@ func TestTCPAuditChecksumAndEOFFailure(t *testing.T) {
 					if _, err := protocol.ReadFrame(conn, 1024); err != nil {
 						return
 					}
+				}
+				// Consume the client's TLS close_notify before replying. Closing
+				// a socket with unread input can reset it and lose sibling data.
+				var extra [1]byte
+				if n, err := conn.Read(extra[:]); n != 0 || err != io.EOF {
+					return
 				}
 				for id := uint32(1); id <= 3; id++ {
 					r, _ := store.Resource(id)

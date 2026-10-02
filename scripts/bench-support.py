@@ -47,7 +47,7 @@ def pinned():
     return installed
 
 
-def check_network(root, rid):
+def check_network(root, rid, publish=True):
     root = Path(root)
     before, after = read(root / 'network' / f'{rid}.before.json'), read(root / 'network' / f'{rid}.after.json')
     plan = read(root / 'schedule.json')
@@ -85,15 +85,20 @@ def check_network(root, rid):
                 for ns in ('qclient', 'qserver'):
                     if details[ns]['packets'] <= 0 or details[ns]['redirect_packets'] <= 0:
                         raise ValueError(f'{ns} shaping/redirect counters did not increase')
-                if details['qclient']['bytes'] < run['bytes_received'] or details['qclient']['bytes'] <= 5*details['qserver']['bytes']:
+                if details['qclient']['bytes'] < run['bytes_received']:
+                    raise ValueError('downstream direction/bytes sanity failed')
+                # A 1 KiB exchange is dominated by handshake/control. The
+                # sustained-bulk ratio/rate criteria do not apply to it.
+                if plan.get('suite', 'bulk') != 'handshake' and details['qclient']['bytes'] <= 5*details['qserver']['bytes']:
                     raise ValueError('downstream direction/bytes sanity failed')
                 if scenario['loss_downstream_pct'] > 0 and details['qclient']['drops'] <= 0:
                     raise ValueError('successful loss trial showed no downstream drops')
-                if run['goodput_mbps'] is None or not 0 < run['goodput_mbps'] <= scenario['rate_mbps'] * 1.1:
+                if plan.get('suite', 'bulk') != 'handshake' and (run['goodput_mbps'] is None or not 0 < run['goodput_mbps'] <= scenario['rate_mbps'] * 1.1):
                     raise ValueError('payload goodput rate sanity failed')
     except (ValueError, KeyError, StopIteration, TypeError) as exc:
         status, error = 'FAIL', str(exc)
-    put(root / 'network' / f'{rid}.check.json', dict(schema_version=1, run_id=rid, status=status, error=error, details=details))
+    if publish:
+        put(root / 'network' / f'{rid}.check.json', dict(schema_version=1, run_id=rid, status=status, error=error, details=details))
     if status != 'PASS':
         raise ValueError(error)
     return details

@@ -105,16 +105,28 @@ func (s Schedule) BuildEntries() ([]Entry, error) {
 	if err := config.ValidateScenarios(s.Scenarios); err != nil {
 		return nil, err
 	}
-	if !metrics.ValidID(s.ExperimentID) || s.SchemaVersion != 1 || s.Suite != "bulk" ||
+	factor := 2
+	if s.Suite == "handshake" {
+		factor = 3
+	}
+	if !metrics.ValidID(s.ExperimentID) || s.SchemaVersion != 1 || (s.Suite != "bulk" && s.Suite != "handshake") ||
 		s.Runs < 1 || s.Warmups < 0 || len(s.ScenarioNames) == 0 ||
-		s.Runs > MaxEntries/2 || s.Warmups > MaxEntries/2 ||
-		2*(s.Runs+s.Warmups)*len(s.ScenarioNames) > MaxEntries ||
+		s.Runs > MaxEntries/factor || s.Warmups > MaxEntries/factor ||
+		factor*(s.Runs+s.Warmups)*len(s.ScenarioNames) > MaxEntries ||
 		(s.Execution != "ingress-ifb" && s.Execution != "loopback-test") ||
 		s.TimeoutNS <= 0 || s.TimeoutNS > int64(time.Hour) || s.Addr == "" || s.ServerName == "" {
-		return nil, fmt.Errorf("invalid schedule settings (max %d entries; only cold bulk suite in P9)", MaxEntries)
+		return nil, fmt.Errorf("invalid schedule settings (max %d entries)", MaxEntries)
 	}
 	if _, ok := s.Workloads.Profiles[s.Profile]; !ok {
 		return nil, fmt.Errorf("unknown schedule workload")
+	}
+	if s.Suite == "handshake" {
+		p := s.Workloads.Profiles[s.Profile]
+		c := s.Scenario("rtt50-loss0")
+		if s.Profile != "handshake" || p.ResourceCount != 1 || p.ResourceSizeBytes != 1024 || p.ChunkBytes != 1024 ||
+			len(s.ScenarioNames) != 1 || s.ScenarioNames[0] != "rtt50-loss0" || c.DelayEachWayMS != 25 || c.LossDownstreamPct != 0 || c.LossUpstreamPct != 0 || c.RateMbps != 20 {
+			return nil, fmt.Errorf("handshake suite requires handshake profile and normative rtt50-loss0")
+		}
 	}
 	host, port, err := net.SplitHostPort(s.Addr)
 	portNumber, numberErr := strconv.Atoi(port)
@@ -162,6 +174,14 @@ func (s Schedule) BuildEntries() ([]Entry, error) {
 				var applied *uint64
 				if !s.SeedDisabled {
 					applied = &seed
+				}
+				if s.Suite == "handshake" {
+					orders := [][]string{{"cold", "resumed", "early"}, {"resumed", "early", "cold"}, {"early", "cold", "resumed"},
+						{"early", "resumed", "cold"}, {"resumed", "cold", "early"}, {"cold", "early", "resumed"}}
+					for oi, mode := range orders[(startOrder+repeat)%len(orders)] {
+						entries = append(entries, Entry{1, s.ExperimentID, pair + "_quic_" + mode, name, phase, repeat, pair, oi, "quic", mode, s.Profile, applied, "performance", len(entries)})
+					}
+					continue
 				}
 				order := []string{"tcp", "quic"}
 				if (startOrder+repeat)%2 == 1 {

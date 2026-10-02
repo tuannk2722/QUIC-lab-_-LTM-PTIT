@@ -1,0 +1,12 @@
+=== RUN   TestSessionRejectedValidTicketSingleReplaySixWorkers
+    early_test.go:69: server batch failure: request frame: stream 20 canceled by remote with error code 1
+    early_test.go:75: resource 6 stream 20: response before FIN: Application error 0x1 (remote): QB01 batch or stream failure
+        resource 1 stream 0: response before FIN: Application error 0x1 (remote): QB01 batch or stream failure
+        resource 2 stream 4: response before FIN: Application error 0x1 (remote): QB01 batch or stream failure
+        resource 3 stream 8: response before FIN: Application error 0x1 (remote): QB01 batch or stream failure
+        resource 4 stream 12: response before FIN: Application error 0x1 (remote): QB01 batch or stream failure
+        resource 5 stream 16: response before FIN: Application error 0x1 (remote): QB01 batch or stream failure
+--- FAIL: TestSessionRejectedValidTicketSingleReplaySixWorkers (0.06s)
+FAIL
+FAIL	quic-performance-lab/tests/integration	0.063s
+FAIL

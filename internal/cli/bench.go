@@ -16,14 +16,14 @@ import (
 )
 
 type benchOptions struct {
-	plan                                                                                                              bool
-	entry, merge, out, experimentID, profile, profiles, scenarios, scenario, execution, addr, ca, serverName, network string
-	runs, warmups                                                                                                     int
-	seed                                                                                                              uint64
-	seedDisabled                                                                                                      bool
-	timeout                                                                                                           time.Duration
-	seen                                                                                                              map[string]bool
-	args                                                                                                              []string
+	plan                                                                                                                     bool
+	entry, merge, out, experimentID, profile, profiles, scenarios, scenario, execution, addr, ca, serverName, network, suite string
+	runs, warmups                                                                                                            int
+	seed                                                                                                                     uint64
+	seedDisabled                                                                                                             bool
+	timeout                                                                                                                  time.Duration
+	seen                                                                                                                     map[string]bool
+	args                                                                                                                     []string
 }
 
 func runBench(o benchOptions, w config.Workloads, c config.Scenarios, out, errOut io.Writer) int {
@@ -45,7 +45,7 @@ func runBench(o benchOptions, w config.Workloads, c config.Scenarios, out, errOu
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
 	if o.entry != "" {
-		for _, flag := range []string{"transport", "scenario", "runs", "warmups", "seed", "disable-netem-seed", "network-profile", "run-id"} {
+		for _, flag := range []string{"transport", "mode", "suite", "scenario", "runs", "warmups", "seed", "disable-netem-seed", "network-profile", "run-id"} {
 			if o.seen[flag] {
 				return bad(fmt.Errorf("%s is controlled by the immutable entry", flag))
 			}
@@ -87,7 +87,9 @@ func runBench(o benchOptions, w config.Workloads, c config.Scenarios, out, errOu
 		o.out = filepath.Join("results", o.experimentID)
 	}
 	names := []string{}
-	if !o.plan || o.seen["scenario"] {
+	if o.suite == "handshake" {
+		names = []string{"rtt50-loss0"}
+	} else if !o.plan || o.seen["scenario"] {
 		names = append(names, o.scenario)
 	} else {
 		for _, sc := range c.Scenarios {
@@ -100,7 +102,7 @@ func runBench(o benchOptions, w config.Workloads, c config.Scenarios, out, errOu
 	if !o.plan {
 		execution = "loopback-test"
 	}
-	s := bench.Schedule{SchemaVersion: 1, ExperimentID: o.experimentID, CreatedUTC: time.Now().UTC().Format(time.RFC3339Nano), Suite: "bulk",
+	s := bench.Schedule{SchemaVersion: 1, ExperimentID: o.experimentID, CreatedUTC: time.Now().UTC().Format(time.RFC3339Nano), Suite: o.suite,
 		Profile: o.profile, ScenarioNames: names, Runs: o.runs, Warmups: o.warmups, Seed: o.seed, SeedDisabled: o.seedDisabled, Execution: execution,
 		Addr: o.addr, ServerName: o.serverName, TimeoutNS: int64(o.timeout), Workloads: w, Scenarios: c}
 	var err error

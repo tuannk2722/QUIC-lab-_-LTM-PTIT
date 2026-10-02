@@ -1,6 +1,6 @@
-# Kết quả nghiệm thu — P0/G00 đến P9/G09
+# Kết quả nghiệm thu — P0/G00 đến P10/G10
 
-**Audit fix P7–P9 (D24, 2026-10-01):** đã sửa năm findings lifecycle/concurrency/provenance. G00-build, G06/G09 journal/claim/provenance/localhost và G07/G08 lifecycle/network software regressions PASS; actual G09 của bản sửa **BLOCKED** bởi sudo authentication trước runner. Closed-pipe cleanup regression PASS không thay actual Ctrl+C terminal trong namespace. [Evidence, logs và lệnh rerun](evidence/audit-p7-p9/README.md). PASS của actual dataset cũ bên dưới là lịch sử, không chứng minh source mới đã qua system gate; không P10.
+**Hiện hành P10 (2026-10-01):** user xác nhận P9/G09 PASS và cho phép riêng P10/G10. Three-mode/ticket/rejection/attempt flow, full localhost96 cohort và software checks đã triển khai; **overall G10 BLOCKED** vì `sudo -n` yêu cầu xác thực trước runner, chưa có actual IFB P10 cohort. Packet0RTT proof pending P11. [Evidence/lệnh G10](evidence/p10/README.md). D24 audit và G09 histories giữ nguyên; không tự nhận đã rerun privileged G09 của bản sửa hoặc human-review P10.
 
 Ngày cập nhật: 2026-10-01 UTC. Baseline: `7e54ad654b14b8eb38b0db369203df4d34f003d7`; đầu P4 ở commit `65d5a7b`. Người dùng đã human-review/approve P0/G00 và P4/G04; cho phép P5→G05→P6→G06 tuần tự. Môi trường: Ubuntu 26.04.1 LTS trong WSL2, UID 1000.
 
@@ -53,7 +53,14 @@ Ngày cập nhật: 2026-10-01 UTC. Baseline: `7e54ad654b14b8eb38b0db369203df4d3
 | G09-main240+16/1536/manifest/actual network | PASS | User full rerun g09_exit=0; agent read-only review | 256 invoked/256 success/0fail/0missing;240 measured+16warmup/1536 hash rows;1286 kernel snapshots/256 counter+idle checks/four RTT probes;stats recomputed | [review](evidence/p9/g09-rerun-review.json), [log](evidence/p9/g09-system-run2.log), [archive](evidence/p9/g09-user-run-artifacts.tar.gz) | No numeric superiority/HOL proof |
 | G09-actual controlled interrupted/UID/cleanup/host | PASS | Separate child actual SIGINT130; outside-sandbox read-only resource check | 2 planned/1invoked/2failed/12 resource rows; child/main cleanup0, equal host snapshots, no managed processes/namespaces | [review](evidence/p9/g09-rerun-review.json) | Interactive terminal Ctrl+C through tee previously141/cleanup1 remains unfixed |
 | G09 overall | PASS | Full user-run actual gate + agent artifact review | User g09_exit=0, main_exit=0/interrupt_exit130; dataset and controlled cleanup validated | [P9 evidence](evidence/p9/README.md) | Dừng human review P9; no P10; interactive Ctrl+C limitation retained |
-| G10–G12 | NOT_RUN | Chưa mở phase | Chưa resumption/0-RTT/qlog/PCAP/progress/rehearsal | Không evidence các gate này | Chờ phase riêng |
+| G10-build/suite/race | PASS | make build/test/test-race | Final source build/test/race exit0, UID1000 ngoài sandbox; failed first rejection/fixture and sandbox logs giữ history | [P10 evidence](evidence/p10/README.md) | Không thay network gate |
+| G10-ticket/cold/resumed/accepted | PASS (actual localhost) | RunSession integration + canonical checker | Cache notification/deadline; actual DidResume/Used0RTT đúng; own prior/target t0; bytes/FIN/hash đúng | [functional archive/review](evidence/p10/README.md) | Packet0RTT corroboration thuộc G11 |
+| G10-rejected/one-replay/no-duplicate | PASS (actual localhost) | Valid-ticket fixed-key acceptance hook, six workers | DidResume=true/Used=false/rejected=true, fallback1, attempts0/1 same t0;2 connections/12 REQUESTs (6 prior+6 replay), final6144 bytes/six hashes | [functional evidence](evidence/p10/README.md) | Actual impaired rejection trace chưa thuộc P10 dataset |
+| G10-missing-ticket/handshake-failure/cancel | PASS (actual localhost) | Negative integration + canonical rows/history | Bounded errors, no extra replay; missing ticket không invoke target; state unknown giữ null; failures không bị lọc | [functional evidence](evidence/p10/README.md) | Không |
+| G10-handshake96/64tickets/cohort/stats/plots | PASS (software/local) | run_g10_software.py + checker/analysis tests |96/96 transfer success,90 measured+6 target warmups/96 streams,64 separate ticket warmups; measured API-qualified cold30/resumed30/early29, early1 unachieved excluded latency; wronghostname3/3 fail | [software review/archive](evidence/p10/README.md) | Loopback only, không performance claim |
+| G10-actual90+6/IFB/RTT/kernel/UID/cleanup | BLOCKED | sudo -n bash tests/system/run.sh --gate G10 | exit1 trước runner: interactive authentication required; no topology mutation/actual P10 network dataset | [attempt log](evidence/p10/g10-system-attempt.log) | Chạy exact manual command trong Ubuntu WSL2 |
+| G10 overall | BLOCKED | Full P10 system gate cần actual ingress cohort | Software/functional PASS không thay gate mạng thật | [runbook](evidence/p10/README.md) | Dừng review P10; chưa P11/P12 |
+| G11–G12 | NOT_RUN | Chưa mở phase | qlog/PCAP/progress/packet proof/rehearsal chưa triển khai | Không evidence các gate này | Chờ phase riêng |
 
 
 ## Lệnh tái lập P0
@@ -178,6 +185,8 @@ Review receiver IFB/flower direction, tc JSON units/seed, offload fixed/absent h
 
 User authorized the six review fixes only. G04/G05/G06 regression checks **PASS**: build, full Go suite, full race suite, G06 actual TCP/QUIC success + TLS failure and Python mutation regressions. Evidence and reproduction: [audit-p0-p6/README.md](evidence/audit-p0-p6/README.md). Actual additional QUIC resolve/socket failures retain raw JSON plus N stream rows. Historical sandbox denial and intermediate EOF-timeout regression failure are retained separately; neither remains a final blocker. At that audit checkpoint G07–G12 were NOT_RUN; the current G07 status is recorded in the table above.
 
-## Tái lập P9/G09
+## Tái lập P9/G09 (checkpoint lịch sử trước khi user xác nhận PASS)
 
 Full commands, exit capture, seed-null option, artifact expectations và review: [evidence/p9/README.md](evidence/p9/README.md). Run trong terminal Ubuntu WSL2 từ repo root: build/deps/cert bằng user, topology/server absent, `sudo bash tests/system/run.sh --gate G09`. Khi blocked hiện tại không có main result path để đưa vào report; source software data ở results/p9-software-6011935o/, archive là localhost correctness. Không chạy P10 cho đến khi được cho phép riêng.
+
+Checkpoint hiện hành P10 đã được user cho phép riêng. Xem [evidence/p10/README.md](evidence/p10/README.md) để review scope/real result paths/reproduction/limits; actual G10 BLOCKED, P11/P12 chưa mở.

@@ -1,0 +1,28 @@
+=== RUN   TestSessionColdResumedEarlyActualState
+=== RUN   TestSessionColdResumedEarlyActualState/cold
+    early_test.go:51: mode=cold resume=false used0rtt=false ticket=false request_minus_handshake=51.189µs bytes=1024
+=== RUN   TestSessionColdResumedEarlyActualState/resumed
+    early_test.go:51: mode=resumed resume=true used0rtt=false ticket=true request_minus_handshake=124.344µs bytes=1024
+=== RUN   TestSessionColdResumedEarlyActualState/early
+    early_test.go:51: mode=early resume=true used0rtt=true ticket=true request_minus_handshake=-7.229734ms bytes=1024
+--- PASS: TestSessionColdResumedEarlyActualState (0.27s)
+    --- PASS: TestSessionColdResumedEarlyActualState/cold (0.02s)
+    --- PASS: TestSessionColdResumedEarlyActualState/resumed (0.05s)
+    --- PASS: TestSessionColdResumedEarlyActualState/early (0.02s)
+=== RUN   TestSessionRejectedValidTicketSingleReplaySixWorkers
+    early_test.go:100: valid-ticket rejection: DidResume=true Used0RTT=false fallback=1 attempts=2 requests=12 final_bytes=6144
+--- PASS: TestSessionRejectedValidTicketSingleReplaySixWorkers (0.14s)
+=== RUN   TestSessionTicketTimeoutHandshakeFailureAndCancel
+=== RUN   TestSessionTicketTimeoutHandshakeFailureAndCancel/missing_ticket
+    early_test.go:145: missing_ticket bounded error=ticket warm-up failed: ticket delivery: context deadline exceeded
+=== RUN   TestSessionTicketTimeoutHandshakeFailureAndCancel/target_handshake_failure
+    early_test.go:145: target_handshake_failure bounded error=resource 1 stream 0: response before FIN: CRYPTO_ERROR 0x150 (remote): tls: internal error
+        CRYPTO_ERROR 0x150 (remote): tls: internal error
+=== RUN   TestSessionTicketTimeoutHandshakeFailureAndCancel/target_cancel
+    early_test.go:145: target_cancel bounded error=context canceled
+--- PASS: TestSessionTicketTimeoutHandshakeFailureAndCancel (0.35s)
+    --- PASS: TestSessionTicketTimeoutHandshakeFailureAndCancel/missing_ticket (0.15s)
+    --- PASS: TestSessionTicketTimeoutHandshakeFailureAndCancel/target_handshake_failure (0.08s)
+    --- PASS: TestSessionTicketTimeoutHandshakeFailureAndCancel/target_cancel (0.12s)
+PASS
+ok  	quic-performance-lab/tests/integration	0.773s

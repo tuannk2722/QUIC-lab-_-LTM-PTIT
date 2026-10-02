@@ -2,15 +2,15 @@
 
 T03 — QUIC Protocol Implementation and Performance, môn Lập trình mạng, PTIT.
 
-**Bản sửa audit P7–P9 (D24):** 5 findings đã sửa; build/suite/race và software/localhost regressions PASS. Actual G09 của bản sửa **BLOCKED** do sudo cần xác thực; [evidence và lệnh rerun](docs/evidence/audit-p7-p9/README.md). PASS dataset bên dưới thuộc source cũ. Không mở P10.
+**Trạng thái hiện tại:** người dùng xác nhận P9/G09 **PASS** và cho phép riêng P10/G10. P10 đã triển khai QUIC cold/resumed/early, ticket notification, một replay sau rejection, handshake schedule và thống kê/plots tách mode. Build/suite/race/analysis/network regressions PASS. Actual G10 ingress IFB **BLOCKED**: lượt `sudo -n` exit1 vì cần xác thực, trước khi runner tạo topology. Localhost chỉ kiểm correctness; [P10 evidence/runbook](docs/evidence/p10/README.md) ghi kết quả thực và lệnh gate. Dừng tại P10 để người dùng review; P11/P12 chưa triển khai.
 
-**Trạng thái hiện tại:** P0/G00 đến P8/G08 PASS. P9 runner/plan/merge, manifest, thống kê và plots đã triển khai; build/tests/race và actual CLI localhost PASS. Full G09 user rerun **PASS**: main240 measured+16 warmup, 256 success/0 failure, 1536 resource rows và controlled interrupt/cleanup verified. Interactive terminal Ctrl+C qua tee từng exit141/cleanup1 còn là issue riêng. Xem [ACCEPTANCE_RESULTS](docs/ACCEPTANCE_RESULTS.md) và [P9 evidence/runbook](docs/evidence/p9/README.md). Dừng human review P9, không P10.
+P9 dataset lịch sử tại `results/p9-g09-8dFdkj/main/` có main240 measured+16 warmup, 256 success/0 failure, 1536 resource rows và controlled interrupt/cleanup verified. [D24 audit](docs/evidence/audit-p7-p9/README.md) giữ nguyên các lần BLOCKED trước đây. Interactive terminal Ctrl+C qua tee từng exit141/cleanup1 còn là limitation riêng; controlled interrupt PASS không xác minh lại đường terminal đó. Xem [ACCEPTANCE_RESULTS](docs/ACCEPTANCE_RESULTS.md) và [P9 evidence](docs/evidence/p9/README.md).
 
 Thiết kế: cùng bộ resource trong RAM được phục vụ bởi TCP/TLS trên TCP và raw QUIC trên UDP cùng số port 4433. Hai namespace chạy trong Ubuntu WSL2; P8 cấu hình impairment phía nhận qua IFB. P9 orchestrator quản lý benchmark tuần tự; qlog/packet capture thuộc P11.
 
 [Đặc tả](docs/DEMO_SPEC.md) · [Kế hoạch triển khai](docs/IMPLEMENTATION_PLAN.md) · [Nghiệm thu](docs/ACCEPTANCE.md) · [Kịch bản demo](docs/DEMO_SCRIPT.md)
 
-Repo phải nằm trong filesystem Linux native, ưu tiên `/home/<user>/...`, không `/mnt/c/...` hoặc `/mnt/d/...`. Mở Windows VS Code bằng Remote WSL, workspace `WSL: Ubuntu`. Implementation mặc định human-gated: chỉ phase được người dùng cho phép, chạy gate rồi cập nhật TASK và dừng review. Người dùng đã cho phép riêng P9/G09; xem [bằng chứng acceptance](docs/ACCEPTANCE_RESULTS.md) để biết trạng thái gate mới nhất.
+Repo phải nằm trong filesystem Linux native, ưu tiên `/home/<user>/...`, không `/mnt/c/...` hoặc `/mnt/d/...`. Mở Windows VS Code bằng Remote WSL, workspace `WSL: Ubuntu`. Implementation mặc định human-gated: chỉ phase được người dùng cho phép, chạy gate rồi cập nhật TASK và dừng review. Phạm vi được cho phép hiện tại là riêng P10/G10; xem [bằng chứng acceptance](docs/ACCEPTANCE_RESULTS.md) để biết trạng thái gate mới nhất.
 
 ## Tái lập P0 (chạy bên trong Ubuntu WSL2)
 
@@ -38,7 +38,7 @@ Makefile tự chọn Go local nếu có, nếu không dùng PATH và kiểm đú
 
 `make certs` tạo cert local hạn 30 ngày, SAN localhost/127.0.0.1/10.10.0.2, key 0600; từ chối ghi đè. Chỉ khi chủ động thay identity và đã dừng mọi server, dùng `make certs CERT_FORCE=--force`. Test tạo identity riêng trong thư mục tạm, không sửa cert đang dùng.
 
-Client `--mode=resumed|early` và bench handshake suite còn trả **exit 1 / not implemented**; cold TCP/QUIC và bulk bench P9 được hỗ trợ. Input/config không hợp lệ trả **2**. `--help`/`--version` trả 0. Defaults workload/scenario/timeouts được đọc từ configs; `--profiles` và `--scenarios` cho phép chọn tệp rõ ràng.
+Client hỗ trợ `--mode=cold` trên TCP/QUIC, `--mode=resumed|early` trên QUIC với `--profile=handshake`; bench hỗ trợ bulk và handshake suites. Input/config không hợp lệ trả **2**; transfer hoặc ghi results thất bại trả **1**. `--help`/`--version` trả 0. Defaults workload/scenario/timeouts được đọc từ configs; `--profiles` và `--scenarios` cho phép chọn tệp rõ ràng.
 
 `make doctor` chỉ inventory, không tạo namespace hoặc cấp quyền cho Go. Nếu sandbox chặn netlink, chạy lệnh ở terminal Ubuntu WSL bình thường. Để tái lập primitive preflight (đã PASS trong hồ sơ P0), chạy:
 
@@ -93,7 +93,7 @@ bin/client --transport=quic --mode=cold --profile=bulk --addr=127.0.0.1:4433 --s
 
 Server công bố ready file atomically sau khi cả hai listeners đã bind; từ chối ghi đè marker đã có và xóa marker của mình khi dừng bình thường. Cả hai listeners dùng chung certificate và một RAM workload store, với tối đa 8 connections đang xử lý tổng cộng. Mỗi QUIC resource dùng một bidirectional stream; JSON tối thiểu ghi `transport_stream_id` thực bên cạnh `resource_id`, bytes và checksum. Client QUIC gửi các REQUEST trên nhiều stream rồi nhận response độc lập, dùng cùng QB01 và kiểm đủ FIN/EOF/hash. QUIC v1 cho phép server nhận 64 bidirectional streams, client từ chối stream do server tự mở; hai phía tắt incoming unidirectional streams. Receive credits ban đầu/tối đa là 512 KiB/2 MiB mỗi stream và 2 MiB/16 MiB mỗi connection.
 
-Đây là đường truyền cold và kiểm chức năng trên localhost, chưa phải benchmark. `--allow-0rtt`, các mode resumed/early, IFB impairment và network benchmark thuộc các phase sau; topology namespace P7 được hướng dẫn bên dưới. Không suy ra performance hoặc G07/G08 từ output localhost; trạng thái G04 được ghi tại [ACCEPTANCE_RESULTS](docs/ACCEPTANCE_RESULTS.md).
+Các lệnh trên kiểm đường truyền cold trên localhost. P10 đã thêm `--allow-0rtt` và resumed/early theo hướng dẫn bên dưới; P7/P8/P9 cung cấp topology/IFB/network benchmark. Không suy ra performance hoặc G07/G08 từ output localhost; trạng thái G04 được ghi tại [ACCEPTANCE_RESULTS](docs/ACCEPTANCE_RESULTS.md).
 
 ## P5/P6: metrics và canonical result files
 
@@ -200,7 +200,41 @@ sudo bash tests/system/run.sh --gate G09 2>&1 | tee docs/evidence/p9/g09-system.
 g09_status=${PIPESTATUS[0]}; printf 'g09_exit=%s\n' "$g09_status" | tee -a docs/evidence/p9/g09-system.log
 ```
 
-G09 attempt của agent bị chặn trước runner bởi sudo xác thực tương tác. Chạy command trên trong terminal Ubuntu WSL2 của người dùng để thu actual dataset; gate_root chứa main/ và interrupt/ cùng checker hashes/cleanup. Software evidence chỉ localhost correctness, **không thay G09**, xem [P9 runbook](docs/evidence/p9/README.md) để review files/failure policy và tái lập. P10–P12 chưa được mở.
+Lượt G09 của agent trước đây bị sudo xác thực tương tác chặn; người dùng sau đó chạy actual gate và xác nhận P9/G09 PASS. Historical gate_root chứa main/ và interrupt/ cùng checker hashes/cleanup. Software evidence chỉ localhost correctness; xem [P9 runbook](docs/evidence/p9/README.md) để review files/failure policy và tái lập.
+
+## P10: resumption, 0-RTT và G10
+
+Cold target có TLS config/cache mới, không dùng ticket cũ. Mỗi resumed/early target tạo một cold connection riêng để nhận ticket qua `ClientSessionCache.Put` có state khác nil; đợi notification với deadline cấu hình, sau đó đóng prior connection. Ticket warm-up có t0 riêng, lưu tại `ticket-warmup/`; target bắt đầu t0 mới trên cùng server process. Resumed dùng Dial và đợi handshake; early dùng DialEarly, bắt đầu observer rồi enqueue REQUEST trước khi đợi handshake. Server dùng ListenEarly; `--allow-0rtt=false` cho phép từ chối early nhưng vẫn xử lý 1-RTT.
+
+Một coordinator xử lý `Err0RTTRejected`: đợi tất cả workers cũ dừng, gọi NextConnection trên connection hiện tại, rồi replay toàn batch read-only tối đa một lần. Fallback giữ t0 target ban đầu, final resource rows thuộc attempt1; `attempts/<run_id>.json` giữ cả attempt0/1. Bytes final không cộng bytes đã bỏ. `tls_resumed`, `used_0rtt`, `early_rejected` lấy từ quan sát thực; state chưa xác định để null. Transfer thành công vẫn cần đủ bytes/FIN/hash. Successful fallback giữ `success=true`, đồng thời `used_0rtt=false`, `early_rejected=true`, `fallback_count=1`.
+
+Kiểm ba mode trên localhost, hai terminal từ repo root:
+
+```bash
+# Terminal 1: giữ nguyên process giữa prior connection và target
+bin/server --transport=quic --profile=handshake --listen=127.0.0.1:14436 --allow-0rtt=true
+# Terminal 2: mỗi lệnh tự lưu target, prior ticket warm-up và attempts
+bin/client --transport=quic --profile=handshake --mode=cold --addr=127.0.0.1:14436 --server-name=localhost
+bin/client --transport=quic --profile=handshake --mode=resumed --addr=127.0.0.1:14436 --server-name=localhost
+bin/client --transport=quic --profile=handshake --mode=early --addr=127.0.0.1:14436 --server-name=localhost
+```
+
+`make benchmark-handshake` dùng 1×1024 bytes, rtt50-loss0, ba QUIC modes × (30 measured +2 target warmups) =96 target rows. Có thêm 64 ticket warm-ups riêng cho resumed/early, không vào CSV aggregate hoặc denominator target. Schedule cân bằng sáu permutations: mỗi mode ở mỗi vị trí 10 lần trong 30 measured triples; seed chung một triple, đổi giữa triples, qdisc reset trước từng invocation. Bulk P9 giữ riêng. Summary/plots tách cold/resumed/early và báo `n_success`, `n_failed`, `n_mode_achieved`, `n_fallback`, `n_unachieved`; fallback hoặc mode chưa đạt không vào latency distribution của mode dự định.
+
+Chuẩn bị build/deps/certs bằng UID thường, dừng server/topology cũ, rồi chạy trong Ubuntu WSL2:
+
+```bash
+make build
+make test-analysis
+test -r certs/server.crt && test -r certs/server.key || make certs
+# Full G10: functional/rejection/error cases, default ingress IFB cohort và cleanup
+set -o pipefail
+sudo bash tests/system/run.sh --gate G10 2>&1 | tee docs/evidence/p10/g10-user-run.log
+g10_status=${PIPESTATUS[0]}
+printf 'g10_exit=%s\n' "$g10_status" | tee -a docs/evidence/p10/g10-user-run.log
+```
+
+G10 actual đang BLOCKED ở sudo authentication, chưa có dataset impairment P10. Localhost API qualification yêu cầu actual TLS resumption/Used0RTT, không rejection/fallback, và `request_end_ms < handshake_ms` của target. Handshake là lúc client observer nhìn thấy hoàn tất, có scheduling delay; Write return chỉ chứng minh API đã nhận REQUEST. Packet 0-RTT chứa application request, qlog/PCAP/progress và full corroboration thuộc P11, chưa thực hiện. Review ticket lifecycle/deadlines, observer, coordinator một replay, valid-ticket rejection harness, final-attempt CSV/state và failure denominators tại [P10 evidence](docs/evidence/p10/README.md).
 
 ## Hợp đồng README sau triển khai đầy đủ
 
@@ -215,4 +249,4 @@ Agent phải thay mục này bằng các bước **đã kiểm tra thực tế**
 7. Chỉ rõ lệnh chạy ở host Windows hay bên trong Ubuntu WSL2; mọi build/test/network/benchmark chạy trong Ubuntu WSL2.
 8. Liên kết provenance, disclosure AI và giới hạn kết luận.
 
-Hiện có targets build/test/test-race/certs/doctor và P7/P8 setup-network/server/netem/inspect-network/clear-netem/clean-network/test-network. P9 bổ sung benchmark/analyze/analysis-deps/test-analysis; các targets demo/handshake/capture thuộc P10–P12.
+Hiện có targets build/test/test-race/certs/doctor và P7/P8 setup-network/server/netem/inspect-network/clear-netem/clean-network/test-network. P9 có benchmark/analyze/analysis-deps/test-analysis; P10 thêm benchmark-handshake. Demo/capture và đóng gói/rehearsal thuộc P11/P12.

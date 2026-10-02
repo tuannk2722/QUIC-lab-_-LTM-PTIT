@@ -1,0 +1,22 @@
+/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/.tools/go1.27.1/bin/go test -mod=readonly ./...
+?   	quic-performance-lab/cmd/bench	[no test files]
+?   	quic-performance-lab/cmd/client	[no test files]
+?   	quic-performance-lab/cmd/server	[no test files]
+ok  	quic-performance-lab/internal/bench	(cached)
+ok  	quic-performance-lab/internal/cli	0.404s
+ok  	quic-performance-lab/internal/config	(cached)
+ok  	quic-performance-lab/internal/metrics	(cached)
+ok  	quic-performance-lab/internal/protocol	(cached)
+ok  	quic-performance-lab/internal/tlsconfig	(cached)
+?   	quic-performance-lab/internal/transport	[no test files]
+ok  	quic-performance-lab/internal/transport/quic	0.065s
+ok  	quic-performance-lab/internal/transport/tcp	(cached)
+ok  	quic-performance-lab/internal/workload	(cached)
+ok  	quic-performance-lab/tests/api	(cached)
+--- FAIL: TestTCPAuditChecksumAndEOFFailure (1.34s)
+    --- FAIL: TestTCPAuditChecksumAndEOFFailure/checksum (0.49s)
+        audit_test.go:71: {Run:{SchemaVersion:1 ExperimentID: RunID: Phase: RepeatIndex:0 PairID: OrderIndex:0 TimestampUTC:2026-10-01T12:07:30.873702874Z Scenario: Transport:tcp Mode: TraceMode: NetworkProfile: ResourceCount:3 ResourceSizeBytes:1024 ChunkBytes:0 DelayEachWayMS:0 LossDownstreamPct:0 LossUpstreamPct:0 RateMbps:0 NetemSeed:<nil> BytesExpected:3072 BytesReceived:2048 RunTiming:{TCPConnectMS:0x1b5f2b332740 TLSHandshakeMS:0x1b5f2b332750 HandshakeMS:0x1b5f2b332748 ConnectMS:0x1b5f2b332748 EarlyReadyMS:<nil> TTFAMS:0x1b5f2b332758 TransferMS:<nil> TotalMS:<nil> ElapsedMS:10.449081 GoodputMbps:<nil> E2EGoodputMbps:<nil>} TLSResumed:0x1b5f2b3328de Attempted0RTT:false Used0RTT:<nil> EarlyRejected:<nil> FallbackCount:0 Success:false ErrorCode:transfer_error ErrorMessage:read tcp 127.0.0.1:39380->127.0.0.1:33781: read: connection reset by peer} Streams:[{SchemaVersion:1 ExperimentID: RunID: ResourceID:1 TransportStreamID:<nil> AttemptIndex:0 StreamTiming:{RequestStartMS:0x1b5f2b3326c0 RequestEndMS:0x1b5f2b3326c8 FirstByteMS:0x1b5f2b3326d0 TTFBRequestMS:0x1b5f2b3326d8 PayloadDoneMS:0x1b5f2b3326e0 CompleteMS:0x1b5f2b3326e8 CompletionRequestMS:0x1b5f2b3326f0} BytesExpected:1024 BytesReceived:1024 ChecksumOK:0x1b5f2b3328df Success:true ErrorCode: ErrorMessage:} {SchemaVersion:1 ExperimentID: RunID: ResourceID:2 TransportStreamID:<nil> AttemptIndex:0 StreamTiming:{RequestStartMS:0x1b5f2b3326f8 RequestEndMS:0x1b5f2b332700 FirstByteMS:0x1b5f2b332708 TTFBRequestMS:0x1b5f2b332710 PayloadDoneMS:0x1b5f2b332718 CompleteMS:0x1b5f2b332720 CompletionRequestMS:0x1b5f2b332728} BytesExpected:1024 BytesReceived:1024 ChecksumOK:0x1b5f2b3328f0 Success:false ErrorCode:checksum_mismatch ErrorMessage:malformed QB01 frame: checksum mismatch} {SchemaVersion:1 ExperimentID: RunID: ResourceID:3 TransportStreamID:<nil> AttemptIndex:0 StreamTiming:{RequestStartMS:0x1b5f2b332730 RequestEndMS:0x1b5f2b332738 FirstByteMS:<nil> TTFBRequestMS:<nil> PayloadDoneMS:<nil> CompleteMS:<nil> CompletionRequestMS:<nil>} BytesExpected:1024 BytesReceived:0 ChecksumOK:<nil> Success:false ErrorCode:transfer_error ErrorMessage:read tcp 127.0.0.1:39380->127.0.0.1:33781: read: connection reset by peer}]}
+FAIL
+FAIL	quic-performance-lab/tests/integration	10.941s
+FAIL
+make: *** [Makefile:32: test] Error 1

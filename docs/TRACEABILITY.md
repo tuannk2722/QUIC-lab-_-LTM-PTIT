@@ -89,6 +89,8 @@ Các con số terminal/CSV trong chat là giả lập minh họa. Gói không gi
 
 ## 5. Kiểm soát hoàn thành
 
+P10/D25 (user xác nhận P9 PASS và cho phép riêng P10): rows18/20–23/28/29 map tới TicketCache/RunSession/one-replay coordinator, ListenEarly/actual state, attempts/ticket-warmup artifacts, handshake96-target schedule và mode-aware cohort/stats/plots. Functional/localhost evidence tại `evidence/p10/`; actual IFB G10 BLOCKED vì sudo authentication trước runner. Row20 packet0RTT và rows25/26/qlog/PCAP/HOL corroboration vẫn pending P11, không đánh dấu complete bằng API/timing.
+
 D24 audit P7–P9 gắn rows21–24/28/29 với experiment ownership, atomic claim, completed invocation, pipe-independent finalization và build/source/binary receipt. Evidence bản sửa tách tại `evidence/audit-p7-p9/`; không thay hash, raw hoặc trạng thái lịch sử của actual G09 cũ.
 
 Mỗi row coding map tới gate; mỗi concept lý thuyết map tới source/defense. Nội dung optional được nêu rõ chứ không biến mất. Agent trước final phải đọc lại bảng này, kiểm acceptance evidence và ghi deviations vào CONTEXT. Không coi “đã copy file nguồn” là “agent đã hiểu”; cần đọc đủ nguồn liên quan khi giải quyết ambiguity/conflict/provenance hoặc final traceability và có explanation/code tests tương ứng khi triển khai; không bắt đọc lại toàn bộ originals mỗi phiên thường lệ.

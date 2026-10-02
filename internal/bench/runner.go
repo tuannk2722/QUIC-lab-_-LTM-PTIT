@@ -83,20 +83,12 @@ func ExecuteEntry(ctx context.Context, path, out, profiles, scenarios, ca, netwo
 	if err := claimEntry(root, e); err != nil {
 		return metrics.TrialRecord{}, err
 	}
-	results, transferErr := RunCold(ctx, e.Transport, s.Addr, cfg, store, time.Duration(s.TimeoutNS))
-	record, err := metrics.NewTrial(s.Meta(e), results, transferErr)
+	o := RunTrial(ctx, e.Transport, e.Mode, s.Addr, cfg, store, time.Duration(s.TimeoutNS), time.Duration(s.Workloads.Timeouts.TicketWaitSeconds)*time.Second)
+	record, err := WriteOutcome(out, s.Meta(e), o)
 	if err != nil {
 		return record, err
 	}
-	if err := metrics.WriteTrial(out, record); err != nil {
-		return record, err
-	}
-	if len(results) > 0 && results[0].Connection != nil {
-		if err := WriteJSON(filepath.Join(out, "connection.json"), results[0].Connection); err != nil {
-			return record, err
-		}
-	}
-	return record, transferErr
+	return record, o.Err
 }
 
 func claimEntry(root string, e Entry) error {
@@ -145,7 +137,7 @@ func RecordMatches(s Schedule, e Entry, r metrics.TrialRecord) error {
 	var bytes uint64
 	for i, v := range r.Streams {
 		if v.SchemaVersion != 1 || v.ExperimentID != m.ExperimentID || v.RunID != m.RunID || v.ResourceID != uint32(i+1) ||
-			v.BytesExpected != m.ResourceSizeBytes || v.BytesReceived > v.BytesExpected || v.AttemptIndex != 0 ||
+			v.BytesExpected != m.ResourceSizeBytes || v.BytesReceived > v.BytesExpected || v.AttemptIndex != a.FallbackCount ||
 			(a.Transport == "tcp" && v.TransportStreamID != nil) {
 			return fmt.Errorf("invalid shard resource row")
 		}

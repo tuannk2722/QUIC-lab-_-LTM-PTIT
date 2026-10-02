@@ -1,0 +1,115 @@
+{
+  "status": "PASS",
+  "checks": [
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "bash",
+        "-n",
+        "scripts/bench.sh",
+        "tests/system/run.sh",
+        "tests/system/g10.sh"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        ".tools/go1.27.1/bin/gofmt",
+        "-l",
+        "internal/protocol/batch.go",
+        "internal/protocol/request.go",
+        "internal/protocol/batch_test.go",
+        "internal/protocol/errors.go",
+        "internal/protocol/codec.go",
+        "internal/protocol/protocol_test.go",
+        "internal/protocol/frame.go",
+        "internal/protocol/response.go",
+        "internal/workload/resource.go",
+        "internal/workload/workload_test.go",
+        "internal/workload/generator.go",
+        "internal/bench/bench_test.go",
+        "internal/bench/build.go",
+        "internal/bench/build_test.go",
+        "internal/bench/merge.go",
+        "internal/bench/session.go",
+        "internal/bench/runner.go",
+        "internal/bench/schedule.go",
+        "internal/bench/manifest.go",
+        "internal/bench/handshake_test.go",
+        "internal/tlsconfig/config_test.go",
+        "internal/tlsconfig/config.go",
+        "internal/tlsconfig/sessioncache_test.go",
+        "internal/tlsconfig/sessioncache.go",
+        "internal/config/config_test.go",
+        "internal/config/config.go",
+        "internal/config/network.go",
+        "internal/config/json.go",
+        "internal/config/network_test.go",
+        "internal/cli/cli_test.go",
+        "internal/cli/cli.go",
+        "internal/cli/bench.go",
+        "internal/metrics/result.go",
+        "internal/metrics/timer.go",
+        "internal/metrics/csv.go",
+        "internal/metrics/result_test.go",
+        "internal/metrics/timer_test.go",
+        "internal/transport/connection.go",
+        "internal/transport/types.go",
+        "internal/transport/tcp/scheduler_test.go",
+        "internal/transport/tcp/server.go",
+        "internal/transport/tcp/client.go",
+        "internal/transport/tcp/scheduler.go",
+        "internal/transport/quic/config.go",
+        "internal/transport/quic/streams.go",
+        "internal/transport/quic/server.go",
+        "internal/transport/quic/audit_test.go",
+        "internal/transport/quic/client.go",
+        "internal/transport/quic/early.go",
+        "tests/integration/bench_test.go",
+        "tests/integration/early_test.go",
+        "tests/integration/audit_test.go",
+        "tests/integration/tcp_test.go",
+        "tests/integration/quic_test.go",
+        "tests/api/quic_test.go"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "python3",
+        "scripts/build.py",
+        "verify"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "python_files_parsed": [
+    "scripts/bench-support.py",
+    "tests/system/check_g10.py",
+    "tests/system/run_g10_software.py",
+    "tests/system/test_handshake.py",
+    "docs/evidence/p10/review_software.py",
+    "analysis/test_stats.py",
+    "analysis/test_validate.py",
+    "analysis/test_session_state.py",
+    "analysis/plot.py",
+    "analysis/cohort.py",
+    "analysis/summarize.py",
+    "analysis/validate.py"
+  ]
+}

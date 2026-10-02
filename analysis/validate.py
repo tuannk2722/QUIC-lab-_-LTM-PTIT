@@ -114,9 +114,9 @@ def validate_timeline(run, stream):
         if stream[after] is not None:
             require(stream[before] is not None and stream[before] <= stream[after],
                     f"{rid}: invalid {before}/{after} ordering")
-    if run["mode"] == "cold" and stream["request_start_ms"] is not None:
+    if run["mode"] in ("cold", "resumed") and stream["request_start_ms"] is not None:
         require(run["handshake_ms"] is not None and run["handshake_ms"] <= stream["request_start_ms"],
-                f"{rid}: cold request before handshake")
+                f"{rid}: secure request before handshake")
     if stream["success"]:
         require(all(stream[k] is not None for k in milestones), f"{rid}: missing stream milestones")
         require(stream["checksum_ok"] is True and stream["bytes_received"] == stream["bytes_expected"],
@@ -124,6 +124,30 @@ def validate_timeline(run, stream):
         require(not stream["error_code"] and not stream["error_message"], f"{rid}: successful stream error")
         if run["transport"] == "quic":
             require(stream["transport_stream_id"] is not None, f"{rid}: missing QUIC stream ID")
+
+
+def validate_session_state(run, streams):
+    rid = run['run_id']
+    early = run['transport'] == 'quic' and run['mode'] == 'early'
+    for key in ('handshake_ms', 'early_ready_ms'):
+        require(run[key] is None or run[key] <= run['elapsed_ms'], f'{rid}: {key} after trial end')
+    if run['tls_resumed'] is not None or run['used_0rtt'] is not None:
+        require(run['handshake_ms'] is not None, f'{rid}: session state without observed handshake')
+    if run['early_ready_ms'] is not None:
+        require(early and run['attempted_0rtt'], f'{rid}: early readiness without early API')
+    require(not run['attempted_0rtt'] or early, f'{rid}: early API on incompatible mode')
+    if not early:
+        require(run['used_0rtt'] is not True and run['early_rejected'] is not True and
+                run['early_ready_ms'] is None and run['fallback_count'] == 0, f'{rid}: non-early state')
+    if run['used_0rtt'] is True:
+        require(early and run['attempted_0rtt'] and run['early_ready_ms'] is not None and run['tls_resumed'] is True and
+                run['early_rejected'] is False and run['fallback_count'] == 0, f'{rid}: contradictory accepted state')
+    if run['early_rejected'] is True:
+        require(early and run['attempted_0rtt'] and run['used_0rtt'] is not True, f'{rid}: contradictory rejection')
+    if run['fallback_count'] == 1:
+        require(early and run['attempted_0rtt'] and run['early_rejected'] is True and run['used_0rtt'] is False,
+                f'{rid}: fallback without observed rejection')
+    require(all(s['attempt_index'] == run['fallback_count'] for s in streams), f'{rid}: mixed final attempts')
 
 
 def validate(directory):
@@ -141,6 +165,7 @@ def validate(directory):
     for run in runs:
         rid = run["run_id"]
         group = by_run[rid]
+        validate_session_state(run, group)
         require(len(group) == run["resource_count"], f"{rid}: wrong stream count")
         require({s["resource_id"] for s in group} == set(range(1, run["resource_count"] + 1)), f"{rid}: duplicate/missing resource")
         require(all(s["experiment_id"] == run["experiment_id"] for s in group), f"{rid}: experiment FK")

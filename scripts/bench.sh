@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# P9 privileged orchestration only. Build/dependencies/cert preparation is done
+# Bulk/handshake privileged orchestration. Build/dependencies/cert preparation is done
 # as the ordinary user. Every file/Go process/check/analysis belongs to that user.
 set -euo pipefail
 export LC_ALL=C
@@ -11,19 +11,22 @@ require_sudo_caller
 # Terminal output is best effort; artifact finalization never uses this pipe.
 trap '' PIPE
 out=
+suite=bulk
 interrupt_case=false
 plan_args=()
 probe_seed=default
 while (( $# )); do
     case "$1" in
         --out=*) out=${1#*=} ;;
+        --suite=bulk|--suite=handshake) suite=${1#*=} ;;
         --runs=*|--warmups=*|--seed=*|--scenario=*) plan_args+=("$1") ;;
         --disable-netem-seed) plan_args+=("$1"); probe_seed=none ;;
         --interrupt-case) interrupt_case=true ;;
-        *) echo 'Usage: sudo bash scripts/bench.sh [--out=NEW_DIR] [--runs=N --warmups=N --seed=UINT64 --scenario=NAME --disable-netem-seed]' >&2; exit 2 ;;
+        *) echo 'Usage: sudo bash scripts/bench.sh [--suite=bulk|handshake --out=NEW_DIR] [--runs=N --warmups=N --seed=UINT64 --scenario=NAME --disable-netem-seed]' >&2; exit 2 ;;
     esac
     shift
 done
+[[ $suite == bulk || $interrupt_case == false ]] || { echo 'interrupt-case is a bulk G09 harness' >&2; exit 2; }
 run_user() { setpriv --reuid "$SUDO_UID" --regid "$SUDO_GID" --init-groups -- "$@" 8>&-; }
 support() { run_user python3 scripts/bench-support.py "$@"; }
 say() { printf 'P9: %s\n' "$*" 2>/dev/null || true; }
@@ -103,10 +106,12 @@ support preflight || lab_die 'G08 prerequisite or pinned analysis dependencies u
 if namespace_exists qclient || namespace_exists qserver || [[ -e $LAB_MARKER ]]; then lab_die 'stop existing lab server and clean owned topology before benchmark'; fi
 run_user test -r certs/server.crt && run_user test -r certs/server.key || lab_die 'make certs as normal user first'
 run_user mkdir -p results
-if [[ -z $out ]]; then out="$repo/results/$(run_user python3 -c 'import secrets,time; print("p9-bulk-"+time.strftime("%Y%m%dT%H%M%S",time.gmtime())+"-"+secrets.token_hex(4))')"; fi
+if [[ -z $out ]]; then out="$repo/results/$(run_user python3 -c 'import secrets,time,sys; print("bench-"+sys.argv[1]+"-"+time.strftime("%Y%m%dT%H%M%S",time.gmtime())+"-"+secrets.token_hex(4))' "$suite")"; fi
 out=$(realpath -m -- "$out")
 if [[ $interrupt_case == true ]]; then plan_args+=(--runs=1 --warmups=0 --scenario=baseline); fi
-run_user "$repo/bin/bench" --plan --suite=bulk --profile=bulk --network-profile=ingress-ifb --out="$out" "${plan_args[@]}"
+profile=bulk
+[[ $suite != handshake ]] || profile=handshake
+run_user "$repo/bin/bench" --plan --suite="$suite" --profile="$profile" --network-profile=ingress-ifb --out="$out" "${plan_args[@]}"
 planned=true
 host_snapshot before
 support runtime "$out"
@@ -128,11 +133,11 @@ done
 host_compare active || infra_fail 'host state changed during setup'
 ready="$out/ready"
 bash scripts/run-in-netns.sh qserver -- /usr/bin/python3 "$repo/scripts/bench-support.py" launch-verified \
-    "$out/logs/server.log" "$out" server --transport=both --profile=bulk --listen=10.10.0.2:4433 --ready-file="$ready" 8>&- &
+    "$out/logs/server.log" "$out" server --transport=both --profile="$profile" --allow-0rtt=true --listen=10.10.0.2:4433 --ready-file="$ready" 8>&- &
 server_pid=$!
 for ((i=0;i<100;i++)); do [[ -s $ready ]] && break; is_running "$server_pid" || infra_fail 'server exited before readiness'; sleep 0.1; done
 [[ -s $ready && $(stat -c '%u:%g' "/proc/$server_pid") == "$SUDO_UID:$SUDO_GID" ]] || infra_fail 'server readiness/UID failed'
-trial_timeout=$(run_user python3 -c 'import json,sys,math; print(math.ceil(json.load(open(sys.argv[1]))["timeout_ns"]/1e9)+15)' "$out/schedule.json")
+trial_timeout=$(run_user python3 -c 'import json,sys,math; s=json.load(open(sys.argv[1])); print(math.ceil(s["timeout_ns"]/1e9)*(2 if s["suite"]=="handshake" else 1)+15)' "$out/schedule.json")
 server_timeout=$(run_user python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["workloads"]["timeouts"]["trial_seconds"]+1)' "$out/schedule.json")
 while IFS=$'\t' read -r rid scenario seed; do
     is_running "$server_pid" || infra_fail 'server exited'

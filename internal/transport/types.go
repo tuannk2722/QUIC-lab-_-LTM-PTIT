@@ -9,8 +9,10 @@ type Timing struct {
 }
 
 type Result struct {
-	Connection *ConnectionInfo
-	ResourceID uint32
+	Connection   *ConnectionInfo
+	Session      *SessionState
+	AttemptIndex int
+	ResourceID   uint32
 	// StreamID is the native QUIC stream ID. It is nil for TCP.
 	StreamID        *int64
 	BytesExpected   uint64
@@ -19,4 +21,26 @@ type Result struct {
 	Err             error
 	ChecksumOK      bool
 	Timing          Timing
+}
+
+type SessionState struct {
+	Attempted0RTT bool
+	EarlyRejected *bool
+	FallbackCount int
+}
+
+// Attempts retain old stream milestones without mixing them into final rows.
+type Attempt struct {
+	Index   int
+	Results []Result
+	Err     error
+}
+
+type Outcome struct {
+	Results        []Result
+	Warmup         []Result
+	WarmupErr      error
+	TicketObserved bool
+	Attempts       []Attempt
+	Err            error
 }

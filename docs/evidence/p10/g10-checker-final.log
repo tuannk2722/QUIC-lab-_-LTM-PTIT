@@ -1,0 +1,9 @@
+test_exact_functional_target_count_and_rejection_workload (__main__.HandshakeChecks.test_exact_functional_target_count_and_rejection_workload) ... ok
+test_idle_retry_numeric_order_requires_last_pair_quiet (__main__.HandshakeChecks.test_idle_retry_numeric_order_requires_last_pair_quiet) ... ok
+test_replay_history_binding_duplicate_final_and_old_worker_barrier (__main__.HandshakeChecks.test_replay_history_binding_duplicate_final_and_old_worker_barrier) ... ok
+test_ticket_warmup_identity_cohort_chronology_and_failed_notification (__main__.HandshakeChecks.test_ticket_warmup_identity_cohort_chronology_and_failed_notification) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.019s
+
+OK

@@ -21,7 +21,7 @@ SEED ?=
 RESULTS ?=
 export PROFILE SCENARIO NETWORK_PROFILE NETEM_SEED RUNS WARMUPS SEED RESULTS
 
-.PHONY: check-go build test test-race certs doctor setup-network server clean-network netem clear-netem inspect-network test-network benchmark analyze analysis-deps test-analysis
+.PHONY: check-go build test test-race certs doctor setup-network server clean-network netem clear-netem inspect-network test-network benchmark benchmark-handshake analyze analysis-deps test-analysis
 check-go:
 	@test "$$($(GO) version | awk '{print $$3}')" = "go$(GO_VERSION)" || { echo 'Expected Go $(GO_VERSION); see README.md' >&2; exit 3; }
 
@@ -67,9 +67,10 @@ analysis-deps:
 	python3 -m pip install --only-binary=:all: --cache-dir .tools/pip-cache --target .tools/analysis -r analysis/requirements.txt
 
 test-analysis:
-	python3 -m unittest discover -s analysis -p 'test_stats.py' -v
+	python3 -m unittest discover -s analysis -p 'test_*.py' -v
 	python3 tests/system/test_bench.py -v
 	python3 tests/system/test_audit_p7_p9.py -v
+	python3 tests/system/test_handshake.py -v
 
 benchmark: build
 	@bench_args=(); \
@@ -78,6 +79,15 @@ benchmark: build
 		if [[ -n $$SEED ]]; then bench_args+=(--seed="$$SEED"); fi; \
 		if [[ $$NETEM_SEED == none ]]; then bench_args+=(--disable-netem-seed); \
 		elif [[ $$NETEM_SEED != default ]]; then echo 'Use SEED for schedule seed or NETEM_SEED=none explicitly.' >&2; exit 2; fi; \
+		sudo bash scripts/bench.sh "$${bench_args[@]}"
+
+benchmark-handshake: build
+	@bench_args=(--suite=handshake); \
+		if [[ -n $$RUNS ]]; then bench_args+=(--runs="$$RUNS"); fi; \
+		if [[ -n $$WARMUPS ]]; then bench_args+=(--warmups="$$WARMUPS"); fi; \
+		if [[ -n $$SEED ]]; then bench_args+=(--seed="$$SEED"); fi; \
+		if [[ $$NETEM_SEED == none ]]; then bench_args+=(--disable-netem-seed); \
+		elif [[ $$NETEM_SEED != default ]]; then echo 'Use SEED or explicit NETEM_SEED=none.' >&2; exit 2; fi; \
 		sudo bash scripts/bench.sh "$${bench_args[@]}"
 
 analyze:

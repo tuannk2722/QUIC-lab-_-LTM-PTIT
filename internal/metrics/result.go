@@ -139,6 +139,18 @@ func NewTrial(meta TrialMeta, results []transport.Result, transferErr error) (Tr
 		BytesExpected: uint64(meta.ResourceCount) * meta.ResourceSizeBytes, RunTiming: runTiming,
 		Success: success, ErrorCode: code, ErrorMessage: msg}
 	record.Streams = make([]StreamRecord, meta.ResourceCount)
+	if results[0].Connection != nil {
+		info := results[0].Connection
+		resumed := info.DidResume
+		run.TLSResumed = &resumed
+		run.Used0RTT = info.Used0RTT
+	}
+	if results[0].Session != nil {
+		state := results[0].Session
+		run.Attempted0RTT = state.Attempted0RTT
+		run.EarlyRejected = state.EarlyRejected
+		run.FallbackCount = state.FallbackCount
+	}
 	seen := make(map[uint32]bool, meta.ResourceCount)
 	for i, r := range results {
 		if r.ResourceID < 1 || int(r.ResourceID) > meta.ResourceCount || seen[r.ResourceID] {
@@ -171,7 +183,7 @@ func NewTrial(meta TrialMeta, results []transport.Result, transferErr error) (Tr
 			}
 		}
 		record.Streams[r.ResourceID-1] = StreamRecord{SchemaVersion: SchemaVersion, ExperimentID: meta.ExperimentID, RunID: meta.RunID,
-			ResourceID: r.ResourceID, TransportStreamID: r.StreamID, AttemptIndex: 0, StreamTiming: streamTimings[i],
+			ResourceID: r.ResourceID, TransportStreamID: r.StreamID, AttemptIndex: r.AttemptIndex, StreamTiming: streamTimings[i],
 			BytesExpected: r.BytesExpected, BytesReceived: r.BytesReceived, ChecksumOK: checksum,
 			Success: streamSuccess, ErrorCode: streamCode, ErrorMessage: streamMsg}
 	}

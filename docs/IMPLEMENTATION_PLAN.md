@@ -29,6 +29,7 @@ Mỗi phase: đọc hợp đồng → inspect code → implement → chạy gate
 | internal/metrics/timer.go, result.go, csv.go, json.go | Monotonic record, export, null/errors | P5/P6 |
 | internal/metrics/progress.go | Evidence in-memory event collection | P11 |
 | internal/bench/runner.go, schedule.go, merge.go, manifest.go | Shared cold trials, immutable hash-bound seeds/order, failure rows, provenance/host metadata | P9 |
+| internal/bench/session.go | Shared three-mode sequence; final, ticket warm-up và attempt artifacts | P10 |
 | internal/cli/bench.go, internal/transport/connection.go | Bench flags/lifecycle, actual post-FIN TLS/socket sidecars | P9 |
 | internal/observability/qlog.go, keylog.go | Optional traces và mapping, flush | P11 |
 | scripts/gen-cert.sh | Local cert/key SAN, secure file permissions | P0 |
@@ -42,6 +43,7 @@ Mỗi phase: đọc hợp đồng → inspect code → implement → chạy gate
 | scripts/capture.sh, demo.sh | Evidence capture và managed live lifecycle | P11/P12 |
 | analysis/validate.py, cohort.py, summarize.py, plot.py | Results/cohort contract, stats, charts | P6/P9/P12 |
 | tests/system/g09.sh, check_g09.py, run_g09_software.py, test_bench.py | Actual default+interrupt gate; software localhost and checker unit regression | P9 |
+| tests/system/g10.sh, check_g10.py, run_g10_software.py, test_handshake.py | G10 functional +96-target IFB gate, raw/ticket/history checks, localhost/pure regression | P10 |
 | analysis/requirements.txt | Pin thư viện plotting nếu dùng ngoài stdlib | P9 |
 | tests/integration/*_test.go | Transport/TLS/error/early functional tests | P2–P10 |
 | tests/system/run.sh | Namespace/impairment/cleanup acceptance | P7–P12 |
@@ -127,6 +129,8 @@ Read exact pinned early APIs. Client cache wrapper có ticket notification; thre
 Integration tests: cold no ticket, resumed without early, early accepted, deliberately rejected early with valid resumption setup, missing ticket timeout, handshake failure/cancel. Forced rejection test phải giữ ticket keys hợp lệ khi đổi acceptance (dùng config hook đúng version hoặc test harness có ticket keys cố định); không chỉ xóa cache rồi gọi đó là rejection.
 
 Gate G10: actual Used0RTT+DidResume+timing/evidence sau P11; accepted and rejection correctness; no duplicate fallback; early rejected records false, fallback_count=1 và bytes correct. Run 3×30 handshake suite; warmups logged, không gộp vào bulk.
+
+P10 refinement D25: defaults96 targets (90 measured+6 phase warmups),64 separately logged ticket warmups; six-permutation order/seed triples. Shared CLI/bench sequence dùng cache notification, original target t0 qua one replay, actual state và attempt index. CSV-derived summary phân biệt transfer success/mode achievement/fallback; early qualification dùng RequestEnd<observed Handshake, packet proof pending P11. Full command `sudo bash tests/system/run.sh --gate G10` chạy functional tests và ingress IFB default cohort; localhost driver không thay network gate. Current G10 actual **BLOCKED** vì sudo yêu cầu xác thực trước runner; evidence/manual commands tại [P10](evidence/p10/README.md). Dừng human review P10, không tự mở P11.
 
 ## P11 — qlog, PCAP, progress evidence
 

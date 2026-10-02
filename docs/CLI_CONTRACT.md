@@ -1,6 +1,6 @@
 # CLI và Make contract
 
-Các lệnh dưới đây là **hợp đồng cuối cùng**. P0–P8/G00–G08 đã PASS, gồm cold TCP/QUIC, canonical metrics/results và receiver IFB thực. P9 có bulk bench plan/entry/merge, orchestrator, manifest và CSV-derived stats/plots; software checks và full G09 actual user rerun PASS; main240+16/1536 rows, controlled SIGINT/cleanup verified. Interactive terminal Ctrl+C qua tee từng exit141/cleanup1 vẫn là limitation riêng. Client resumed/early và handshake suite còn thuộc P10; traces thuộc P11. Defaults dùng chung config loader. Không dùng command string eval từ input; subprocess dùng argument list.
+Các lệnh dưới đây là **hợp đồng cuối cùng**. User xác nhận P9/G09 PASS và cho phép riêng P10/G10. Client QUIC cold/resumed/early, server early listener và handshake suite đã triển khai; actual IFB G10 BLOCKED ở sudo authentication, localhost correctness có evidence riêng. Traces thuộc P11, chưa mở. Defaults dùng chung config loader. Không dùng command string eval từ input; subprocess dùng argument list.
 
 ## 1. Binaries
 
@@ -9,7 +9,7 @@ Các lệnh dưới đây là **hợp đồng cuối cùng**. P0–P8/G00–G08 
 | Binary | Flags cốt lõi | Semantics |
 |---|---|---|
 | server | `--listen=0.0.0.0:4433 --transport=both --profile=bulk --profiles=configs/workloads.json` | tcp/quic/both; store theo profile |
-| server | `--cert=certs/server.crt --key=certs/server.key --allow-0rtt=true` | QUIC early listener thuộc P10; P4 chỉ cold, TCP vẫn full TLS1.3 |
+| server | `--cert=certs/server.crt --key=certs/server.key --allow-0rtt=true` | P10 ListenEarly/Allow0RTT thực; TCP vẫn full TLS1.3 |
 | server | `--ready-file=PATH --qlog-dir=PATH --keylog=PATH` | ready file atomic sau listeners được chọn; qlog/keylog thuộc P11 |
 | client | `--addr=10.10.0.2:4433 --transport=tcp --mode=cold --profile=bulk` | transport tcp/quic; mode cold/resumed/early, early chỉ QUIC |
 | client | `--ca=certs/server.crt --server-name=10.10.0.2 --timeout=60s` | trust đúng cert và identity |
@@ -21,6 +21,7 @@ Các lệnh dưới đây là **hợp đồng cuối cùng**. P0–P8/G00–G08 
 | bench | `--schedule-entry=PATH --out=DIR --network-state=PATH` | Đường main wrapper: chạy entry với metadata thực, output shard |
 | bench | `--merge=DIR` | Đọc schedule+shards, tạo runs/streams, failed rows cho entry thiếu |
 | bench | `--plan --suite=bulk --seed=SEED --out=DIR` | Xuất schedule immutable, chưa chạy network/trials |
+| bench | `--suite=handshake [--plan] --runs=30 --warmups=2 --out=DIR` | QUIC cold/resumed/early, handshake profile và rtt50-loss0; direct chỉ localhost correctness |
 | bench | `--plan --network-profile=ingress-ifb\|loopback-test --disable-netem-seed` | Main hoặc correctness plan; seed=null chỉ khi chọn explicit limitation |
 
 Các flags môi trường dùng chung (addr/ca/profile/timeout) của client phải dùng được ở bench. `--mode=resumed` tạo prior connection + ticket rồi Dial thường, không gửi early. `--mode=cold` fresh cache. Bench direct không có network-state chỉ được label loopback-test/exploratory, không tự gán configured loss thành applied loss.
@@ -33,11 +34,11 @@ Schedule entry tối thiểu: schema_version, experiment_id, run_id, scenario, p
 
 `bin/client --mode=cold --transport=quic` dùng một QUIC v1 connection, một bidirectional stream/resource và cùng QB01; `--transport=tcp` giữ một TLS connection và scheduler round-robin. Client QUIC gửi các REQUEST mà không chờ response của resource trước; mỗi stream gửi request rồi đóng send-half. Output JSON trên stdout vẫn có `resource_id`, `transport_stream_id` thực cho QUIC, `bytes`, `checksum_ok`, `elapsed_ms`, thêm object `metrics` P5; TCP bỏ `transport_stream_id`. Với profile bulk, 6 resource nằm trong mảng `resources`. Canonical typed record/CSV P6 nằm trong thư mục kết quả mới; stdout localhost chỉ là correctness output.
 
-QUIC P4 cho phép server nhận 64 incoming bidirectional streams, còn client từ chối stream do server tự mở; hai phía tắt incoming unidirectional streams. Receive credits ban đầu/tối đa: 512 KiB/2 MiB mỗi stream và 2 MiB/16 MiB mỗi connection; đây là flow-control credits của quic-go, không phải kích thước resource buffer. `--allow-0rtt` vẫn là flag cho P10 và chưa kích hoạt early path; client `--mode=resumed|early` trả exit 1 / not implemented. `--qlog-dir`, `--keylog`, `--progress` thuộc P11; P9 performance bench từ chối bật các flags này.
+QUIC cho phép server nhận64 incoming bidirectional streams, còn client từ chối stream do server tự mở; hai phía tắt incoming unidirectional streams. Receive credits ban đầu/tối đa:512KiB/2MiB mỗi stream và2MiB/16MiB mỗi connection; đây là flow-control credits của quic-go. P10 `--allow-0rtt` điều khiển acceptance thực; resumed/early được hỗ trợ trên QUIC/handshake profile. `--qlog-dir`, `--keylog`, `--progress` thuộc P11 và vẫn bị từ chối trước transfer.
 
 ### Hiện trạng P5/P6
 
-Cold client tính các mốc client monotonic theo METRICS: first DATA byte khi Read trả n>0, total_ms đến FIN cuối, elapsed_ms đến kết thúc trial và goodput chỉ khi success. Không ép request_end trước first_byte. TCP dial thành công vẫn ghi tcp_connect_ms khi TLS handshake fail; các mốc chưa có là null/ô CSV rỗng. Chưa có 0-RTT actual state nên tls_resumed/used_0rtt/early_rejected nullable, attempted_0rtt=false cho cold.
+Client tính các mốc client monotonic theo METRICS: first DATA byte khi Read trả n>0, total_ms đến FIN cuối, elapsed_ms đến kết thúc trial và goodput chỉ khi success. Không ép request_end trước first_byte. TCP dial thành công vẫn ghi tcp_connect_ms khi TLS handshake fail; các mốc chưa có là null/ô CSV rỗng. P10 QUIC TLSResumed/Used0RTT được đọc từ actual state sau observed handshake; chưa xác định giữ nullable, attempted_0rtt=false cho cold.
 
 Mỗi invocation client tạo thư mục mới `results/<experiment_id>/` hoặc `--out=DIR`; ID tự sinh khi thiếu, ID chỉ gồm 1..128 ASCII chữ/số/`_`/`-`. Trong đó có `raw/<run_id>.json`, `runs.csv`, `streams.csv`; validator: `python3 analysis/validate.py DIR`. Failure sau khi trial bắt đầu vẫn ghi run và N resource rows trước khi trả exit 1. Directory đã tồn tại bị từ chối để không append/overwrite. Result write failure trả exit 1; raw đã ghi giữ lại nếu lỗi CSV và file `INCOMPLETE` còn hiện diện cho đến khi ghi đủ. Nếu không có `--network-state`, cold CLI giữ `network_profile=loopback-test` cho correctness/exploratory. P8 flag nhận snapshot đã verify, đúng namespace và mới trong 5 phút; gắn network fields và phase/trace_mode=evidence, không đưa G08 vào main cohort. P9 bench entry nhận cùng snapshot nhưng phase warmup/measured và trace_mode=performance đến từ schedule.
 
@@ -82,6 +83,12 @@ Merge chạy một lần, không append/overwrite aggregate. Giữ source shards
 ## 2. Exit codes và output
 
 Refinement D24 (audit P7–P9): chạy `make build` bằng user tạo `bin/build.json`; bench plan/entry từ chối source hoặc binaries không khớp receipt, cần rebuild trước lần chạy mới. Experiment lưu `build.json` và manifest hashes; entry claim nguyên tử trước network, giữ claim sau lỗi/SIGKILL, không xóa claim để chạy lại cùng run ID. Raw chỉ được aggregate thành success khi journal có exit0 và thời điểm kết thúc hợp lệ. Wrapper từ chối runner cạnh tranh bằng experiment lock trước preflight topology (exit3); giữ lock qua cleanup. Merge/analysis logs nằm ở `logs/{merge,validate,summarize,plot}.log`, teardown log ở `logs/teardown.log`, nên vẫn có artifact khi terminal pipe đóng. Chạy `make build` trước `make test-analysis` vì lifecycle regression dùng binary thật và pinned plotting dependencies. Bản sửa có software regression; actual rerun xem `evidence/audit-p7-p9/`.
+
+### Hiện trạng P10/G10
+
+Client/bench dùng chung RunTrial/RunSession. Cold clone TLS config/empty cache; resumed/early mở một prior cold connection, chờ cache Put với ticket deadline rồi đóng, target có own t0. Resumed dùng Dial thường, early dùng DialEarly; không reuse target giữa trials. Warm-up failure vẫn có failed target rows và `target_invoked=false`. `ticket-warmup/` chứa canonical prior record; `attempts/<run_id>.json` chứa target attempts tối đa2, original t0 và actual state; `INCOMPLETE` chỉ xóa khi sidecars đủ. Stdout JSON giữ transfer/metrics shape, stderr in mode/TLSResumed/Used0RTT/rejection/fallback và result path; không gọi fallback là0RTT success.
+
+`--suite=handshake` tự chọn handshake profile/rtt50-loss0, từ chối incompatible explicit profile/scenario/mode override. Schedule96 targets,64 prior ticket connections ngoài aggregate, six-permutation order/seed triples. Wrapper managed server với Allow0RTT=true, giữ network condition qua prior+target, watchdog2×timeout+15s. `make benchmark-handshake` nhận optional RUNS/WARMUPS/SEED như bulk; changed counts chỉ exploratory. `python3 analysis/summarize.py DIR --handshake` và `python3 analysis/plot.py DIR --handshake` yêu cầu full actual ingress cohort; generic analyze nhận diện suite và giữ denominator/mode qualification. Full gate: `sudo bash tests/system/run.sh --gate G10`, không repeat-count overrides; exact runbook/evidence tại [P10](evidence/p10/README.md). API qualification chưa là G11 packet proof. Dừng human review P10.
 
 - 0: thao tác yêu cầu thành công; client full data + hash pass. Early demo yêu cầu “prove accepted early” thêm gate riêng, không coi fallback success là proof.
 - 1: runtime/transfer/checksum/result write failure, hoặc benchmark có trial failed (vẫn hoàn thành những entry còn lại nếu testbed còn hợp lệ).

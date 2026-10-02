@@ -1,14 +1,14 @@
 # Bắt đầu — QUIC Performance Lab / T03
 
-Current D24 audit fix P7–P9: 5 findings đã sửa, software/race/localhost PASS; actual G09 bản sửa BLOCKED ở sudo authentication. [Evidence và next commands](docs/evidence/audit-p7-p9/README.md). Trạng thái dataset PASS bên dưới là lịch sử của source cũ, không là gate bản sửa.
+Current: người dùng xác nhận P9/G09 PASS và cho phép riêng P10/G10. P10 cold/resumed/early, ticket notification, bounded replay, handshake schedule/statistics đã triển khai. Actual G10 ingress IFB BLOCKED vì sudo cần xác thực, trước khi runner chạy; localhost chỉ xác nhận correctness. [P10 evidence và lệnh gate](docs/evidence/p10/README.md). Giữ [D24 audit history](docs/evidence/audit-p7-p9/README.md), không dùng lần blocked cũ làm trạng thái hiện tại của P9.
 
 Bộ bàn giao dành cho Codex trong IDE, phiên bản 1.0, ngày 28/09/2026 (Asia/Ho_Chi_Minh).
-Bản gốc là **đặc tả + cấu trúc khởi đầu**. Cập nhật 2026-10-01: P0/G00 đến P8/G08 PASS; cold TCP/QUIC, metrics/CSV, topology và impairment receiver IFB đã chạy thật. G08 rerun exit0/cleanup0 với tám successful evidence trials; [Evidence P8](docs/evidence/p8/README.md) có log và artifact review. P9 runner/manifest/stats/plots và software checks đã xong; G09 actual user rerun PASS tại results/p9-g09-8dFdkj, đủ main240+16; controlled interrupt/cleanup verified. Interactive terminal Ctrl+C qua tee còn issue141/cleanup1 đã ghi evidence. Dừng human review P9; 0-RTT/qlog thuộc phase sau.
+Bản gốc là **đặc tả + cấu trúc khởi đầu**. Cập nhật 2026-10-01: P0/G00 đến P9/G09 PASS theo hồ sơ và xác nhận người dùng; cold TCP/QUIC, metrics/CSV, topology và receiver IFB đã chạy thật. G08 rerun exit0/cleanup0 với tám successful evidence trials; [Evidence P8](docs/evidence/p8/README.md) giữ log/artifact review. P9 actual user rerun tại results/p9-g09-8dFdkj đủ main240+16 và controlled interrupt/cleanup; interactive terminal Ctrl+C qua tee còn issue141/cleanup1 riêng. P10 có functional/localhost evidence và manual G10 runbook, actual gate BLOCKED; dừng review P10. Qlog/PCAP/progress và packet corroboration 0-RTT thuộc P11.
 
 ## Bạn cần làm gì?
 
 1. Môi trường hiện hành từ 2026-09-30: **Ubuntu dưới WSL2 trên Windows 11**. Windows VS Code là UI, mở bằng Remote WSL với workspace `WSL: Ubuntu`; terminal/build/test/network chạy trong Ubuntu WSL2. Repo phải nằm trên filesystem Linux native, ưu tiên `/home/<user>/...`, không `/mnt/c/...` hoặc `/mnt/d/...`.
-2. Cho phép rõ ràng từng phase/milestone. Mặc định HUMAN-GATED: agent chỉ làm phase được phép, chạy gate, cập nhật TASK rồi dừng review; build thành công riêng lẻ không đủ. Chỉ tự tiếp tục nhiều phase khi người dùng yêu cầu rõ ràng. Khi quyền/OS chặn, agent ghi BLOCKED/lệnh thủ công và hoàn tất phần độc lập trong phase được phép. Người dùng đã cho phép riêng P9/G09; sau cập nhật evidence thì dừng review, không tự mở P10.
+2. Cho phép rõ ràng từng phase/milestone. Mặc định HUMAN-GATED: agent chỉ làm phase được phép, chạy gate, cập nhật TASK rồi dừng review; build thành công riêng lẻ không đủ. Chỉ tự tiếp tục nhiều phase khi người dùng yêu cầu rõ ràng. Khi quyền/OS chặn, agent ghi BLOCKED/lệnh thủ công và hoàn tất phần độc lập trong phase được phép. Người dùng đã cho phép riêng P10/G10; không tự mở P11/P12.
 
 Không cần dán lại toàn bộ cuộc trò chuyện. `AGENTS.md` chỉ cách đọc; `docs/00-INDEX.md` chỉ nguồn sự thật; `.codex/TASK.md` giữ tiến độ qua phiên. Context quan trọng phải nằm trong file, không phụ thuộc trí nhớ phiên chat.
 
@@ -33,6 +33,12 @@ Quyết định môi trường ban đầu được D13 (2026-09-30) thay bằng 
 
 Không có bản xuất nguyên văn của phần chat bị lược bỏ; không tuyên bố đã đọc được phần không được cung cấp. Bảng truy vết và quyết định nằm tại [CONTEXT_AND_DECISIONS.md](docs/CONTEXT_AND_DECISIONS.md) và [TRACEABILITY.md](docs/TRACEABILITY.md).
 
-## P9/G09 — actual PASS / dừng review
+## P9/G09 — actual PASS / evidence lịch sử
 
 [P9 runbook/evidence](docs/evidence/p9/README.md) ghi behavior, files, software verification, limitation và full manual G09 command. Sau build/deps/certs bằng user và topology/server absent, chạy `sudo bash tests/system/run.sh --gate G09` trong terminal Ubuntu WSL2; capture exit/log như README. Không dùng localhost hoặc schedule256 chưa chạy thay main performance cohort. Runner tự managed server/process cleanup, giữ failures và source shards; review AB/BA/seed reset, missing-row denominator, watcher/signals/UID, network before-after và stats p95/sample stddev.
+
+## P10/G10 — actual BLOCKED / dừng review
+
+`make benchmark-handshake` chạy QUIC cold/resumed/early trên 1×1024 bytes/rtt50-loss0: 90 measured +6 target warmups; 64 prior ticket warm-ups lưu riêng. Cache cold rỗng; resumed/early đợi ticket notification, prior và target có t0 riêng, giữ server process. Rejection replay tối đa một lần, giữ t0 target/attempt history, final bytes/hash không đếm đôi. Stats/plots tách mode và báo transfer failures, mode achievement và fallback.
+
+Full gate: `sudo bash tests/system/run.sh --gate G10`; build/deps/certs bằng UID thường, topology/server ban đầu absent, lưu log/PIPESTATUS theo [README](README.md#p10-resumption-0-rtt-và-g10). Lượt agent bị sudo authentication chặn trước runner nên chưa có actual IFB dataset P10. Review ticket/cache/deadlines, actual booleans, request enqueue so với observed handshake, một replay và denominators trong [P10 evidence](docs/evidence/p10/README.md). API qualification và localhost transfer không thay packet proof; P11 chưa thực hiện.

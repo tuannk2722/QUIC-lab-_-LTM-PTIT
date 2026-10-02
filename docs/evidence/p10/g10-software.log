@@ -1,0 +1,129 @@
+{
+  "status": "PASS",
+  "scope": "actual localhost correctness; not G10 IFB/main performance",
+  "result_root": "/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p10-software-0dq12lsw",
+  "uid": 1000,
+  "commands": [
+    {
+      "argv": [
+        "/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/.tools/go1.27.1/bin/go",
+        "test",
+        "-mod=readonly",
+        "-count=1",
+        "-v",
+        "-run",
+        "^TestSession",
+        "./tests/integration"
+      ],
+      "exit_code": 0,
+      "log": "functional-tests.log"
+    },
+    {
+      "argv": [
+        "bin/client",
+        "--transport=quic",
+        "--profile=handshake",
+        "--mode=cold",
+        "--addr=127.0.0.1:48979",
+        "--server-name=localhost",
+        "--format=json",
+        "--out=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p10-software-0dq12lsw/client-cold"
+      ],
+      "exit_code": 0,
+      "log": "client-cold.log"
+    },
+    {
+      "argv": [
+        "bin/client",
+        "--transport=quic",
+        "--profile=handshake",
+        "--mode=resumed",
+        "--addr=127.0.0.1:48979",
+        "--server-name=localhost",
+        "--format=json",
+        "--out=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p10-software-0dq12lsw/client-resumed"
+      ],
+      "exit_code": 0,
+      "log": "client-resumed.log"
+    },
+    {
+      "argv": [
+        "bin/client",
+        "--transport=quic",
+        "--profile=handshake",
+        "--mode=early",
+        "--addr=127.0.0.1:48979",
+        "--server-name=localhost",
+        "--format=json",
+        "--out=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p10-software-0dq12lsw/client-early"
+      ],
+      "exit_code": 0,
+      "log": "client-early.log"
+    },
+    {
+      "argv": [
+        "bin/bench",
+        "--suite=handshake",
+        "--addr=127.0.0.1:48979",
+        "--server-name=localhost",
+        "--out=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p10-software-0dq12lsw/success"
+      ],
+      "exit_code": 0,
+      "log": "suite96.log"
+    },
+    {
+      "argv": [
+        "bin/bench",
+        "--suite=handshake",
+        "--addr=127.0.0.1:48979",
+        "--server-name=localhost",
+        "--runs=1",
+        "--warmups=0",
+        "--server-name=wrong.invalid",
+        "--out=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p10-software-0dq12lsw/tls-failure"
+      ],
+      "exit_code": 1,
+      "log": "tls-failure.log"
+    }
+  ],
+  "suite": {
+    "gate": "G10-suite",
+    "status": "PASS",
+    "scope": "localhost correctness",
+    "counts": {
+      "status": "PASS",
+      "attempted": 96,
+      "success": 96,
+      "failed": 0,
+      "measured_trials": 90,
+      "warmup_trials_excluded": 6,
+      "evidence_trials_excluded": 0
+    },
+    "api_qualified_measured": {
+      "cold": 30,
+      "resumed": 30,
+      "early": 29
+    },
+    "failures": {
+      "cold": 0,
+      "resumed": 0,
+      "early": 0
+    },
+    "fallback": {
+      "cold": 0,
+      "resumed": 0,
+      "early": 0
+    },
+    "ticket_warmups_separate": 64,
+    "packet_proof": "NOT_RUN: P11 required; API/timing alone is not full accepted-early evidence"
+  },
+  "failure": {
+    "status": "PASS",
+    "attempted": 3,
+    "success": 0,
+    "failed": 3,
+    "measured_trials": 3,
+    "warmup_trials_excluded": 0,
+    "evidence_trials_excluded": 0
+  }
+}

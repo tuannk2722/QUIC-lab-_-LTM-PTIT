@@ -72,7 +72,7 @@ func Run(name string, args []string, out, errOut io.Writer) int {
 	fs := flag.NewFlagSet(name, flag.ContinueOnError)
 	fs.SetOutput(errOut)
 	fs.Usage = func() {
-		fmt.Fprintf(errOut, "Usage: %s [flags]\nP9: cold TCP/QUIC trials and bulk plan/entry/merge; resumption/0-RTT requires P10.\n", name)
+		fmt.Fprintf(errOut, "Usage: %s [flags]\nP10: cold TCP/QUIC, QUIC resumed/early handshake trials and bulk/handshake plan/entry/merge.\n", name)
 		fs.PrintDefaults()
 	}
 	version := fs.Bool("version", false, "print build, commit and toolchain versions")
@@ -86,6 +86,7 @@ func Run(name string, args []string, out, errOut io.Writer) int {
 	var scheduleSeed uint64
 	var execution string
 	var seedDisabled bool
+	var allow0RTT bool
 	fs.String("qlog-dir", "", "qlog directory (future evidence mode)")
 	fs.String("keylog", "", "TLS secrets file (future evidence mode)")
 	if name == "server" {
@@ -93,7 +94,7 @@ func Run(name string, args []string, out, errOut io.Writer) int {
 		fs.StringVar(&transportName, "transport", "both", "tcp, quic or both")
 		fs.StringVar(&cert, "cert", "certs/server.crt", "certificate PEM")
 		fs.StringVar(&key, "key", "certs/server.key", "private key PEM")
-		fs.Bool("allow-0rtt", true, "allow read-only QUIC early data (future phase)")
+		fs.BoolVar(&allow0RTT, "allow-0rtt", true, "allow read-only QUIC early data")
 		fs.StringVar(&readyFile, "ready-file", "", "atomic readiness path")
 	} else if name == "client" || name == "bench" {
 		fs.StringVar(&addr, "addr", "10.10.0.2:4433", "server endpoint")
@@ -118,7 +119,7 @@ func Run(name string, args []string, out, errOut io.Writer) int {
 		fs.StringVar(&scenario, "scenario", "rtt50-loss3", "scenario name")
 		fs.IntVar(&runs, "runs", 0, "measured repeats (default: scenario config)")
 		fs.IntVar(&warmups, "warmups", 0, "warmups (default: scenario config)")
-		fs.BoolVar(&plan, "plan", false, "create immutable bulk schedule and manifest")
+		fs.BoolVar(&plan, "plan", false, "create immutable bulk/handshake schedule and manifest")
 		fs.StringVar(&suite, "suite", "bulk", "bulk or handshake")
 		fs.Uint64Var(&scheduleSeed, "seed", 0, "schedule seed (default: scenario config)")
 		fs.BoolVar(&seedDisabled, "disable-netem-seed", false, "explicit seed=null limitation; retain deterministic order")
@@ -236,13 +237,24 @@ func Run(name string, args []string, out, errOut io.Writer) int {
 		if fs.Lookup("qlog-dir").Value.String() != "" || fs.Lookup("keylog").Value.String() != "" || fs.Lookup("progress").Value.String() == "true" {
 			return bad("P9 performance bench requires traces off; P11 implements evidence collection")
 		}
-		if suite != "bulk" || mode != "cold" {
-			fmt.Fprintln(errOut, "not implemented: handshake/resumption/early suite requires P10")
-			return 1
+		if suite == "handshake" {
+			if seen["profile"] && *profile != "handshake" {
+				return bad("handshake suite requires profile=handshake")
+			}
+			if seen["scenario"] && scenario != "rtt50-loss0" {
+				return bad("handshake suite requires rtt50-loss0")
+			}
+			*profile = "handshake"
+		}
+		if mode != "cold" {
+			return bad("bench mode is controlled by suite/schedule")
+		}
+		if (suite != "handshake") && *profile == "handshake" && !(entry != "" || merge != "") {
+			return bad("use suite=handshake for handshake benchmarks")
 		}
 		return runBench(benchOptions{plan: plan, entry: entry, merge: merge, out: outDir, experimentID: experimentID, profile: *profile,
 			profiles: *profiles, scenarios: scenarios, scenario: scenario, runs: runs, warmups: warmups, seed: scheduleSeed, seedDisabled: seedDisabled,
-			execution: execution, addr: addr, ca: ca, serverName: serverName, timeout: timeout, network: networkStatePath, seen: seen, args: args}, w, s, out, errOut)
+			execution: execution, addr: addr, ca: ca, serverName: serverName, timeout: timeout, network: networkStatePath, suite: suite, seen: seen, args: args}, w, s, out, errOut)
 	}
 	if name == "server" {
 		store, err := workload.NewStore(w.Profiles[*profile], w.Limits)
@@ -261,13 +273,16 @@ func Run(name string, args []string, out, errOut io.Writer) int {
 			BatchTimeout:     time.Duration(w.Timeouts.BatchSeconds) * time.Second,
 			TrialTimeout:     time.Duration(w.Timeouts.TrialSeconds) * time.Second,
 			MaxConnections:   int(w.Limits.MaxActiveConnections),
-		}, readyFile, *profile, errOut); err != nil {
+		}, readyFile, *profile, allow0RTT, errOut); err != nil {
 			fmt.Fprintln(errOut, err)
 			return 1
 		}
 		return 0
 	}
-	if name == "client" && mode == "cold" {
+	if name == "client" {
+		if mode != "cold" && *profile != "handshake" {
+			return bad("resumed/early requires handshake profile")
+		}
 		var network *config.NetworkState
 		if networkStatePath != "" {
 			n, err := config.LoadNetworkState(networkStatePath)
@@ -305,7 +320,10 @@ func Run(name string, args []string, out, errOut io.Writer) int {
 		if outDir == "" {
 			outDir = filepath.Join("results", experimentID)
 		}
-		results, err := bench.RunCold(context.Background(), transportName, addr, cfg, expected, timeout)
+		ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+		defer stop()
+		o := bench.RunTrial(ctx, transportName, mode, addr, cfg, expected, timeout, time.Duration(w.Timeouts.TicketWaitSeconds)*time.Second)
+		results, err := o.Results, o.Err
 		meta := metrics.TrialMeta{ExperimentID: experimentID, RunID: runID, Phase: "measured", Scenario: "loopback-test",
 			Transport: transportName, Mode: mode, TraceMode: "performance", NetworkProfile: "loopback-test",
 			ResourceCount: expected.Count(), ResourceSizeBytes: uint64(expected.Profile().ResourceSizeBytes), ChunkBytes: uint32(expected.Profile().ChunkBytes)}
@@ -317,14 +335,13 @@ func Run(name string, args []string, out, errOut io.Writer) int {
 			fmt.Fprintf(errOut, "network: profile=%s scenario=%s snapshot=%s (evidence trial)\n", network.NetworkProfile, network.Scenario, networkStatePath)
 		}
 		if len(results) == expected.Count() {
-			record, recordErr := metrics.NewTrial(meta, results, err)
+			record, recordErr := bench.WriteOutcome(outDir, meta, o)
 			if recordErr != nil {
 				fmt.Fprintln(errOut, "result conversion failed:", recordErr)
 				return 1
 			}
-			if writeErr := metrics.WriteTrial(outDir, record); writeErr != nil {
-				fmt.Fprintln(errOut, "result write failed:", writeErr)
-				return 1
+			if transportName == "quic" {
+				fmt.Fprintf(errOut, "mode=%s tls_resumed=%v used_0rtt=%v early_rejected=%v fallback_count=%d\n", mode, boolValue(record.Run.TLSResumed), boolValue(record.Run.Used0RTT), boolValue(record.Run.EarlyRejected), record.Run.FallbackCount)
 			}
 			fmt.Fprintln(errOut, "results:", outDir)
 		}
@@ -404,10 +421,17 @@ func writeTransfer(out io.Writer, transportName, profile, format string, results
 	return nil
 }
 
-func serveCLI(parent context.Context, addr, transportName string, cfg *tls.Config, store *workload.Store, tcpOpts tcptransport.ServerOptions, readyFile, profile string, errOut io.Writer) error {
+func boolValue(v *bool) any {
+	if v == nil {
+		return "unknown"
+	}
+	return *v
+}
+
+func serveCLI(parent context.Context, addr, transportName string, cfg *tls.Config, store *workload.Store, tcpOpts tcptransport.ServerOptions, readyFile, profile string, allow0RTT bool, errOut io.Writer) error {
 	var tcpListener net.Listener
 	var packet net.PacketConn
-	var quicListener *quic.Listener
+	var quicListener quictransport.Listener
 	var err error
 	if transportName == "tcp" || transportName == "both" {
 		tcpListener, err = net.Listen("tcp", addr)
@@ -417,6 +441,7 @@ func serveCLI(parent context.Context, addr, transportName string, cfg *tls.Confi
 		defer tcpListener.Close()
 	}
 	quicOpts := quictransport.ServerOptions{
+		Allow0RTT:        allow0RTT,
 		HandshakeTimeout: tcpOpts.HandshakeTimeout,
 		BatchTimeout:     tcpOpts.BatchTimeout,
 		TrialTimeout:     tcpOpts.TrialTimeout,

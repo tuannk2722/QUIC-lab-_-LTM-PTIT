@@ -1,0 +1,244 @@
+{
+  "phase": "P10",
+  "gate": "G10",
+  "status": "BLOCKED",
+  "updated_client_date": "2026-10-02",
+  "client_timezone": "Asia/Saigon",
+  "scope": "user-authorized P10 only; stop for human review; P11/P12 not run",
+  "acceptance": {
+    "G10-build/suite/race": "PASS",
+    "G10-ticket/cold/resumed/accepted": "PASS (localhost)",
+    "G10-rejected/one-replay/no-duplicate": "PASS (localhost)",
+    "G10-missing-ticket/handshake-failure/cancel": "PASS (localhost)",
+    "G10-default96/64tickets/cohort/stats/plots/failures": "PASS (localhost/software)",
+    "G10-actual90+6/IFB/RTT/kernel/UID/cleanup": "BLOCKED",
+    "G10-overall": "BLOCKED",
+    "G11-packet-proof": "NOT_RUN",
+    "G12": "NOT_RUN"
+  },
+  "blocker": "sudo interactive authentication required before runner; no actual P10 namespace/IFB dataset or topology mutation",
+  "software_source_root": "/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p10-software-0dq12lsw",
+  "software_counts": {
+    "attempted": 96,
+    "evidence_trials_excluded": 0,
+    "failed": 0,
+    "measured_trials": 90,
+    "status": "PASS",
+    "success": 96,
+    "warmup_trials_excluded": 6
+  },
+  "qualified_measured": {
+    "cold": 30,
+    "early": 29,
+    "resumed": 30
+  },
+  "ticket_warmups_separate": 64,
+  "unachieved_successful_measured": [
+    "c0_measured_0020_quic_early"
+  ],
+  "failed_cohort": {
+    "attempted": 3,
+    "failed": 3,
+    "reason": "actual wrong-hostname TLS failure"
+  },
+  "archive": {
+    "byte_verified": true,
+    "files": 1213,
+    "path": "localhost-artifacts.tar.gz",
+    "sha256": "f87f10d1ea2417c47c7342106a7bbbd26ea62e333ef592bd7fc208f910f2d93a"
+  },
+  "artifact_files": 1213,
+  "independent_statistics": {
+    "run_groups": 15,
+    "resource_groups": 6
+  },
+  "as_run_provenance": {
+    "changed_since_run": [
+      "Makefile",
+      "tests/integration/audit_test.go",
+      "tests/system/check_g10.py"
+    ],
+    "added_since_run": [
+      "tests/system/test_handshake.py"
+    ],
+    "note": "actual as-run receipts/raw/source hashes preserved; final checker rerun on copy"
+  },
+  "commands": [
+    {
+      "command": "make build",
+      "exit_code": 0,
+      "evidence": "g10-build-final.log"
+    },
+    {
+      "command": "make test",
+      "exit_code": 0,
+      "evidence": "g10-suite-verified.log"
+    },
+    {
+      "command": "make test-race",
+      "exit_code": 0,
+      "evidence": "g10-race-verified.log"
+    },
+    {
+      "command": "make test-network",
+      "exit_code": 0,
+      "evidence": "g10-network-regression.log"
+    },
+    {
+      "command": "make test-analysis",
+      "exit_code": 0,
+      "evidence": "g10-analysis-complete.log"
+    },
+    {
+      "command": "python3 tests/system/test_handshake.py -v",
+      "exit_code": 0,
+      "evidence": "g10-checker-final.log"
+    },
+    {
+      "command": "python3 tests/system/run_g10_software.py",
+      "exit_code": 0,
+      "evidence": "g10-software.log"
+    },
+    {
+      "command": "python3 docs/evidence/p10/review_software.py results/p10-software-0dq12lsw",
+      "exit_code": 0,
+      "evidence": "g10-review-final.log"
+    },
+    {
+      "command": "read-only G10 kernel/host/probe parser on historical G09",
+      "exit_code": 0,
+      "evidence": "g10-archived-network-check.log"
+    },
+    {
+      "command": "read-only G10 idle/invocation parser on historical G09",
+      "exit_code": 0,
+      "evidence": "g10-idle-compatibility.log"
+    },
+    {
+      "command": "bash tests/system/run.sh --gate G10",
+      "exit_code": 3,
+      "evidence": "g10-nonroot.log"
+    },
+    {
+      "command": "sudo -n bash tests/system/run.sh --gate G10 (first attempt)",
+      "exit_code": 1,
+      "evidence": "g10-system-attempt.log"
+    },
+    {
+      "command": "sudo -n bash tests/system/run.sh --gate G10 (resume attempt)",
+      "exit_code": 1,
+      "evidence": "g10-system-resume-attempt.log"
+    },
+    {
+      "command": "shell/Python/gofmt/diff/build receipt",
+      "exit_code": 0,
+      "evidence": "g10-static.json"
+    }
+  ],
+  "files_changed": [
+    ".codex/TASK.md",
+    "Makefile",
+    "README.md",
+    "START_HERE.md",
+    "analysis/cohort.py",
+    "analysis/plot.py",
+    "analysis/summarize.py",
+    "analysis/test_session_state.py",
+    "analysis/test_stats.py",
+    "analysis/validate.py",
+    "docs/00-INDEX.md",
+    "docs/ACCEPTANCE_RESULTS.md",
+    "docs/AI_USAGE.md",
+    "docs/CLI_CONTRACT.md",
+    "docs/CONTEXT_AND_DECISIONS.md",
+    "docs/IMPLEMENTATION_PLAN.md",
+    "docs/METRICS_AND_RESULTS.md",
+    "docs/NETWORK_AND_BENCHMARK.md",
+    "docs/TRACEABILITY.md",
+    "docs/VERSIONS.md",
+    "docs/evidence/p10/README.md",
+    "docs/evidence/p10/g10-analysis-complete.log",
+    "docs/evidence/p10/g10-analysis-final.log",
+    "docs/evidence/p10/g10-analysis.log",
+    "docs/evidence/p10/g10-archived-network-check.log",
+    "docs/evidence/p10/g10-build-final.log",
+    "docs/evidence/p10/g10-build.log",
+    "docs/evidence/p10/g10-checker-final.log",
+    "docs/evidence/p10/g10-checker-unit.log",
+    "docs/evidence/p10/g10-first-test.log",
+    "docs/evidence/p10/g10-idle-compatibility.log",
+    "docs/evidence/p10/g10-make-dry-run.log",
+    "docs/evidence/p10/g10-network-regression.log",
+    "docs/evidence/p10/g10-nonroot.log",
+    "docs/evidence/p10/g10-race-final.log",
+    "docs/evidence/p10/g10-race-verified.log",
+    "docs/evidence/p10/g10-race.log",
+    "docs/evidence/p10/g10-rejection-debug.log",
+    "docs/evidence/p10/g10-review-final.log",
+    "docs/evidence/p10/g10-review.log",
+    "docs/evidence/p10/g10-session-after-fix.log",
+    "docs/evidence/p10/g10-session-tests.log",
+    "docs/evidence/p10/g10-software.log",
+    "docs/evidence/p10/g10-static.json",
+    "docs/evidence/p10/g10-status.json",
+    "docs/evidence/p10/g10-suite-final.log",
+    "docs/evidence/p10/g10-suite-sandbox.log",
+    "docs/evidence/p10/g10-suite-verified.log",
+    "docs/evidence/p10/g10-suite.log",
+    "docs/evidence/p10/g10-system-attempt.log",
+    "docs/evidence/p10/g10-system-resume-attempt.log",
+    "docs/evidence/p10/localhost-artifacts.tar.gz",
+    "docs/evidence/p10/localhost-review.json",
+    "docs/evidence/p10/review_software.py",
+    "internal/bench/handshake_test.go",
+    "internal/bench/manifest.go",
+    "internal/bench/runner.go",
+    "internal/bench/schedule.go",
+    "internal/bench/session.go",
+    "internal/cli/bench.go",
+    "internal/cli/cli.go",
+    "internal/metrics/result.go",
+    "internal/tlsconfig/sessioncache.go",
+    "internal/tlsconfig/sessioncache_test.go",
+    "internal/transport/quic/client.go",
+    "internal/transport/quic/early.go",
+    "internal/transport/quic/server.go",
+    "internal/transport/types.go",
+    "scripts/bench-support.py",
+    "scripts/bench.sh",
+    "tests/integration/audit_test.go",
+    "tests/integration/early_test.go",
+    "tests/system/check_g10.py",
+    "tests/system/g10.sh",
+    "tests/system/run.sh",
+    "tests/system/run_g10_software.py",
+    "tests/system/test_handshake.py"
+  ],
+  "limitations": [
+    "localhost correctness only, no performance or HOL causation claim",
+    "API/REQUEST enqueue timing is not packet0RTT proof; P11 required",
+    "shared WSL2 CPU/scheduling and observer timing; one successful early target unachieved",
+    "P10 actual IFB orchestration still unverified; inherited fresh-boot IFB and terminal Ctrl+C limitations retained"
+  ],
+  "next_action": [
+    "human review P10 patch/evidence",
+    "make build",
+    "set -o pipefail",
+    "sudo bash tests/system/run.sh --gate G10 2>&1 | tee docs/evidence/p10/g10-user-run.log",
+    "g10_status=${PIPESTATUS[0]}",
+    "printf 'g10_exit=%s\\n' \"$g10_status\" | tee -a docs/evidence/p10/g10-user-run.log"
+  ],
+  "test_counts": {
+    "analysis": 10,
+    "g09_checker": 2,
+    "audit_p7_p9": 3,
+    "g10_checker": 4,
+    "network": 9
+  },
+  "read_only_cleanup_observation": {
+    "managed_binaries_visible": [],
+    "software_ready_file_exists": false,
+    "namespace_paths_present": [],
+    "scope": "read-only ordinary-user observation; not actual G10 namespace cleanup gate"
+  }
+}

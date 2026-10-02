@@ -1,0 +1,42 @@
+python3 -m unittest discover -s analysis -p 'test_*.py' -v
+test_no_fabricated_acceptance_or_mixed_attempt (test_session_state.SessionStateTests.test_no_fabricated_acceptance_or_mixed_attempt) ... ok
+test_rejected_fallback_and_unknown_failure (test_session_state.SessionStateTests.test_rejected_fallback_and_unknown_failure) ... ok
+test_actual_mode_and_enqueue_qualification (test_stats.HandshakeTests.test_actual_mode_and_enqueue_qualification) ... ok
+test_attempt_history_preserves_original_t0_and_single_replay (test_stats.HandshakeTests.test_attempt_history_preserves_original_t0_and_single_replay) ... ok
+test_contradictory_states_and_duplicate_replay_are_rejected (test_stats.HandshakeTests.test_contradictory_states_and_duplicate_replay_are_rejected) ... ok
+test_full_triple_counts_permutations_and_seed_binding (test_stats.HandshakeTests.test_full_triple_counts_permutations_and_seed_binding) ... ok
+test_plot_groups_never_pool_quic_modes (test_stats.HandshakeTests.test_plot_groups_never_pool_quic_modes) ... ok
+test_transfer_success_fallback_and_failures_remain_separate (test_stats.HandshakeTests.test_transfer_success_fallback_and_failures_remain_separate) ... ok
+test_failures_warmups_and_outliers (test_stats.StatisticsTests.test_failures_warmups_and_outliers) ... ok
+test_nearest_rank_even_median_and_sample_stddev (test_stats.StatisticsTests.test_nearest_rank_even_median_and_sample_stddev) ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 1.172s
+
+OK
+python3 tests/system/test_bench.py -v
+test_idle_requires_drained_queues_and_quiet_counters (__main__.NetworkChecks.test_idle_requires_drained_queues_and_quiet_counters) ... ok
+test_matching_and_config_or_counter_change (__main__.NetworkChecks.test_matching_and_config_or_counter_change) ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.008s
+
+OK
+python3 tests/system/test_audit_p7_p9.py -v
+test_build_receipt_rejects_stale_source_and_binaries (__main__.AuditTests.test_build_receipt_rejects_stale_source_and_binaries) ... ok
+test_experiment_lock_excludes_second_runner_and_releases (__main__.AuditTests.test_experiment_lock_excludes_second_runner_and_releases) ... ok
+test_signal_cleanup_with_closed_output_keeps_all_artifacts (__main__.AuditTests.test_signal_cleanup_with_closed_output_keeps_all_artifacts) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 3.928s
+
+OK
+python3 tests/system/test_handshake.py -v
+test_exact_functional_target_count_and_rejection_workload (__main__.HandshakeChecks.test_exact_functional_target_count_and_rejection_workload) ... ok
+test_replay_history_binding_duplicate_final_and_old_worker_barrier (__main__.HandshakeChecks.test_replay_history_binding_duplicate_final_and_old_worker_barrier) ... ok
+test_ticket_warmup_identity_cohort_chronology_and_failed_notification (__main__.HandshakeChecks.test_ticket_warmup_identity_cohort_chronology_and_failed_notification) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.007s
+
+OK

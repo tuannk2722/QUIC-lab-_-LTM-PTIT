@@ -1,0 +1,7 @@
+{
+  "status": "PASS",
+  "scope": "read-only pure G10 kernel/host/probe parser compatibility on historical G09 actual evidence, not G10 network gate",
+  "snapshots": 512,
+  "probes": 4,
+  "host_before_active_final_equal": true
+}
