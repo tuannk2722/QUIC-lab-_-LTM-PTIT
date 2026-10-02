@@ -1,0 +1,34 @@
+python3 scripts/tls_keylog_overlay.py "/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/.tools/go1.27.1/bin/go"
+{
+  "overlay": "/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/.tools/tls-keylog-overlay/overlay.json",
+  "kind": "go-build-overlay",
+  "go_version": "go1.27.1",
+  "scope": "existing QUIC early secret to optional KeyLogWriter; no cryptography changes",
+  "files": {
+    "src/crypto/tls/handshake_client.go": {
+      "original_sha256": "ae3719b4cd6925b3e2689a21422865ce99611d097d727f9dc939c031f0ea703b",
+      "overlay_sha256": "899481a8a5ebef375b7569b29f9c168b500d7d4c09af79fdd3fb470312b65cbf"
+    },
+    "src/crypto/tls/handshake_server_tls13.go": {
+      "original_sha256": "6cb325a7623c3bfe60e066b08fed2cc64e6b6cff85ad8f6467c038968d3a7fe6",
+      "overlay_sha256": "7673a66eb052cb6e782c66d80b4d08d9eb3f23b21452a7e4bd10b2a124994168"
+    }
+  }
+}
+/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/.tools/go1.27.1/bin/go test -overlay="/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/.tools/tls-keylog-overlay/overlay.json" -mod=readonly ./...
+?   	quic-performance-lab/cmd/bench	[no test files]
+?   	quic-performance-lab/cmd/client	[no test files]
+?   	quic-performance-lab/cmd/server	[no test files]
+ok  	quic-performance-lab/internal/bench	(cached)
+ok  	quic-performance-lab/internal/cli	(cached)
+ok  	quic-performance-lab/internal/config	(cached)
+ok  	quic-performance-lab/internal/metrics	(cached)
+ok  	quic-performance-lab/internal/observability	(cached)
+ok  	quic-performance-lab/internal/protocol	(cached)
+ok  	quic-performance-lab/internal/tlsconfig	(cached)
+ok  	quic-performance-lab/internal/transport	(cached)
+ok  	quic-performance-lab/internal/transport/quic	(cached)
+ok  	quic-performance-lab/internal/transport/tcp	(cached)
+ok  	quic-performance-lab/internal/workload	(cached)
+ok  	quic-performance-lab/tests/api	(cached)
+ok  	quic-performance-lab/tests/integration	4.006s

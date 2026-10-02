@@ -8,6 +8,7 @@ import (
 	"sync"
 	"time"
 
+	"quic-performance-lab/internal/observability"
 	"quic-performance-lab/internal/protocol"
 	"quic-performance-lab/internal/workload"
 
@@ -16,6 +17,7 @@ import (
 
 type ServerOptions struct {
 	Allow0RTT bool
+	Evidence  *observability.Manager
 	// Test harness can vary acceptance per connection, keeping TLS keys stable.
 	Accept0RTT       func() bool
 	HandshakeTimeout time.Duration
@@ -92,6 +94,9 @@ func ListenPacket(packet net.PacketConn, cfg *tls.Config, opts ServerOptions) (L
 	}
 	qcfg := quicConfig(opts.HandshakeTimeout, opts.TrialTimeout)
 	qcfg.Allow0RTT = opts.Allow0RTT
+	if opts.Evidence != nil {
+		opts.Evidence.Configure(context.Background(), qcfg)
+	}
 	if opts.Accept0RTT != nil {
 		qcfg.GetConfigForClient = func(*quicgo.ClientInfo) (*quicgo.Config, error) {
 			selected := qcfg.Clone()

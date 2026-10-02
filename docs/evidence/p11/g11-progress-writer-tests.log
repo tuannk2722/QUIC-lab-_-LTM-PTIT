@@ -1,0 +1,4 @@
+=== RUN   TestProgressAttemptsAndExclusiveOutput
+--- PASS: TestProgressAttemptsAndExclusiveOutput (0.00s)
+PASS
+ok  	quic-performance-lab/internal/metrics	1.019s

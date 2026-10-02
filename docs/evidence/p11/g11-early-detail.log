@@ -1,0 +1,22 @@
+=== RUN   TestEvidenceEarlyKeylog
+=== RUN   TestEvidenceEarlyKeylog/cold
+    early_keylog_test.go:125: mode=cold client_early_labels=0 server_early_labels=0 bytes=1024
+=== RUN   TestEvidenceEarlyKeylog/resumed
+    early_keylog_test.go:125: mode=resumed client_early_labels=0 server_early_labels=0 bytes=1024
+=== RUN   TestEvidenceEarlyKeylog/early
+    early_keylog_test.go:125: mode=early client_early_labels=1 server_early_labels=1 bytes=1024
+=== RUN   TestEvidenceEarlyKeylog/rejected
+    early_keylog_test.go:125: mode=rejected client_early_labels=1 server_early_labels=0 bytes=1024
+=== RUN   TestEvidenceEarlyKeylog/client_writer_error
+    early_keylog_test.go:102: early keylog write failure propagated
+=== RUN   TestEvidenceEarlyKeylog/server_writer_error
+    early_keylog_test.go:102: early keylog write failure propagated
+--- PASS: TestEvidenceEarlyKeylog (0.29s)
+    --- PASS: TestEvidenceEarlyKeylog/cold (0.12s)
+    --- PASS: TestEvidenceEarlyKeylog/resumed (0.03s)
+    --- PASS: TestEvidenceEarlyKeylog/early (0.03s)
+    --- PASS: TestEvidenceEarlyKeylog/rejected (0.04s)
+    --- PASS: TestEvidenceEarlyKeylog/client_writer_error (0.03s)
+    --- PASS: TestEvidenceEarlyKeylog/server_writer_error (0.03s)
+PASS
+ok  	quic-performance-lab/tests/integration	0.294s

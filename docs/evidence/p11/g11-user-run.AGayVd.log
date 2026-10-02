@@ -1,0 +1,27 @@
+P7 topology ready: qclient=10.10.0.1/24 qserver=10.10.0.2/24 eth0 MTU=1500 ifb0=up owner_uid=1000
+G11: run=handshake_cold exit=0
+G11: run=handshake_resumed exit=0
+G11: run=handshake_early exit=0
+G11: run=loss_0_tcp exit=0
+G11: run=loss_0_quic exit=0
+G11: run=loss_1_quic exit=0
+G11: run=loss_1_tcp exit=0
+G11: run=loss_2_tcp exit=0
+G11: run=loss_2_quic exit=0
+G11: run=loss_3_quic exit=0
+G11: run=loss_3_tcp exit=0
+G11: run=loss_4_tcp exit=0
+G11: run=loss_4_quic exit=0
+G11: run=loss_5_quic exit=0
+G11: run=loss_5_tcp exit=0
+G11: run=loss_6_tcp exit=0
+G11: run=loss_6_quic exit=0
+G11: run=loss_7_quic exit=0
+G11: run=loss_7_tcp exit=0
+G11: run=loss_8_tcp exit=0
+G11: run=loss_8_quic exit=0
+G11: run=loss_9_quic exit=0
+G11: run=loss_9_tcp exit=0
+G11: gate_root=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p11-g11-6a8cc99602b7 original_exit=0 cleanup_exit=0
+g11_exit=0
+log=docs/evidence/p11/g11-user-run.AGayVd.log

@@ -1,0 +1,134 @@
+software_root=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p11-software-53py2hwj
+{
+  "schema_version": 1,
+  "scope": "localhost correctness only; no captured packet or impairment proof",
+  "trace_mode": "evidence",
+  "uid": 1000,
+  "runs": [
+    {
+      "run_id": "handshake_quic_cold",
+      "profile": "handshake",
+      "transport": "quic",
+      "mode": "cold",
+      "out": "handshake-quic/cold",
+      "client_qlog": "handshake-quic/cold-qlog",
+      "server_qlog": "handshake-quic/server-qlog",
+      "exit_code": 0,
+      "argv": [
+        "bin/client",
+        "--transport=quic",
+        "--profile=handshake",
+        "--mode=cold",
+        "--addr=127.0.0.1:52153",
+        "--server-name=localhost",
+        "--experiment-id=g11software",
+        "--run-id=handshake_quic_cold",
+        "--out=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p11-software-53py2hwj/handshake-quic/cold",
+        "--qlog-dir=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p11-software-53py2hwj/handshake-quic/cold-qlog",
+        "--keylog=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p11-software-53py2hwj/handshake-quic/cold.keylog",
+        "--progress",
+        "--format=json"
+      ]
+    },
+    {
+      "run_id": "handshake_quic_resumed",
+      "profile": "handshake",
+      "transport": "quic",
+      "mode": "resumed",
+      "out": "handshake-quic/resumed",
+      "client_qlog": "handshake-quic/resumed-qlog",
+      "server_qlog": "handshake-quic/server-qlog",
+      "exit_code": 0,
+      "argv": [
+        "bin/client",
+        "--transport=quic",
+        "--profile=handshake",
+        "--mode=resumed",
+        "--addr=127.0.0.1:52153",
+        "--server-name=localhost",
+        "--experiment-id=g11software",
+        "--run-id=handshake_quic_resumed",
+        "--out=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p11-software-53py2hwj/handshake-quic/resumed",
+        "--qlog-dir=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p11-software-53py2hwj/handshake-quic/resumed-qlog",
+        "--keylog=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p11-software-53py2hwj/handshake-quic/resumed.keylog",
+        "--progress",
+        "--format=json"
+      ]
+    },
+    {
+      "run_id": "handshake_quic_early",
+      "profile": "handshake",
+      "transport": "quic",
+      "mode": "early",
+      "out": "handshake-quic/early",
+      "client_qlog": "handshake-quic/early-qlog",
+      "server_qlog": "handshake-quic/server-qlog",
+      "exit_code": 0,
+      "argv": [
+        "bin/client",
+        "--transport=quic",
+        "--profile=handshake",
+        "--mode=early",
+        "--addr=127.0.0.1:52153",
+        "--server-name=localhost",
+        "--experiment-id=g11software",
+        "--run-id=handshake_quic_early",
+        "--out=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p11-software-53py2hwj/handshake-quic/early",
+        "--qlog-dir=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p11-software-53py2hwj/handshake-quic/early-qlog",
+        "--keylog=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p11-software-53py2hwj/handshake-quic/early.keylog",
+        "--progress",
+        "--format=json"
+      ]
+    },
+    {
+      "run_id": "bulk_quic_cold",
+      "profile": "bulk",
+      "transport": "quic",
+      "mode": "cold",
+      "out": "bulk-quic/cold",
+      "client_qlog": "bulk-quic/cold-qlog",
+      "server_qlog": "bulk-quic/server-qlog",
+      "exit_code": 0,
+      "argv": [
+        "bin/client",
+        "--transport=quic",
+        "--profile=bulk",
+        "--mode=cold",
+        "--addr=127.0.0.1:49867",
+        "--server-name=localhost",
+        "--experiment-id=g11software",
+        "--run-id=bulk_quic_cold",
+        "--out=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p11-software-53py2hwj/bulk-quic/cold",
+        "--qlog-dir=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p11-software-53py2hwj/bulk-quic/cold-qlog",
+        "--keylog=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p11-software-53py2hwj/bulk-quic/cold.keylog",
+        "--progress",
+        "--format=json"
+      ]
+    },
+    {
+      "run_id": "bulk_tcp_cold",
+      "profile": "bulk",
+      "transport": "tcp",
+      "mode": "cold",
+      "out": "bulk-tcp/cold",
+      "client_qlog": "bulk-tcp/cold-qlog",
+      "server_qlog": "bulk-tcp/server-qlog",
+      "exit_code": 0,
+      "argv": [
+        "bin/client",
+        "--transport=tcp",
+        "--profile=bulk",
+        "--mode=cold",
+        "--addr=127.0.0.1:40239",
+        "--server-name=localhost",
+        "--experiment-id=g11software",
+        "--run-id=bulk_tcp_cold",
+        "--out=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p11-software-53py2hwj/bulk-tcp/cold",
+        "--qlog-dir=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p11-software-53py2hwj/bulk-tcp/cold-qlog",
+        "--keylog=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p11-software-53py2hwj/bulk-tcp/cold.keylog",
+        "--progress",
+        "--format=json"
+      ]
+    }
+  ]
+}

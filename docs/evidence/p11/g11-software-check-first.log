@@ -1,0 +1,12 @@
+{
+  "gate": "G11",
+  "status": "BLOCKED",
+  "scope": "localhost software only",
+  "qlog": "PASS",
+  "progress": "PASS",
+  "udp_decode": "BLOCKED",
+  "early_proof": "BLOCKED",
+  "representative": null,
+  "hol": "NOT_RUN",
+  "full_demo_complete": false
+}

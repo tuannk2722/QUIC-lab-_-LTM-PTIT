@@ -1,0 +1,237 @@
+software_root=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p11-software-xzfxm1sf
+{
+  "schema_version": 1,
+  "scope": "localhost correctness only; no captured packet or impairment proof",
+  "trace_mode": "evidence",
+  "uid": 1000,
+  "build": {
+    "binaries": {
+      "bench": "cfe4bf6764fb192b8b782c30ad9935846f99137b44db8d68bc585ea1f435a5dc",
+      "client": "3c427f475447c5794c8419a4a9ce8581fe1f038419508968209aec5244ca8574",
+      "server": "419092a38b125d60ece7bdc4fcf758f6d304b26b67329752cba32a1131c97cd3"
+    },
+    "build_flags": [
+      "-overlay=<temporary hash-checked TLS overlay>",
+      "-mod=readonly",
+      "-trimpath",
+      "-ldflags",
+      "-X quic-performance-lab/internal/cli.Build=392f599"
+    ],
+    "go_version": "go version go1.27.1 linux/amd64",
+    "inputs": {
+      "Makefile": "f9de0a5075f442c6099fa10f2077e405e325a6ebd80157f8101bb060241e3271",
+      "cmd/bench/main.go": "7920c5cddc68674f3f9e686f06db047f9a34e3cf5ec4e0f9c457b5fd22ad49a0",
+      "cmd/client/main.go": "60b9f3ed60449ca2d0d95cee5f64945718fed1f547ad439b55a127f77fdc693c",
+      "cmd/server/main.go": "f677690526def67c961ee8f7e60e40acfaa574b4a26c0da61cad18b1397ea249",
+      "go.mod": "12efa3fdf5749194119ede91d82be9ad78664b5924848def733198366602176f",
+      "go.sum": "b784e4c82602368b95ba925eee11c47e72f3bd4d8737d48c1797acd71452d870",
+      "internal/bench/build.go": "ba337d9220d8577531f378b574affb658847045c28d6386dbef2f37c90e5049d",
+      "internal/bench/manifest.go": "2ec84ee4bb652b744dddd5ef704db5effbe0f3fe7374bc49958389b357bab150",
+      "internal/bench/merge.go": "1056aac83a28e00dff52cd2895a39668bfd9c678be2a84c671ee85e07b1ff10f",
+      "internal/bench/runner.go": "97761412624b458ba90b33d35eb944d31aa69dd078e4c6db08cbda22dfff7735",
+      "internal/bench/schedule.go": "57f761d2bf3d8f9734adec66ee6db7402b7ca5cd162eac55a265758139415384",
+      "internal/bench/session.go": "96fa28c87859b9bf0527e6166791578f3b9e683af760eda60b89b53367240a7c",
+      "internal/cli/bench.go": "833973ca5ccc2e7e0c728eb1385ef0b8addc0554e3b6964fb5ed94fa90a173ab",
+      "internal/cli/cli.go": "e1fd418656405a062f59e8c64711ae810083bd88248fba8e5d419726fe1b7a35",
+      "internal/config/config.go": "866c4e78333a10643f6eac3e365d0172a83f6986abd85e5f2174594a7577d3da",
+      "internal/config/json.go": "14a194c512840cbd0975316485931ec4240ec3b179397779b5d5024de52f344e",
+      "internal/config/network.go": "1c5c78cd7dc765762e09c3dafc75009ce74f56302acf4aa9440461c91d559da1",
+      "internal/metrics/csv.go": "c2006c8c6d497ab3f7c3f61ea30e090509b42cce36c731902baf22be93a04a09",
+      "internal/metrics/progress.go": "ea26a68ae2b2ec22c94ea129c9d3fc2f96b85c5acdb8fc9d79e43e1d187552d3",
+      "internal/metrics/result.go": "6bd6792c441322235c7602676d551596635dbe355fa457e453fe534d03aa41d6",
+      "internal/metrics/timer.go": "f18864af1382504c5cceee1d833d1d9742fc5c3e4fc286b2e25d1fb428772d45",
+      "internal/observability/trace.go": "b1f6ad26011bd6c11f9ec2cab6ef2a48fa04ff295076fc2616b577e4dcb1da02",
+      "internal/protocol/batch.go": "2f5ea39a3635962dc08e57019175dcd2da960929f465575b9b4dcac3078e509f",
+      "internal/protocol/codec.go": "569f0b36e5dba5efd6c21d7b3dbc6bcf40d708ddb7f6e6d6bfd379afc07d82a4",
+      "internal/protocol/errors.go": "fda28a49592bdc09b89b0dbe5206b97d674ee8e36eb0396282ca92bef0932926",
+      "internal/protocol/frame.go": "55a6783421495b31c4feb5d160e8066f52342c1064ff2391edc8b18c59cc70b9",
+      "internal/protocol/request.go": "c5626a1e27437a5be910a520e899e156f5fc171af31e3c7646f1a783e6aa5192",
+      "internal/protocol/response.go": "932ebd313f72721f5974f808768b670e3de24f9d265e9decc4b4198733645ab7",
+      "internal/tlsconfig/config.go": "9d1d7d11259878bf6d1cdf986fe421a040e941e379b7895252bb68110c013c86",
+      "internal/tlsconfig/sessioncache.go": "4ce198541a4536ec7ac54ce5e6e277c4a0068e2cfcc116d7d847b22528228804",
+      "internal/transport/connection.go": "6e6cb7f6f1d943231b5f229002a5efb2e0eee7383c4b1abd9fe96c52493c2282",
+      "internal/transport/progress.go": "0767dab4f07ef193adf31ce2aa887a5bc73577ffaa4ed6d6194b60450db27ab6",
+      "internal/transport/quic/client.go": "78ad7c8a2a27a2292a0f88f92e852b9a0853c3f19f7a35f4606a9c85bb4e1880",
+      "internal/transport/quic/config.go": "a8b9253a6b1d5401b0b4d8a9a6047735fed71ec1859c518d531e6c5a1662d675",
+      "internal/transport/quic/early.go": "4cc92084925ba9cf06e72a6e21cc5a6a4ba7ecf5820acbbdebaa1623cc5616a5",
+      "internal/transport/quic/server.go": "cf11e89e75856f34357a77611f97948303f0f71f1b3e259ba3309b64f0daeb99",
+      "internal/transport/quic/streams.go": "9b81a02d8a5ea8d9871b113f27503a850ee9bf8245c64dd43a052c51caa318f4",
+      "internal/transport/tcp/client.go": "a5ec71f1b823b582f512ff6af1fa57eb5c2fbb6496d134f7844fd9db764d193f",
+      "internal/transport/tcp/scheduler.go": "3bc0d89cedac03886c82e08aa447de81fb78f777713cfa8bce67b6423dd67e4d",
+      "internal/transport/tcp/server.go": "d35d1eef24ccacec648a2d122d007d6b59b21754103cbe0743a9215db42f43da",
+      "internal/transport/types.go": "d2c8881567066c60504b0cb7765aef069c2569700bdbf959ababc6079e156011",
+      "internal/workload/generator.go": "d0d66b1441d86d1e4b7398bcbc6885b8878622a12c06eef7858da3db5d2596cf",
+      "internal/workload/resource.go": "49dbe27d363760e458127b3439a1291f9adc5f2bfa766cf958f1e68153103027",
+      "scripts/build.py": "0823a101d0869643822fc8efed4b43fa129562d599837758dc665d251413754d",
+      "scripts/tls_keylog_overlay.py": "ed01f8eaec86cd89c511e1507c3c2fb3f649a0a8d0137323e4fab7d5f71117f4"
+    },
+    "schema_version": 1,
+    "tls_keylog_overlay": {
+      "files": {
+        "src/crypto/tls/handshake_client.go": {
+          "original_sha256": "ae3719b4cd6925b3e2689a21422865ce99611d097d727f9dc939c031f0ea703b",
+          "overlay_sha256": "899481a8a5ebef375b7569b29f9c168b500d7d4c09af79fdd3fb470312b65cbf"
+        },
+        "src/crypto/tls/handshake_server_tls13.go": {
+          "original_sha256": "6cb325a7623c3bfe60e066b08fed2cc64e6b6cff85ad8f6467c038968d3a7fe6",
+          "overlay_sha256": "7673a66eb052cb6e782c66d80b4d08d9eb3f23b21452a7e4bd10b2a124994168"
+        }
+      },
+      "go_version": "go1.27.1",
+      "kind": "go-build-overlay",
+      "scope": "existing QUIC early secret to optional KeyLogWriter; no cryptography changes"
+    }
+  },
+  "runs": [
+    {
+      "run_id": "handshake_quic_cold",
+      "profile": "handshake",
+      "transport": "quic",
+      "mode": "cold",
+      "out": "handshake-quic/cold",
+      "client_qlog": "handshake-quic/cold-qlog",
+      "server_qlog": "handshake-quic/server-qlog",
+      "exit_code": 0,
+      "argv": [
+        "bin/client",
+        "--transport=quic",
+        "--profile=handshake",
+        "--mode=cold",
+        "--addr=127.0.0.1:55535",
+        "--server-name=localhost",
+        "--experiment-id=g11software",
+        "--run-id=handshake_quic_cold",
+        "--out=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p11-software-xzfxm1sf/handshake-quic/cold",
+        "--qlog-dir=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p11-software-xzfxm1sf/handshake-quic/cold-qlog",
+        "--keylog=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p11-software-xzfxm1sf/handshake-quic/cold.keylog",
+        "--progress",
+        "--format=json"
+      ]
+    },
+    {
+      "run_id": "handshake_quic_resumed",
+      "profile": "handshake",
+      "transport": "quic",
+      "mode": "resumed",
+      "out": "handshake-quic/resumed",
+      "client_qlog": "handshake-quic/resumed-qlog",
+      "server_qlog": "handshake-quic/server-qlog",
+      "exit_code": 0,
+      "argv": [
+        "bin/client",
+        "--transport=quic",
+        "--profile=handshake",
+        "--mode=resumed",
+        "--addr=127.0.0.1:55535",
+        "--server-name=localhost",
+        "--experiment-id=g11software",
+        "--run-id=handshake_quic_resumed",
+        "--out=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p11-software-xzfxm1sf/handshake-quic/resumed",
+        "--qlog-dir=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p11-software-xzfxm1sf/handshake-quic/resumed-qlog",
+        "--keylog=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p11-software-xzfxm1sf/handshake-quic/resumed.keylog",
+        "--progress",
+        "--format=json"
+      ]
+    },
+    {
+      "run_id": "handshake_quic_early",
+      "profile": "handshake",
+      "transport": "quic",
+      "mode": "early",
+      "out": "handshake-quic/early",
+      "client_qlog": "handshake-quic/early-qlog",
+      "server_qlog": "handshake-quic/server-qlog",
+      "exit_code": 0,
+      "argv": [
+        "bin/client",
+        "--transport=quic",
+        "--profile=handshake",
+        "--mode=early",
+        "--addr=127.0.0.1:55535",
+        "--server-name=localhost",
+        "--experiment-id=g11software",
+        "--run-id=handshake_quic_early",
+        "--out=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p11-software-xzfxm1sf/handshake-quic/early",
+        "--qlog-dir=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p11-software-xzfxm1sf/handshake-quic/early-qlog",
+        "--keylog=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p11-software-xzfxm1sf/handshake-quic/early.keylog",
+        "--progress",
+        "--format=json"
+      ]
+    },
+    {
+      "run_id": "bulk_quic_cold",
+      "profile": "bulk",
+      "transport": "quic",
+      "mode": "cold",
+      "out": "bulk-quic/cold",
+      "client_qlog": "bulk-quic/cold-qlog",
+      "server_qlog": "bulk-quic/server-qlog",
+      "exit_code": 0,
+      "argv": [
+        "bin/client",
+        "--transport=quic",
+        "--profile=bulk",
+        "--mode=cold",
+        "--addr=127.0.0.1:57331",
+        "--server-name=localhost",
+        "--experiment-id=g11software",
+        "--run-id=bulk_quic_cold",
+        "--out=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p11-software-xzfxm1sf/bulk-quic/cold",
+        "--qlog-dir=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p11-software-xzfxm1sf/bulk-quic/cold-qlog",
+        "--keylog=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p11-software-xzfxm1sf/bulk-quic/cold.keylog",
+        "--progress",
+        "--format=json"
+      ]
+    },
+    {
+      "run_id": "bulk_tcp_cold",
+      "profile": "bulk",
+      "transport": "tcp",
+      "mode": "cold",
+      "out": "bulk-tcp/cold",
+      "client_qlog": "bulk-tcp/cold-qlog",
+      "server_qlog": "bulk-tcp/server-qlog",
+      "exit_code": 0,
+      "argv": [
+        "bin/client",
+        "--transport=tcp",
+        "--profile=bulk",
+        "--mode=cold",
+        "--addr=127.0.0.1:57015",
+        "--server-name=localhost",
+        "--experiment-id=g11software",
+        "--run-id=bulk_tcp_cold",
+        "--out=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p11-software-xzfxm1sf/bulk-tcp/cold",
+        "--qlog-dir=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p11-software-xzfxm1sf/bulk-tcp/cold-qlog",
+        "--keylog=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p11-software-xzfxm1sf/bulk-tcp/cold.keylog",
+        "--progress",
+        "--format=json"
+      ]
+    },
+    {
+      "run_id": "bulk_tcp_tls_failure",
+      "profile": "bulk",
+      "transport": "tcp",
+      "mode": "cold",
+      "out": "bulk-tcp/tls_failure",
+      "client_qlog": "bulk-tcp/tls_failure-qlog",
+      "server_qlog": "bulk-tcp/server-qlog",
+      "exit_code": 1,
+      "argv": [
+        "bin/client",
+        "--transport=tcp",
+        "--profile=bulk",
+        "--mode=cold",
+        "--addr=127.0.0.1:57015",
+        "--server-name=wrong.invalid",
+        "--experiment-id=g11software",
+        "--run-id=bulk_tcp_tls_failure",
+        "--out=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p11-software-xzfxm1sf/bulk-tcp/tls_failure",
+        "--qlog-dir=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p11-software-xzfxm1sf/bulk-tcp/tls_failure-qlog",
+        "--keylog=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p11-software-xzfxm1sf/bulk-tcp/tls_failure.keylog",
+        "--progress",
+        "--format=json"
+      ]
+    }
+  ]
+}

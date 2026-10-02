@@ -1,0 +1,13 @@
+test_archived_checker_rejects_actual_empty_capture_on_copy (__main__.LifecycleTests.test_archived_checker_rejects_actual_empty_capture_on_copy) ... ok
+test_capture_status_rejects_empty_truncated_and_unflushed_dump (__main__.LifecycleTests.test_capture_status_rejects_empty_truncated_and_unflushed_dump) ... ok
+test_deadline_kills_only_owned_child_and_reports_failure (__main__.LifecycleTests.test_deadline_kills_only_owned_child_and_reports_failure) ... ok
+test_exit_between_check_and_kill_uses_wait_status (__main__.LifecycleTests.test_exit_between_check_and_kill_uses_wait_status) ... ok
+test_graceful_exit_and_signalled_child_are_distinguished (__main__.LifecycleTests.test_graceful_exit_and_signalled_child_are_distinguished) ... ok
+test_namespace_entry_uses_owner_environment (__main__.LifecycleTests.test_namespace_entry_uses_owner_environment) ... ok
+test_production_run_user_resets_root_environment_and_keeps_seed (__main__.LifecycleTests.test_production_run_user_resets_root_environment_and_keeps_seed) ... ok
+test_real_failed_run_empty_capture_is_not_promoted (__main__.LifecycleTests.test_real_failed_run_empty_capture_is_not_promoted) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 2.635s
+
+OK

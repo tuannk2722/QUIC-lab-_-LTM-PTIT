@@ -1,0 +1,5 @@
+=== RUN   TestEvidenceRejectedAttemptProgressAndFlush
+    evidence_test.go:60: rejection: attempts=2 final_resources=6 payload_per_resource=32769 fallback_points=3 no_discarded_points=true
+--- PASS: TestEvidenceRejectedAttemptProgressAndFlush (0.16s)
+PASS
+ok  	quic-performance-lab/tests/integration	1.181s

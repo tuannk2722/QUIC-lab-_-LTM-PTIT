@@ -1,0 +1,44 @@
+{
+  "scope": "read-only audit of failed actual user-run; no gate PASS",
+  "source": "results/p11-g11-3344e60b5868",
+  "gate": "G11",
+  "status": "FAIL",
+  "planned": 23,
+  "invoked": 5,
+  "cleanup": {
+    "original_exit": 1,
+    "cleanup_exit": 0,
+    "finished_utc": "2026-10-02T07:28:54.436761+00:00"
+  },
+  "checker_ran": false,
+  "host_unchanged": {
+    "link": true,
+    "address": true,
+    "route": true
+  },
+  "keylog_values_excluded": true,
+  "early_keylog_labels_only": {
+    "client": [
+      "CLIENT_HANDSHAKE_TRAFFIC_SECRET",
+      "CLIENT_TRAFFIC_SECRET_0",
+      "SERVER_HANDSHAKE_TRAFFIC_SECRET",
+      "SERVER_TRAFFIC_SECRET_0"
+    ],
+    "server": [
+      "CLIENT_HANDSHAKE_TRAFFIC_SECRET",
+      "CLIENT_TRAFFIC_SECRET_0",
+      "SERVER_HANDSHAKE_TRAFFIC_SECRET",
+      "SERVER_TRAFFIC_SECRET_0"
+    ]
+  },
+  "early_keylog_has_client_early_secret": false,
+  "decoder_audit": "results/p11-fix-audit-10ea741bba/review.json",
+  "source_changed_since_run": [
+    "scripts/capture.sh",
+    "scripts/evidence-support.py",
+    "scripts/run-in-netns.sh",
+    "tests/system/g11.sh",
+    "tests/system/check_g11.py",
+    "Makefile"
+  ]
+}

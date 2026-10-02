@@ -1,0 +1,47 @@
+{
+  "scope": "partial historical actual PCAP audit only; not full G11 rerun",
+  "source": "/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p11-g11-3344e60b5868",
+  "derived_root": "results/p11-fix-audit-10ea741bba",
+  "decoded_packets": 26,
+  "decrypted_streams": 3,
+  "api_qlog": {
+    "status": "PASS",
+    "api_qualified": true,
+    "sent": [
+      {
+        "packet_number": 0,
+        "stream_id": 0,
+        "resource_id": 1,
+        "offset": 0,
+        "length": 32,
+        "qlog_time_ms": 0.829535
+      }
+    ],
+    "received": [
+      {
+        "packet_number": 0,
+        "stream_id": 0,
+        "resource_id": 1,
+        "offset": 0,
+        "length": 32,
+        "qlog_time_ms": 1.20933
+      }
+    ],
+    "matched": [
+      {
+        "packet_number": 0,
+        "stream_id": 0,
+        "resource_id": 1,
+        "offset": 0,
+        "length": 32,
+        "qlog_time_ms": 0.829535
+      }
+    ],
+    "limitation": "qlog identifies STREAM range, not encrypted payload content; decrypted PCAP REQUEST required for full proof"
+  },
+  "early_packet": {
+    "status": "INCONCLUSIVE",
+    "requests": [],
+    "criterion": "decrypted client 0RTT packet contains QB01 REQUEST; PN/native stream mapped to server-received qlog and actual API state"
+  }
+}

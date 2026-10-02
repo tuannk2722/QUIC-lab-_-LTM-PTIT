@@ -1,0 +1,211 @@
+{
+  "status": "PASS",
+  "packages": [
+    {
+      "package": "libabsl20260107",
+      "version": "20260107.0-4",
+      "file": "libabsl20260107_20260107.0-4_amd64.deb",
+      "sha256": "84c1afe45fdeada1772ab88be29e21b9e0970174bac3dc348e8f797d8f6f073f"
+    },
+    {
+      "package": "libbcg729-0",
+      "version": "1.1.1-3build1",
+      "file": "libbcg729-0_1.1.1-3build1_amd64.deb",
+      "sha256": "64db98ca4695c5654521789d9b2ecd1641667f37b5bcf0d625ca631b19b267a2"
+    },
+    {
+      "package": "libcares2",
+      "version": "1.34.6-1ubuntu0.1",
+      "file": "libcares2_1.34.6-1ubuntu0.1_amd64.deb",
+      "sha256": "9c8a576345e6f46a58c5fd2c3335cb728aaed41602ddd3c0734d1800bdcdd15d"
+    },
+    {
+      "package": "libdeflate0",
+      "version": "1.23-2ubuntu1",
+      "file": "libdeflate0_1.23-2ubuntu1_amd64.deb",
+      "sha256": "40ee517cffd3730405be6ae30826533bec0ddf8773bb7ac2cccd22a57acafc25"
+    },
+    {
+      "package": "libfalcosecurity0t64",
+      "version": "0.20.0-4ubuntu0.1",
+      "file": "libfalcosecurity0t64_0.20.0-4ubuntu0.1_amd64.deb",
+      "sha256": "6ad335f89f837168f1eae1d5b61ec8b0a513de2ce512321423ea8453ef3da75e"
+    },
+    {
+      "package": "libgrpc++1.51t64",
+      "version": "1.51.1-8ubuntu1",
+      "file": "libgrpc++1.51t64_1.51.1-8ubuntu1_amd64.deb",
+      "sha256": "12e4e287c484578827f3a9b0c81798e9af940514c82ac8e3e6498533c7437655"
+    },
+    {
+      "package": "libgrpc29t64",
+      "version": "1.51.1-8ubuntu1",
+      "file": "libgrpc29t64_1.51.1-8ubuntu1_amd64.deb",
+      "sha256": "593e3a7a78b7b0f213a158d9a83866fdff52ba6cf937772230ba4af94bffd7ce"
+    },
+    {
+      "package": "libhwloc15",
+      "version": "2.13.0-2",
+      "file": "libhwloc15_2.13.0-2_amd64.deb",
+      "sha256": "7cb114747b4323340d25bd3cc64552ab684c82646053470757bdb274a78898df"
+    },
+    {
+      "package": "libjbig0",
+      "version": "2.1-6.1ubuntu3",
+      "file": "libjbig0_2.1-6.1ubuntu3_amd64.deb",
+      "sha256": "bb2ffa4e359ee7a29dab9902b45e5c85de06f019272700cb2538e4762f141ee8"
+    },
+    {
+      "package": "libjpeg-turbo8",
+      "version": "2.1.5-4ubuntu4",
+      "file": "libjpeg-turbo8_2.1.5-4ubuntu4_amd64.deb",
+      "sha256": "07672ce1f4d187e005ea0cc35d03e515ba056f3d3e7a9a25d3ef386e184da8c5"
+    },
+    {
+      "package": "libjpeg8",
+      "version": "8c-2ubuntu12",
+      "file": "libjpeg8_8c-2ubuntu12_amd64.deb",
+      "sha256": "1403d44d2c2d3eba6a7a8aea97fab0bac2e89e144a3bf600adfdd3ecdc3d9394"
+    },
+    {
+      "package": "libjsoncpp26",
+      "version": "1.9.6-5",
+      "file": "libjsoncpp26_1.9.6-5_amd64.deb",
+      "sha256": "2b42b79a81f9407d0ae9650541dca2e416b76b6ad9f7794737bac8c6d6f56823"
+    },
+    {
+      "package": "liblerc4",
+      "version": "4.0.0+ds-5ubuntu2",
+      "file": "liblerc4_4.0.0+ds-5ubuntu2_amd64.deb",
+      "sha256": "29051d37d010a7a0e3b5648f73f30d35eb1e313061137c88f3a2c2078925a36d"
+    },
+    {
+      "package": "liblua5.4-0",
+      "version": "5.4.8-1build1",
+      "file": "liblua5.4-0_5.4.8-1build1_amd64.deb",
+      "sha256": "ff589ea3f181b89dd76b0240f79c59ac2f13f24e2053f624f774f596c7ef7897"
+    },
+    {
+      "package": "libnghttp3-9",
+      "version": "1.12.0-1",
+      "file": "libnghttp3-9_1.12.0-1_amd64.deb",
+      "sha256": "e72d78a458f77ed3fc9b0bb11780e7ba0b98fd063cb6593de77f146e227936d4"
+    },
+    {
+      "package": "libopencore-amrnb0",
+      "version": "0.1.6-1build2",
+      "file": "libopencore-amrnb0_0.1.6-1build2_amd64.deb",
+      "sha256": "96bf930418b8d61d41ee7a8a917e1e19620f1dd610141b2d99a9a585b8a12736"
+    },
+    {
+      "package": "libopus0",
+      "version": "1.6.1-1",
+      "file": "libopus0_1.6.1-1_amd64.deb",
+      "sha256": "395f9e1bf29b804e42471e225976d69355c220bbfe469cb4ed387d36184b9bcc"
+    },
+    {
+      "package": "libprotobuf32t64",
+      "version": "3.21.12-15ubuntu1",
+      "file": "libprotobuf32t64_3.21.12-15ubuntu1_amd64.deb",
+      "sha256": "adab0eb28161aea2101e33d8b4c8a336ad62c34c70e01bd3d7c1026279ca5757"
+    },
+    {
+      "package": "libprotoc32t64",
+      "version": "3.21.12-15ubuntu1",
+      "file": "libprotoc32t64_3.21.12-15ubuntu1_amd64.deb",
+      "sha256": "878419d40eaae00845382d79896d20b446aa12b0550a9e12db381895b05d86c0"
+    },
+    {
+      "package": "libre2-11",
+      "version": "20250805-1build3",
+      "file": "libre2-11_20250805-1build3_amd64.deb",
+      "sha256": "06118ba5b19b77279bdacff19344ed43803afc743c0ec7e610a544fbaed5c29e"
+    },
+    {
+      "package": "libsbc1",
+      "version": "2.1-1build1",
+      "file": "libsbc1_2.1-1build1_amd64.deb",
+      "sha256": "7d3bc03489593a24345025509c4e2aed73a12d229df6e5d0f9667214aeca37ea"
+    },
+    {
+      "package": "libsmi2t64",
+      "version": "0.4.8+dfsg2-18",
+      "file": "libsmi2t64_0.4.8+dfsg2-18_amd64.deb",
+      "sha256": "99b84be2e711fb7bff620b969f148b51c1394b6dc1fe1ac83d2f598df96c83d6"
+    },
+    {
+      "package": "libsnappy1v5",
+      "version": "1.2.2-2",
+      "file": "libsnappy1v5_1.2.2-2_amd64.deb",
+      "sha256": "1679c696614780a0137e2b484ade47fc226177556e261bace9a779ae98b29346"
+    },
+    {
+      "package": "libspandsp2t64",
+      "version": "0.0.6+dfsg-2.2build2",
+      "file": "libspandsp2t64_0.0.6+dfsg-2.2build2_amd64.deb",
+      "sha256": "c53efde77fc5940e94f350c0b5f766df00a77c652abf72910945902f1bba46b5"
+    },
+    {
+      "package": "libtbb12",
+      "version": "2022.3.0-2",
+      "file": "libtbb12_2022.3.0-2_amd64.deb",
+      "sha256": "9e58d374ec6f5c3a690f5a427819d7d762030d474aa3ea91f52d0c7226ff2741"
+    },
+    {
+      "package": "libtbbbind-2-5",
+      "version": "2022.3.0-2",
+      "file": "libtbbbind-2-5_2022.3.0-2_amd64.deb",
+      "sha256": "fb527d56921d375024b202a7ca7c0b5b8b4e8afb419552885b7db02c1c14e4b2"
+    },
+    {
+      "package": "libtbbmalloc2",
+      "version": "2022.3.0-2",
+      "file": "libtbbmalloc2_2022.3.0-2_amd64.deb",
+      "sha256": "d79793e790d6d3dfd8cd5c4434e09c3bca2098ecf57d6f097bef4df9106a6d8d"
+    },
+    {
+      "package": "libtiff6",
+      "version": "4.7.0-3ubuntu5",
+      "file": "libtiff6_4.7.0-3ubuntu5_amd64.deb",
+      "sha256": "f48cb837a644826b9411ecd9692cbd57fbcb57b5b8fba026652d9204b3acb169"
+    },
+    {
+      "package": "libwebp7",
+      "version": "1.5.0-0.1build1",
+      "file": "libwebp7_1.5.0-0.1build1_amd64.deb",
+      "sha256": "0a846cf63522d9c1f28d31bdd53e35e223d590a0971bb6927b3ee5092934ce9d"
+    },
+    {
+      "package": "libwireshark-data",
+      "version": "4.6.4-1",
+      "file": "libwireshark-data_4.6.4-1_all.deb",
+      "sha256": "1cea0e2a49eb7eb4508e4de300e300b822607b7fa7df87e1e58dd0a6a990b049"
+    },
+    {
+      "package": "libwireshark19",
+      "version": "4.6.4-1",
+      "file": "libwireshark19_4.6.4-1_amd64.deb",
+      "sha256": "f66fa831b3b8cafe5ecc8cba5917e7f053724480d63a1c9f9af9dfc4311c14b9"
+    },
+    {
+      "package": "libwiretap16",
+      "version": "4.6.4-1",
+      "file": "libwiretap16_4.6.4-1_amd64.deb",
+      "sha256": "28ea6ab5d1a1b102511c6a400983ac2156b01e95e599b8ad073be354f2ada015"
+    },
+    {
+      "package": "libwsutil17",
+      "version": "4.6.4-1",
+      "file": "libwsutil17_4.6.4-1_amd64.deb",
+      "sha256": "99fe5dcb49dea88a8ff27ce30e08f848346672e45cf03510eee32db8f1a7105f"
+    },
+    {
+      "package": "tshark",
+      "version": "4.6.4-1",
+      "file": "tshark_4.6.4-1_amd64.deb",
+      "sha256": "de06fc08cb4c604894ba3174ddc1be8677339e13bf4a79a80cf00b6e29cfe973"
+    }
+  ],
+  "install_scope": "local extraction .tools/tshark; no root/system installation",
+  "version_log": "g11-decoder-version.log"
+}

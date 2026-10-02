@@ -1,0 +1,32 @@
+{
+  "status": "PASS",
+  "scope": "D28 source/receipt/static/original immutable audit; no actual network claim",
+  "python_files": 29,
+  "bash_files": 22,
+  "original_actual_files_unchanged": 161,
+  "installed_tls_sources_unchanged": true,
+  "go_quic_pins_configs_schema_originals_changed": false,
+  "build_receipt_sha256": "0c93c22cb7e0dee60a399f13cc8ebd466308ae436cc9b7d5552fb439944ba0a5",
+  "tls_keylog_overlay": {
+    "files": {
+      "src/crypto/tls/handshake_client.go": {
+        "original_sha256": "ae3719b4cd6925b3e2689a21422865ce99611d097d727f9dc939c031f0ea703b",
+        "overlay_sha256": "899481a8a5ebef375b7569b29f9c168b500d7d4c09af79fdd3fb470312b65cbf"
+      },
+      "src/crypto/tls/handshake_server_tls13.go": {
+        "original_sha256": "6cb325a7623c3bfe60e066b08fed2cc64e6b6cff85ad8f6467c038968d3a7fe6",
+        "overlay_sha256": "7673a66eb052cb6e782c66d80b4d08d9eb3f23b21452a7e4bd10b2a124994168"
+      }
+    },
+    "go_version": "go1.27.1",
+    "kind": "go-build-overlay",
+    "scope": "existing QUIC early secret to optional KeyLogWriter; no cryptography changes"
+  },
+  "software_source_differences": [
+    "tests/system/g11.sh",
+    "tests/system/check_g11.py",
+    "tests/system/test_audit_p7_p9.py"
+  ],
+  "task_lines": 52,
+  "new_png_opened": "results/p11-software-xzfxm1sf/viewers/handshake_quic_early.png"
+}

@@ -1,0 +1,322 @@
+tshark: You don't have permission to read the file "/root/.config/wireshark/hosts".
+tshark: You don't have permission to read the file "/root/.config/wireshark/subnets".
+tshark: You don't have permission to read the file "/root/.config/wireshark/subnets".
+tshark: You don't have permission to read the file "/root/.config/wireshark/ss7pcs".
+tshark: Could not open your display filter macro file
+"/root/.config/wireshark/dmacros": Permission denied.
+tshark: You don't have permission to read the file "/root/.local/lib/wireshark/plugins/init.lua".
+ ** (tshark:70640) 07:27:02.794543 [Lua MESSAGE] -- Loading init.lua file from deprecated path: /root/.config/wireshark/init.lua
+tshark: You don't have permission to read the file "/root/.config/wireshark/init.lua".
+tshark: Error loading table 'PKCS #11 Provider Libraries': Permission denied
+tshark: Error loading table 'RSA Private Keys': Permission denied
+tshark: Error loading table 'Display expressions': Permission denied
+tshark: Error loading table 'DNS Servers': Permission denied
+tshark: Error loading table 'SMI Paths': Permission denied
+tshark: Error loading table 'SMI Modules': Permission denied
+tshark: Error loading table 'MaxMind Database Paths': Permission denied
+tshark: Error loading table 'Message Decoding': Permission denied
+tshark: Error loading table 'ASAM CMP Devices': Permission denied
+tshark: Error loading table 'ASAM CMP Interfaces': Permission denied
+tshark: Error loading table 'I-PduM Message List': Permission denied
+tshark: Error loading table 'CAN': Permission denied
+tshark: Error loading table 'FlexRay': Permission denied
+tshark: Error loading table 'LIN': Permission denied
+tshark: Error loading table 'PDU Transport': Permission denied
+tshark: Error loading table 'NM User Data Fields Table': Permission denied
+tshark: Error loading table 'OID Tables': Permission denied
+tshark: Error loading table 'Custom Bluetooth UUIDs': Permission denied
+tshark: Error loading table 'BTMesh Network and Application keys': Permission denied
+tshark: Error loading table 'BTMesh Device keys': Permission denied
+tshark: Error loading table 'BTMesh Label UUIDs': Permission denied
+tshark: Error loading table 'Force Decode by Channel': Permission denied
+tshark: Error loading table 'Decryption Table': Permission denied
+tshark: Error loading table 'collectd Authentication': Permission denied
+tshark: Error loading table 'Node bodytypes': Permission denied
+tshark: Error loading table 'Custom DHCP/BootP Options (Excl. suboptions)': Permission denied
+tshark: Error loading table 'DMP Security Classifications': Permission denied
+tshark: Error loading table 'DPS Security Mode Templates': Permission denied
+tshark: Error loading table 'DPS Session Keys': Permission denied
+tshark: Error loading table 'DPS Identity Secrets': Permission denied
+tshark: Error loading table 'Diagnostic Addresses': Permission denied
+tshark: Error loading table 'Payload Types': Permission denied
+tshark: Error loading table 'DTLS RSA Keylist': Permission denied
+tshark: Error loading table 'Shared Secrets': Permission denied
+tshark: Error loading table 'Device-Specific Profiles': Permission denied
+tshark: Error loading table 'NodeID-Specific Profiles': Permission denied
+tshark: Error loading table 'ESS Category Attributes': Permission denied
+tshark: Error loading table 'Sender Receiver Config': Permission denied
+tshark: Error loading table 'PDCP-LTE Keys': Permission denied
+tshark: Error loading table 'PDCP-NR Keys': Permission denied
+tshark: Error loading table 'Diagnostic Addresses': Permission denied
+tshark: Error loading table 'Custom HTTP Header Fields': Permission denied
+tshark: Error loading table 'Custom HTTP2 Header Fields': Permission denied
+tshark: Error loading table 'HTTP2 Fake Headers': Permission denied
+tshark: Error loading table 'WEP and WPA Decryption Keys': Permission denied
+tshark: Error loading table 'Static Addresses': Permission denied
+tshark: Error loading table 'Keys': Permission denied
+tshark: Error loading table 'Custom IMF headers': Permission denied
+tshark: Error loading table 'ESP SAs': Permission denied
+tshark: Error loading table 'NAT64 Network-Specific Prefixes': Permission denied
+tshark: Error loading table 'IKEv1 Decryption Table': Permission denied
+tshark: Error loading table 'IKEv2 Decryption Table': Permission denied
+tshark: Error loading table 'ISO15765 CAN ID Mapping': Permission denied
+tshark: Error loading table 'ISO15765 PDU Transport Config': Permission denied
+tshark: Error loading table 'K12 Protocols': Permission denied
+tshark: Error loading table 'LBMPDM-TCP tag definitions': Permission denied
+tshark: Error loading table 'LBMR tag definitions': Permission denied
+tshark: Error loading table 'LBMSRS tag definitions': Permission denied
+tshark: Error loading table 'LBT-RM tag definitions': Permission denied
+tshark: Error loading table 'LBT-RU tag definitions': Permission denied
+tshark: Error loading table 'LBT-TCP tag definitions': Permission denied
+tshark: Error loading table 'Custom LDAP AttributeValue types': Permission denied
+tshark: Error loading table 'LIN Interface Mapping': Permission denied
+tshark: Error loading table 'Sender Receiver Config': Permission denied
+tshark: Error loading table 'LoRaWAN Root Keys': Permission denied
+tshark: Error loading table 'LoRaWAN Session Keys': Permission denied
+tshark: Error loading table 'User Object Names': Permission denied
+tshark: Error loading table 'User Resource Names': Permission denied
+tshark: Error loading table 'Static LCID -> drb Table': Permission denied
+tshark: Error loading table 'Static LCID -> drb Table': Permission denied
+tshark: Error loading table 'Pre-Shared Key List': Permission denied
+tshark: Error loading table 'CKN/CAK Info': Permission denied
+tshark: Error loading table 'Message Decoding': Permission denied
+tshark: Error loading table 'Security Contexts': Permission denied
+tshark: Error loading table 'PDCP UE security keys': Permission denied
+tshark: Error loading table 'PDCP UE security keys': Permission denied
+tshark: Error loading table 'PDU Transport PDUs': Permission denied
+tshark: Error loading table 'PDU Transport Extended Config': Permission denied
+tshark: Error loading table 'PRES Users Context List': Permission denied
+tshark: Error loading table 'Protobuf Search Paths': Permission denied
+tshark: Error loading table 'Protobuf UDP Message Types': Permission denied
+tshark: Error loading table 'Protobuf URI Message Types': Permission denied
+tshark: Error loading table 'Kind-ID Table': Permission denied
+tshark: Error loading table 'Pre-configured security table': Permission denied
+tshark: Error loading table 'RTPS GUID-PSK': Permission denied
+tshark: Error loading table 'SCCP Users Table': Permission denied
+tshark: Error loading table 'Chunk types for the statistics dialog': Permission denied
+tshark: Error loading table 'Signal PDU Messages': Permission denied
+tshark: Error loading table 'Signal Value Names': Permission denied
+tshark: Error loading table 'Signal PDU Signal List': Permission denied
+tshark: Error loading table 'SOME/IP': Permission denied
+tshark: Error loading table 'CAN': Permission denied
+tshark: Error loading table 'FlexRay': Permission denied
+tshark: Error loading table 'LIN': Permission denied
+tshark: Error loading table 'PDU Transport': Permission denied
+tshark: Error loading table 'AUTOSAR I-PduM': Permission denied
+tshark: Error loading table 'DLT': Permission denied
+tshark: Error loading table 'UDS': Permission denied
+tshark: Error loading table 'ISOBUS': Permission denied
+tshark: Error loading table 'Custom SIP Header Fields': Permission denied
+tshark: Error loading table 'SIP authorization users': Permission denied
+tshark: Error loading table 'Secret session key to use for decryption': Permission denied
+tshark: Error loading table 'SNMP Users': Permission denied
+tshark: Error loading table 'SNMP Enterprise Specific Trap Types': Permission denied
+tshark: Error loading table 'CAN Interface Mapping': Permission denied
+tshark: Error loading table 'Sender Receiver Config': Permission denied
+tshark: Error loading table 'SOME/IP Services': Permission denied
+tshark: Error loading table 'SOME/IP Methods/Events/Fields': Permission denied
+tshark: Error loading table 'SOME/IP Eventgroups': Permission denied
+tshark: Error loading table 'SOME/IP Clients': Permission denied
+tshark: Error loading table 'SOME/IP Parameter List': Permission denied
+tshark: Error loading table 'SOME/IP Parameter Base Type List': Permission denied
+tshark: Error loading table 'SOME/IP Parameter String List': Permission denied
+tshark: Error loading table 'SOME/IP Parameter Arrays': Permission denied
+tshark: Error loading table 'SOME/IP Parameter Structs': Permission denied
+tshark: Error loading table 'SOME/IP Parameter Unions': Permission denied
+tshark: Error loading table 'SOME/IP Parameter Typedef List': Permission denied
+tshark: Error loading table 'SOME/IP Parameter Enums': Permission denied
+tshark: Error loading table 'SOME/IP Parameter Bitfields': Permission denied
+tshark: Error loading table 'TECMP Devices': Permission denied
+tshark: Error loading table 'TECMP Interfaces': Permission denied
+tshark: Error loading table 'TECMP Control Messages': Permission denied
+tshark: Error loading table 'RSA Keys': Permission denied
+tshark: Error loading table 'XTEA Keys': Permission denied
+tshark: Error loading table 'TLS Decrypt': Permission denied
+tshark: Error loading table 'UDS Routine Identifier List': Permission denied
+tshark: Error loading table 'UDS Data Identifier List': Permission denied
+tshark: Error loading table 'UDS DTC Identifier List': Permission denied
+tshark: Error loading table 'UDS Addresses': Permission denied
+tshark: Error loading table 'User DLTs Table': Permission denied
+tshark: Error loading table 'Bitstream Channel Table': Permission denied
+tshark: Error loading table 'WireGuard static keys': Permission denied
+tshark: Error loading table 'Memory Addresses': Permission denied
+tshark: Error loading table 'UDP/TCP': Permission denied
+tshark: Error loading table 'CAN': Permission denied
+tshark: Error loading table 'Pre-configured Keys': Permission denied
+tshark: Error loading table 'Pre-configured Keys': Permission denied
+tshark: Error loading table 'ZigBee GP Security Keys': Permission denied
+tshark: Error loading table 'ZMTP TCP Protocols': Permission denied
+tshark: Error loading table 'Expert Info Severity Level Configuration': Permission denied
+tshark: Error loading table 'Packet Lengths': Permission denied
+tshark: Can't open your preferences file "/root/.config/wireshark/preferences": Permission denied.
+tshark: Could not open your disabled protocols file
+"/root/.config/wireshark/disabled_protos": Permission denied.
+tshark: Could not open your enabled protocols file
+"/root/.config/wireshark/enabled_protos": Permission denied.
+tshark: Could not open your heuristic dissectors file
+"/root/.config/wireshark/heuristic_protos": Permission denied.
+tshark: You don't have permission to read the file "/root/.config/wireshark/hosts".
+tshark: You don't have permission to read the file "/root/.config/wireshark/subnets".
+tshark: You don't have permission to read the file "/root/.config/wireshark/subnets".
+tshark: You don't have permission to read the file "/root/.config/wireshark/ss7pcs".
+tshark: Could not open your display filter macro file
+"/root/.config/wireshark/dmacros": Permission denied.
+tshark: You don't have permission to read the file "/root/.local/lib/wireshark/plugins/init.lua".
+ ** (tshark:70663) 07:27:03.498238 [Lua MESSAGE] -- Loading init.lua file from deprecated path: /root/.config/wireshark/init.lua
+tshark: You don't have permission to read the file "/root/.config/wireshark/init.lua".
+tshark: Error loading table 'PKCS #11 Provider Libraries': Permission denied
+tshark: Error loading table 'RSA Private Keys': Permission denied
+tshark: Error loading table 'Display expressions': Permission denied
+tshark: Error loading table 'DNS Servers': Permission denied
+tshark: Error loading table 'SMI Paths': Permission denied
+tshark: Error loading table 'SMI Modules': Permission denied
+tshark: Error loading table 'MaxMind Database Paths': Permission denied
+tshark: Error loading table 'Message Decoding': Permission denied
+tshark: Error loading table 'ASAM CMP Devices': Permission denied
+tshark: Error loading table 'ASAM CMP Interfaces': Permission denied
+tshark: Error loading table 'I-PduM Message List': Permission denied
+tshark: Error loading table 'CAN': Permission denied
+tshark: Error loading table 'FlexRay': Permission denied
+tshark: Error loading table 'LIN': Permission denied
+tshark: Error loading table 'PDU Transport': Permission denied
+tshark: Error loading table 'NM User Data Fields Table': Permission denied
+tshark: Error loading table 'OID Tables': Permission denied
+tshark: Error loading table 'Custom Bluetooth UUIDs': Permission denied
+tshark: Error loading table 'BTMesh Network and Application keys': Permission denied
+tshark: Error loading table 'BTMesh Device keys': Permission denied
+tshark: Error loading table 'BTMesh Label UUIDs': Permission denied
+tshark: Error loading table 'Force Decode by Channel': Permission denied
+tshark: Error loading table 'Decryption Table': Permission denied
+tshark: Error loading table 'collectd Authentication': Permission denied
+tshark: Error loading table 'Node bodytypes': Permission denied
+tshark: Error loading table 'Custom DHCP/BootP Options (Excl. suboptions)': Permission denied
+tshark: Error loading table 'DMP Security Classifications': Permission denied
+tshark: Error loading table 'DPS Security Mode Templates': Permission denied
+tshark: Error loading table 'DPS Session Keys': Permission denied
+tshark: Error loading table 'DPS Identity Secrets': Permission denied
+tshark: Error loading table 'Diagnostic Addresses': Permission denied
+tshark: Error loading table 'Payload Types': Permission denied
+tshark: Error loading table 'DTLS RSA Keylist': Permission denied
+tshark: Error loading table 'Shared Secrets': Permission denied
+tshark: Error loading table 'Device-Specific Profiles': Permission denied
+tshark: Error loading table 'NodeID-Specific Profiles': Permission denied
+tshark: Error loading table 'ESS Category Attributes': Permission denied
+tshark: Error loading table 'Sender Receiver Config': Permission denied
+tshark: Error loading table 'PDCP-LTE Keys': Permission denied
+tshark: Error loading table 'PDCP-NR Keys': Permission denied
+tshark: Error loading table 'Diagnostic Addresses': Permission denied
+tshark: Error loading table 'Custom HTTP Header Fields': Permission denied
+tshark: Error loading table 'Custom HTTP2 Header Fields': Permission denied
+tshark: Error loading table 'HTTP2 Fake Headers': Permission denied
+tshark: Error loading table 'WEP and WPA Decryption Keys': Permission denied
+tshark: Error loading table 'Static Addresses': Permission denied
+tshark: Error loading table 'Keys': Permission denied
+tshark: Error loading table 'Custom IMF headers': Permission denied
+tshark: Error loading table 'ESP SAs': Permission denied
+tshark: Error loading table 'NAT64 Network-Specific Prefixes': Permission denied
+tshark: Error loading table 'IKEv1 Decryption Table': Permission denied
+tshark: Error loading table 'IKEv2 Decryption Table': Permission denied
+tshark: Error loading table 'ISO15765 CAN ID Mapping': Permission denied
+tshark: Error loading table 'ISO15765 PDU Transport Config': Permission denied
+tshark: Error loading table 'K12 Protocols': Permission denied
+tshark: Error loading table 'LBMPDM-TCP tag definitions': Permission denied
+tshark: Error loading table 'LBMR tag definitions': Permission denied
+tshark: Error loading table 'LBMSRS tag definitions': Permission denied
+tshark: Error loading table 'LBT-RM tag definitions': Permission denied
+tshark: Error loading table 'LBT-RU tag definitions': Permission denied
+tshark: Error loading table 'LBT-TCP tag definitions': Permission denied
+tshark: Error loading table 'Custom LDAP AttributeValue types': Permission denied
+tshark: Error loading table 'LIN Interface Mapping': Permission denied
+tshark: Error loading table 'Sender Receiver Config': Permission denied
+tshark: Error loading table 'LoRaWAN Root Keys': Permission denied
+tshark: Error loading table 'LoRaWAN Session Keys': Permission denied
+tshark: Error loading table 'User Object Names': Permission denied
+tshark: Error loading table 'User Resource Names': Permission denied
+tshark: Error loading table 'Static LCID -> drb Table': Permission denied
+tshark: Error loading table 'Static LCID -> drb Table': Permission denied
+tshark: Error loading table 'Pre-Shared Key List': Permission denied
+tshark: Error loading table 'CKN/CAK Info': Permission denied
+tshark: Error loading table 'Message Decoding': Permission denied
+tshark: Error loading table 'Security Contexts': Permission denied
+tshark: Error loading table 'PDCP UE security keys': Permission denied
+tshark: Error loading table 'PDCP UE security keys': Permission denied
+tshark: Error loading table 'PDU Transport PDUs': Permission denied
+tshark: Error loading table 'PDU Transport Extended Config': Permission denied
+tshark: Error loading table 'PRES Users Context List': Permission denied
+tshark: Error loading table 'Protobuf Search Paths': Permission denied
+tshark: Error loading table 'Protobuf UDP Message Types': Permission denied
+tshark: Error loading table 'Protobuf URI Message Types': Permission denied
+tshark: Error loading table 'Kind-ID Table': Permission denied
+tshark: Error loading table 'Pre-configured security table': Permission denied
+tshark: Error loading table 'RTPS GUID-PSK': Permission denied
+tshark: Error loading table 'SCCP Users Table': Permission denied
+tshark: Error loading table 'Chunk types for the statistics dialog': Permission denied
+tshark: Error loading table 'Signal PDU Messages': Permission denied
+tshark: Error loading table 'Signal Value Names': Permission denied
+tshark: Error loading table 'Signal PDU Signal List': Permission denied
+tshark: Error loading table 'SOME/IP': Permission denied
+tshark: Error loading table 'CAN': Permission denied
+tshark: Error loading table 'FlexRay': Permission denied
+tshark: Error loading table 'LIN': Permission denied
+tshark: Error loading table 'PDU Transport': Permission denied
+tshark: Error loading table 'AUTOSAR I-PduM': Permission denied
+tshark: Error loading table 'DLT': Permission denied
+tshark: Error loading table 'UDS': Permission denied
+tshark: Error loading table 'ISOBUS': Permission denied
+tshark: Error loading table 'Custom SIP Header Fields': Permission denied
+tshark: Error loading table 'SIP authorization users': Permission denied
+tshark: Error loading table 'Secret session key to use for decryption': Permission denied
+tshark: Error loading table 'SNMP Users': Permission denied
+tshark: Error loading table 'SNMP Enterprise Specific Trap Types': Permission denied
+tshark: Error loading table 'CAN Interface Mapping': Permission denied
+tshark: Error loading table 'Sender Receiver Config': Permission denied
+tshark: Error loading table 'SOME/IP Services': Permission denied
+tshark: Error loading table 'SOME/IP Methods/Events/Fields': Permission denied
+tshark: Error loading table 'SOME/IP Eventgroups': Permission denied
+tshark: Error loading table 'SOME/IP Clients': Permission denied
+tshark: Error loading table 'SOME/IP Parameter List': Permission denied
+tshark: Error loading table 'SOME/IP Parameter Base Type List': Permission denied
+tshark: Error loading table 'SOME/IP Parameter String List': Permission denied
+tshark: Error loading table 'SOME/IP Parameter Arrays': Permission denied
+tshark: Error loading table 'SOME/IP Parameter Structs': Permission denied
+tshark: Error loading table 'SOME/IP Parameter Unions': Permission denied
+tshark: Error loading table 'SOME/IP Parameter Typedef List': Permission denied
+tshark: Error loading table 'SOME/IP Parameter Enums': Permission denied
+tshark: Error loading table 'SOME/IP Parameter Bitfields': Permission denied
+tshark: Error loading table 'TECMP Devices': Permission denied
+tshark: Error loading table 'TECMP Interfaces': Permission denied
+tshark: Error loading table 'TECMP Control Messages': Permission denied
+tshark: Error loading table 'RSA Keys': Permission denied
+tshark: Error loading table 'XTEA Keys': Permission denied
+tshark: Error loading table 'TLS Decrypt': Permission denied
+tshark: Error loading table 'UDS Routine Identifier List': Permission denied
+tshark: Error loading table 'UDS Data Identifier List': Permission denied
+tshark: Error loading table 'UDS DTC Identifier List': Permission denied
+tshark: Error loading table 'UDS Addresses': Permission denied
+tshark: Error loading table 'User DLTs Table': Permission denied
+tshark: Error loading table 'Bitstream Channel Table': Permission denied
+tshark: Error loading table 'WireGuard static keys': Permission denied
+tshark: Error loading table 'Memory Addresses': Permission denied
+tshark: Error loading table 'UDP/TCP': Permission denied
+tshark: Error loading table 'CAN': Permission denied
+tshark: Error loading table 'Pre-configured Keys': Permission denied
+tshark: Error loading table 'Pre-configured Keys': Permission denied
+tshark: Error loading table 'ZigBee GP Security Keys': Permission denied
+tshark: Error loading table 'ZMTP TCP Protocols': Permission denied
+tshark: Error loading table 'Expert Info Severity Level Configuration': Permission denied
+tshark: Error loading table 'Packet Lengths': Permission denied
+tshark: Can't open your preferences file "/root/.config/wireshark/preferences": Permission denied.
+tshark: Could not open your disabled protocols file
+"/root/.config/wireshark/disabled_protos": Permission denied.
+tshark: Could not open your enabled protocols file
+"/root/.config/wireshark/enabled_protos": Permission denied.
+tshark: Could not open your heuristic dissectors file
+"/root/.config/wireshark/heuristic_protos": Permission denied.
+P7 topology ready: qclient=10.10.0.1/24 qserver=10.10.0.2/24 eth0 MTU=1500 ifb0=up owner_uid=1000
+G11: run=handshake_cold exit=0
+G11: run=handshake_resumed exit=0
+G11: run=handshake_early exit=0
+G11: run=loss_0_tcp exit=0
+tests/system/g11.sh: line 39: kill: (73164) - No such process
+G11: gate_root=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p11-g11-3344e60b5868 original_exit=1 cleanup_exit=0
+g11_exit=1

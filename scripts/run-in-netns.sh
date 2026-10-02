@@ -29,4 +29,5 @@ require_owned_topology
 
 # exec preserves foreground signal behavior; no unrelated process is killed.
 exec ip netns exec "$ns" setpriv \
-    --reuid="$SUDO_UID" --regid="$SUDO_GID" --clear-groups -- "$@"
+    --reuid="$SUDO_UID" --regid="$SUDO_GID" --clear-groups --reset-env -- \
+    env PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin "$@"

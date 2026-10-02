@@ -2,15 +2,15 @@
 
 T03 — QUIC Protocol Implementation and Performance, môn Lập trình mạng, PTIT.
 
-**Trạng thái hiện tại:** người dùng xác nhận P9/G09 **PASS** và cho phép riêng P10/G10. P10 đã triển khai QUIC cold/resumed/early, ticket notification, một replay sau rejection, handshake schedule và thống kê/plots tách mode. Build/suite/race/analysis/network regressions PASS. Actual G10 ingress IFB **BLOCKED**: lượt `sudo -n` exit1 vì cần xác thực, trước khi runner tạo topology. Localhost chỉ kiểm correctness; [P10 evidence/runbook](docs/evidence/p10/README.md) ghi kết quả thực và lệnh gate. Dừng tại P10 để người dùng review; P11/P12 chưa triển khai.
+**Trạng thái hiện tại:** P10/G10 **PASS**. P11 early-secret export/full Go/race PASS; latest actual G11 FAIL0/23 trước topology vì reset-env PATH thiếu sbin/sysctl. D29 đã sửa PATH và exact runtime/lifecycle9 PASS. Chạy lại `bash scripts/run-g11-review.sh`; [P11 evidence/lệnh/review](docs/evidence/p11/README.md). Full decrypted packet0RTT/HOL chờ actual gate; không P12.
 
 P9 dataset lịch sử tại `results/p9-g09-8dFdkj/main/` có main240 measured+16 warmup, 256 success/0 failure, 1536 resource rows và controlled interrupt/cleanup verified. [D24 audit](docs/evidence/audit-p7-p9/README.md) giữ nguyên các lần BLOCKED trước đây. Interactive terminal Ctrl+C qua tee từng exit141/cleanup1 còn là limitation riêng; controlled interrupt PASS không xác minh lại đường terminal đó. Xem [ACCEPTANCE_RESULTS](docs/ACCEPTANCE_RESULTS.md) và [P9 evidence](docs/evidence/p9/README.md).
 
-Thiết kế: cùng bộ resource trong RAM được phục vụ bởi TCP/TLS trên TCP và raw QUIC trên UDP cùng số port 4433. Hai namespace chạy trong Ubuntu WSL2; P8 cấu hình impairment phía nhận qua IFB. P9 orchestrator quản lý benchmark tuần tự; qlog/packet capture thuộc P11.
+Thiết kế: cùng bộ resource trong RAM được phục vụ bởi TCP/TLS trên TCP và raw QUIC trên UDP cùng số port 4433. Hai namespace chạy trong Ubuntu WSL2; P8 cấu hình impairment phía nhận qua IFB. P9 orchestrator quản lý benchmark tuần tự; P11 đã thêm qlog/progress và capture driver; actual capture gate còn BLOCKED.
 
 [Đặc tả](docs/DEMO_SPEC.md) · [Kế hoạch triển khai](docs/IMPLEMENTATION_PLAN.md) · [Nghiệm thu](docs/ACCEPTANCE.md) · [Kịch bản demo](docs/DEMO_SCRIPT.md)
 
-Repo phải nằm trong filesystem Linux native, ưu tiên `/home/<user>/...`, không `/mnt/c/...` hoặc `/mnt/d/...`. Mở Windows VS Code bằng Remote WSL, workspace `WSL: Ubuntu`. Implementation mặc định human-gated: chỉ phase được người dùng cho phép, chạy gate rồi cập nhật TASK và dừng review. Phạm vi được cho phép hiện tại là riêng P10/G10; xem [bằng chứng acceptance](docs/ACCEPTANCE_RESULTS.md) để biết trạng thái gate mới nhất.
+Repo phải nằm trong filesystem Linux native, ưu tiên `/home/<user>/...`, không `/mnt/c/...` hoặc `/mnt/d/...`. Mở Windows VS Code bằng Remote WSL, workspace `WSL: Ubuntu`. Implementation mặc định human-gated: chỉ phase được người dùng cho phép, chạy gate rồi cập nhật TASK và dừng review. Phạm vi được cho phép hiện tại là riêng P11/G11; xem [bằng chứng acceptance](docs/ACCEPTANCE_RESULTS.md) để biết trạng thái gate mới nhất.
 
 ## Tái lập P0 (chạy bên trong Ubuntu WSL2)
 
@@ -250,3 +250,7 @@ Agent phải thay mục này bằng các bước **đã kiểm tra thực tế**
 8. Liên kết provenance, disclosure AI và giới hạn kết luận.
 
 Hiện có targets build/test/test-race/certs/doctor và P7/P8 setup-network/server/netem/inspect-network/clear-netem/clean-network/test-network. P9 có benchmark/analyze/analysis-deps/test-analysis; P10 thêm benchmark-handshake. Demo/capture và đóng gói/rehearsal thuộc P11/P12.
+
+## P11 evidence
+
+`make decoder-deps` chuẩn bị decoder tshark4.6.4 cục bộ từ packages/hash pinned, không cài hệ thống. `make gate-g11` build bằng user rồi chạy full gate qua sudo. Lệnh có tee/exit capture, trạng thái subcases và review tại [runbook P11](docs/evidence/p11/README.md). Traces không được gộp vào main performance; TLS keylogs giữ local mode0600.

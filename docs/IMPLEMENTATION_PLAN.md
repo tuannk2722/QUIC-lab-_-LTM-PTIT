@@ -27,11 +27,12 @@ Mỗi phase: đọc hợp đồng → inspect code → implement → chạy gate
 | internal/tlsconfig/config.go | Trust/SAN/ALPN/TLS1.3 chung; không mở socket ở P0 | P0/P2 |
 | internal/tlsconfig/sessioncache.go | Thread-safe cache + ticket signal | P10 |
 | internal/metrics/timer.go, result.go, csv.go, json.go | Monotonic record, export, null/errors | P5/P6 |
-| internal/metrics/progress.go | Evidence in-memory event collection | P11 |
+| internal/transport/progress.go, internal/metrics/progress.go | Bounded per-resource collector và post-timing CSV | P11 |
 | internal/bench/runner.go, schedule.go, merge.go, manifest.go | Shared cold trials, immutable hash-bound seeds/order, failure rows, provenance/host metadata | P9 |
 | internal/bench/session.go | Shared three-mode sequence; final, ticket warm-up và attempt artifacts | P10 |
 | internal/cli/bench.go, internal/transport/connection.go | Bench flags/lifecycle, actual post-FIN TLS/socket sidecars | P9 |
-| internal/observability/qlog.go, keylog.go | Optional traces và mapping, flush | P11 |
+| internal/observability/trace.go | Optional traces và mapping, flush | P11 |
+| scripts/tls_keylog_overlay.py, run-g11-review.sh | Hash-checked build-only early keylog fix và ordinary-user G11 entry | P11/D28 |
 | scripts/gen-cert.sh | Local cert/key SAN, secure file permissions | P0 |
 | scripts/doctor.sh, preflight-network.sh | Inventory không root; primitive probe đặc quyền tách riêng, namespace tạm | P0/P7/P8 |
 | scripts/run-in-netns.sh | Privileged entry → user UID/GID | P7 |
@@ -40,12 +41,15 @@ Mỗi phase: đọc hợp đồng → inspect code → implement → chạy gate
 | internal/config/network.go | Read bounded recent network snapshot, check client namespace identity | P8 |
 | tests/system/g08.sh, check_g08.py, test_network.py | G08 traffic gate/checker and unprivileged negative tests | P8 |
 | scripts/bench.sh, bench-support.py | Privileged network orchestration; unprivileged checks/journals/metadata/analysis | P9 |
-| scripts/capture.sh, demo.sh | Evidence capture và managed live lifecycle | P11/P12 |
+| scripts/capture.sh, process-lifecycle.sh, evidence-support.py, tshark.sh, prepare-decoder.py | Managed capture, child exit status, UID sinks/manifest và pinned offline decoder | P11 |
+| scripts/demo.sh | Managed live lifecycle | P12 |
 | analysis/validate.py, cohort.py, summarize.py, plot.py | Results/cohort contract, stats, charts | P6/P9/P12 |
 | tests/system/g09.sh, check_g09.py, run_g09_software.py, test_bench.py | Actual default+interrupt gate; software localhost and checker unit regression | P9 |
 | tests/system/g10.sh, check_g10.py, run_g10_software.py, test_handshake.py | G10 functional +96-target IFB gate, raw/ticket/history checks, localhost/pure regression | P10 |
 | analysis/requirements.txt | Pin thư viện plotting nếu dùng ngoài stdlib | P9 |
 | tests/integration/*_test.go | Transport/TLS/error/early functional tests | P2–P10 |
+| tests/system/g11.sh, check_g11.py, run_g11_software.py | Actual evidence gate, archived checker và localhost correctness | P11 |
+| analysis/evidence.py, packet_evidence.py, hol.py, decoder-packages.json | quic-12 viewer/correlation, tshark PDML, causal criteria và decoder pin | P11 |
 | tests/system/run.sh | Namespace/impairment/cleanup acceptance | P7–P12 |
 | Makefile | Targets công khai đã mô tả | P0–P12 |
 | docs/REPORT.md | Report template → kết quả thật và giới hạn | P9/P12 |
@@ -130,13 +134,17 @@ Integration tests: cold no ticket, resumed without early, early accepted, delibe
 
 Gate G10: actual Used0RTT+DidResume+timing/evidence sau P11; accepted and rejection correctness; no duplicate fallback; early rejected records false, fallback_count=1 và bytes correct. Run 3×30 handshake suite; warmups logged, không gộp vào bulk.
 
-P10 refinement D25: defaults96 targets (90 measured+6 phase warmups),64 separately logged ticket warmups; six-permutation order/seed triples. Shared CLI/bench sequence dùng cache notification, original target t0 qua one replay, actual state và attempt index. CSV-derived summary phân biệt transfer success/mode achievement/fallback; early qualification dùng RequestEnd<observed Handshake, packet proof pending P11. Full command `sudo bash tests/system/run.sh --gate G10` chạy functional tests và ingress IFB default cohort; localhost driver không thay network gate. Current G10 actual **BLOCKED** vì sudo yêu cầu xác thực trước runner; evidence/manual commands tại [P10](evidence/p10/README.md). Dừng human review P10, không tự mở P11.
+P10 refinement D25: defaults96 targets (90 measured+6 phase warmups),64 separately logged ticket warmups; six-permutation order/seed triples. Shared CLI/bench sequence dùng cache notification, original target t0 qua one replay, actual state và attempt index. CSV-derived summary phân biệt transfer success/mode achievement/fallback; early qualification dùng RequestEnd<observed Handshake, packet proof pending P11. Full command `sudo bash tests/system/run.sh --gate G10` chạy functional tests và ingress IFB default cohort; localhost driver không thay network gate. Actual G10 user-run PASS tại results/p10-g10-cR1oR9; checker audit/archive1836 files tại [P10](evidence/p10/README.md). Historical sudo BLOCKED giữ nguyên. User authorize riêng P11/G11 ngày2026-10-02.
 
 ## P11 — qlog, PCAP, progress evidence
 
 Implement optional observability, QLOGDIR/mapping, correct decoder, capture managed PID, keylog riêng, progress in-memory. Validate qvis hoặc giải pháp viewer phù hợp qlog version; thu sample UDP/QUIC, early packet, loss trace. Store all evidence attempts, chọn representative run có tiêu chí giải thích và disclose.
 
 Gate G11: qlog parse/open thật; PCAP decode QUIC UDP; 0-RTT evidence corroborates API state; HOL trace đủ causal detail hoặc status inconclusive. Không gọi chứng minh HOL nếu chỉ có completion chart. Instrumented dataset tách khỏi main performance.
+
+P11/D26 implementation: client/server optional qlog/keylog, per-resource bounded progress, standalone quic-12 viewer/PNG/SVG, pinned tshark4.6.4 và managed paired capture. `tests/system/run.sh --gate G11` có23 planned trials, all attempts và conservative packet/HOL checker. Latest actual user-run FAIL sau5 successes; D27 sửa lifecycle/environment/capture. User yêu cầu tiếp tục hoàn thành P11: D28 thêm hash-checked Go build-only early keylog overlay, localhost actual export/full suite/race/provenance PASS; không đổi pins/custom crypto. Early decrypted-PCAP precheck chạy sau3 handshake trials trước20 bulk. Full rerun vẫn cần interactive sudo; entry `bash scripts/run-g11-review.sh`. Full early packet/HOL acceptance chờ actual network. [P11 evidence/runbook](evidence/p11/README.md); chỉ P11, không P12.
+
+Current P11 refinement D29: latest user-run1200e3df1cf2 FAIL trước topology/trial0/23 do reset-env PATH thiếu sbin/sysctl. Owner PATH/preflight đã sửa, exact runtime/lifecycle9 PASS; patched full23/PCAP/HOL vẫn pending. Entry giữ `bash scripts/run-g11-review.sh`; không mở P12.
 
 ## P12 — Đóng gói end-to-end và rehearsal
 
@@ -147,3 +155,5 @@ Gate G12: fresh checkout theo README build/run/cleanup được; tất cả mand
 ## Khi đổi phiên hoặc dừng giữa chừng
 
 TASK lưu phase, exact next action, file read/changed, commands+exit/results, unresolved issues. Dùng trạng thái NOT_STARTED/IN_PROGRESS/PASS/FAIL/BLOCKED, không checkbox done cho phần chưa chạy. Khi resume, kiểm git diff và artifact tồn tại trước tin vào checkpoint. Không “làm lại từ đầu” vì context chat mất.
+
+TASK giữ một checkpoint hiện hành ngắn với links tới evidence và normative docs. Khi cần lưu toàn văn checkpoint cũ, chuyển nguyên văn vào `.codex/history/` và gắn link lịch sử; không nối toàn bộ phase history hoặc sao chép cả implementation plan/evidence vào TASK. Đây là quy ước continuity, không thay acceptance hoặc provenance.

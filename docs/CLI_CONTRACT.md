@@ -1,6 +1,6 @@
 # CLI và Make contract
 
-Các lệnh dưới đây là **hợp đồng cuối cùng**. User xác nhận P9/G09 PASS và cho phép riêng P10/G10. Client QUIC cold/resumed/early, server early listener và handshake suite đã triển khai; actual IFB G10 BLOCKED ở sudo authentication, localhost correctness có evidence riêng. Traces thuộc P11, chưa mở. Defaults dùng chung config loader. Không dùng command string eval từ input; subprocess dùng argument list.
+Các lệnh dưới đây là hợp đồng lab. User xác nhận P10/G10 actual PASS và authorize riêng P11/G11. Traces client/server đã triển khai; performance bench yêu cầu traces off. Latest actual G11 FAIL sau5 trials; fix regressions PASS, actual rerun BLOCKED ở sudo và early key export còn pending. Defaults dùng chung config loader; subprocess argument arrays, không eval.
 
 ## 1. Binaries
 
@@ -10,7 +10,7 @@ Các lệnh dưới đây là **hợp đồng cuối cùng**. User xác nhận P
 |---|---|---|
 | server | `--listen=0.0.0.0:4433 --transport=both --profile=bulk --profiles=configs/workloads.json` | tcp/quic/both; store theo profile |
 | server | `--cert=certs/server.crt --key=certs/server.key --allow-0rtt=true` | P10 ListenEarly/Allow0RTT thực; TCP vẫn full TLS1.3 |
-| server | `--ready-file=PATH --qlog-dir=PATH --keylog=PATH` | ready file atomic sau listeners được chọn; qlog/keylog thuộc P11 |
+| server | `--ready-file=PATH --qlog-dir=PATH --keylog=PATH` | ready file atomic sau listeners được chọn; P11 optional trace sinks, new-file-only/flush checked |
 | client | `--addr=10.10.0.2:4433 --transport=tcp --mode=cold --profile=bulk` | transport tcp/quic; mode cold/resumed/early, early chỉ QUIC |
 | client | `--ca=certs/server.crt --server-name=10.10.0.2 --timeout=60s` | trust đúng cert và identity |
 | client | `--experiment-id=ID --run-id=ID --out=DIR --format=table` | ID tự sinh nếu thiếu; table/json; raw result ghi atomically |
@@ -34,7 +34,7 @@ Schedule entry tối thiểu: schema_version, experiment_id, run_id, scenario, p
 
 `bin/client --mode=cold --transport=quic` dùng một QUIC v1 connection, một bidirectional stream/resource và cùng QB01; `--transport=tcp` giữ một TLS connection và scheduler round-robin. Client QUIC gửi các REQUEST mà không chờ response của resource trước; mỗi stream gửi request rồi đóng send-half. Output JSON trên stdout vẫn có `resource_id`, `transport_stream_id` thực cho QUIC, `bytes`, `checksum_ok`, `elapsed_ms`, thêm object `metrics` P5; TCP bỏ `transport_stream_id`. Với profile bulk, 6 resource nằm trong mảng `resources`. Canonical typed record/CSV P6 nằm trong thư mục kết quả mới; stdout localhost chỉ là correctness output.
 
-QUIC cho phép server nhận64 incoming bidirectional streams, còn client từ chối stream do server tự mở; hai phía tắt incoming unidirectional streams. Receive credits ban đầu/tối đa:512KiB/2MiB mỗi stream và2MiB/16MiB mỗi connection; đây là flow-control credits của quic-go. P10 `--allow-0rtt` điều khiển acceptance thực; resumed/early được hỗ trợ trên QUIC/handshake profile. `--qlog-dir`, `--keylog`, `--progress` thuộc P11 và vẫn bị từ chối trước transfer.
+QUIC cho phép server nhận64 incoming bidirectional streams, còn client từ chối stream do server tự mở; hai phía tắt incoming unidirectional streams. Receive credits ban đầu/tối đa:512KiB/2MiB mỗi stream và2MiB/16MiB mỗi connection; đây là flow-control credits của quic-go. P10 `--allow-0rtt` điều khiển acceptance thực; resumed/early được hỗ trợ trên QUIC/handshake profile. P11 `--qlog-dir`, `--keylog`, `--progress` hoạt động ở client/server; performance bench vẫn từ chối traces.
 
 ### Hiện trạng P5/P6
 
@@ -88,7 +88,7 @@ Refinement D24 (audit P7–P9): chạy `make build` bằng user tạo `bin/build
 
 Client/bench dùng chung RunTrial/RunSession. Cold clone TLS config/empty cache; resumed/early mở một prior cold connection, chờ cache Put với ticket deadline rồi đóng, target có own t0. Resumed dùng Dial thường, early dùng DialEarly; không reuse target giữa trials. Warm-up failure vẫn có failed target rows và `target_invoked=false`. `ticket-warmup/` chứa canonical prior record; `attempts/<run_id>.json` chứa target attempts tối đa2, original t0 và actual state; `INCOMPLETE` chỉ xóa khi sidecars đủ. Stdout JSON giữ transfer/metrics shape, stderr in mode/TLSResumed/Used0RTT/rejection/fallback và result path; không gọi fallback là0RTT success.
 
-`--suite=handshake` tự chọn handshake profile/rtt50-loss0, từ chối incompatible explicit profile/scenario/mode override. Schedule96 targets,64 prior ticket connections ngoài aggregate, six-permutation order/seed triples. Wrapper managed server với Allow0RTT=true, giữ network condition qua prior+target, watchdog2×timeout+15s. `make benchmark-handshake` nhận optional RUNS/WARMUPS/SEED như bulk; changed counts chỉ exploratory. `python3 analysis/summarize.py DIR --handshake` và `python3 analysis/plot.py DIR --handshake` yêu cầu full actual ingress cohort; generic analyze nhận diện suite và giữ denominator/mode qualification. Full gate: `sudo bash tests/system/run.sh --gate G10`, không repeat-count overrides; exact runbook/evidence tại [P10](evidence/p10/README.md). API qualification chưa là G11 packet proof. Dừng human review P10.
+`--suite=handshake` tự chọn handshake profile/rtt50-loss0, từ chối incompatible explicit profile/scenario/mode override. Schedule96 targets,64 prior ticket connections ngoài aggregate, six-permutation order/seed triples. Wrapper managed server với Allow0RTT=true, giữ network condition qua prior+target, watchdog2×timeout+15s. `make benchmark-handshake` nhận optional RUNS/WARMUPS/SEED như bulk; changed counts chỉ exploratory. `python3 analysis/summarize.py DIR --handshake` và `python3 analysis/plot.py DIR --handshake` yêu cầu full actual ingress cohort; generic analyze nhận diện suite và giữ denominator/mode qualification. Full gate: `sudo bash tests/system/run.sh --gate G10`, không repeat-count overrides; exact runbook/evidence tại [P10](evidence/p10/README.md). Actual G10 user-run PASS; API qualification chưa là G11 packet proof. P11 authorize riêng, actual capture gate BLOCKED.
 
 - 0: thao tác yêu cầu thành công; client full data + hash pass. Early demo yêu cầu “prove accepted early” thêm gate riêng, không coi fallback success là proof.
 - 1: runtime/transfer/checksum/result write failure, hoặc benchmark có trial failed (vẫn hoàn thành những entry còn lại nếu testbed còn hợp lệ).
@@ -101,6 +101,18 @@ Server in readiness, endpoints và workload; client in transport/mode, scenario 
 P4 hiện in readiness và kết quả transfer tối thiểu theo phần trên; các trường timing đầy đủ, `used0rtt`, scenario được xác minh và output directory là hợp đồng cho các phase metrics/results/0-RTT sau.
 
 Bench summary có attempted/success/failed; có failures thì CSV vẫn giữ đầy đủ. Infra failure như netem apply sai → dừng cohort, không tiếp tục dưới điều kiện mạng giả.
+
+### P11 — optional evidence và gate
+
+Client/server `--qlog-dir=PATH` hoặc QLOGDIR bật exact quic-12 JSON-SEQ; flags override environment. New qlog files/mapping không overwrite, flush bounded5s sau connection/listener shutdown, error làm command nonzero. `--keylog=NEW_FILE` bật local TLS secrets0600/thread-safe, không in secrets hoặc commit mặc định. Client `--progress` ghi private bounded16KiB/final DATA thresholds, flush progress.csv sau timing; any trace flag tự phase/trace_mode=evidence. Trace error sau transport vẫn giữ canonical failure rows. Resumed/early prior có own ticket-qlog/progress; fallback attempts không gộp payload.
+
+`make decoder-deps` download/extract pinned Ubuntu tshark4.6.4 packages/hash vào `.tools/tshark`, unprivileged; không cài hệ thống. `scripts/tshark.sh` ưu tiên system decoder nếu có, actual version ghi manifest. `make capture CAPTURE_NS=qclient|qserver CAPTURE_SECONDS=1..300 CAPTURE_OUT=NEW_DIR` cần owned topology đã có; tạo capture.pcap/tcpdump.log/ready/status.json bằng UID thường, bounded PID cleanup. Gate driver quản server, paired capture và network: `make gate-g11` hoặc full `sudo bash tests/system/run.sh --gate G11` sau user build. Không count overrides. [Exact runbook](evidence/p11/README.md); demo/rehearsal wrappers còn P12.
+
+D27: UID entry/sinks reset environment về passwd owner, không đọc root HOME/XDG config. Capture immediate-mode, graceful flush/drain/EOF trước status; status thêm capture_packets/capture_complete/capture_error và reject empty/truncated/count mismatch. Failed capture cleanup trả nonzero kể cả wrapper được TERM có chủ đích.
+
+D29: sau reset-env, owner helpers/sinks và namespace entry explicit trusted PATH gồm /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin để sysctl/ip/tc/ethtool resolve dưới UID thường. G11 preflight kiểm tools cả dưới owner environment trước prepare/topology. Không inherit root HOME/XDG hoặc arbitrary PATH; seed/group policy giữ nguyên.
+
+D28: make build/test/test-race dùng hash-checked Go1.27.1 build-only TLS overlay để bổ sung optional CLIENT_EARLY_TRAFFIC_SECRET keylog. Installed GOROOT/module cache và pins giữ nguyên; build receipt lưu patch hashes. Keylog nil không ghi secrets; enabled writer errors fail handshake. Gate kiểm decrypted early REQUEST sau3 handshake trials trước20 bulk trials; full23 audit vẫn bắt buộc. Entry một lệnh bằng UID thường: `bash scripts/run-g11-review.sh`; sudo hỏi mật khẩu trong terminal người dùng và log path/exit được in khi xong. Không dùng standalone go build thiếu overlay cho G11.
 
 ## 3. Make targets công khai
 
@@ -117,7 +129,9 @@ Bench summary có attempted/success/failed; có failures thì CSV vẫn giữ đ
 | `make demo-baseline` | Một TCP + một QUIC bulk no-loss có verify mạng |
 | `make demo-loss` | Một paired bulk rtt50-loss3 evidence; in bảng và lưu trace |
 | `make demo-0rtt` | Handshake profile; warm-up/cold/resumed/early, show proof status |
-| `make capture` | Capture lab port4433 theo timeout/managed PID; không chờ vô hạn |
+| `make capture` | P11 managed capture lab port4433/owned namespace, duration<=300s |
+| `make decoder-deps` | Pinned tshark local packages/hash, user preparation |
+| `make gate-g11` | User build rồi actual23-trial evidence gate qua sudo |
 | `make benchmark` | Main 240 measured +16 warm-up, ingress-ifb, performance mode |
 | `make benchmark-handshake` | QUIC 3 modes ×30 measured; ticket warm-ups riêng |
 | `make analyze RESULTS=...` | Validate → summary/charts/report, không sửa raw |

@@ -19,7 +19,10 @@ RUNS ?=
 WARMUPS ?=
 SEED ?=
 RESULTS ?=
-export PROFILE SCENARIO NETWORK_PROFILE NETEM_SEED RUNS WARMUPS SEED RESULTS
+CAPTURE_NS ?= qclient
+CAPTURE_SECONDS ?= 30
+CAPTURE_OUT ?=
+export PROFILE SCENARIO NETWORK_PROFILE NETEM_SEED RUNS WARMUPS SEED RESULTS CAPTURE_NS CAPTURE_SECONDS CAPTURE_OUT
 
 .PHONY: check-go build test test-race certs doctor setup-network server clean-network netem clear-netem inspect-network test-network benchmark benchmark-handshake analyze analysis-deps test-analysis
 check-go:
@@ -28,11 +31,14 @@ check-go:
 build: check-go
 	python3 scripts/build.py "$(GO)" "$(BUILD)"
 
-test: check-go
-	$(GO) test -mod=readonly ./...
+tls-keylog-overlay: check-go
+	python3 scripts/tls_keylog_overlay.py "$(GO)"
 
-test-race: check-go
-	$(GO) test -mod=readonly -race ./...
+test: tls-keylog-overlay
+	$(GO) test -overlay="$(CURDIR)/.tools/tls-keylog-overlay/overlay.json" -mod=readonly ./...
+
+test-race: tls-keylog-overlay
+	$(GO) test -overlay="$(CURDIR)/.tools/tls-keylog-overlay/overlay.json" -mod=readonly -race ./...
 
 certs:
 	bash scripts/gen-cert.sh --dir "$(CERT_DIR)" $(CERT_FORCE)
@@ -71,6 +77,7 @@ test-analysis:
 	python3 tests/system/test_bench.py -v
 	python3 tests/system/test_audit_p7_p9.py -v
 	python3 tests/system/test_handshake.py -v
+	python3 tests/system/test_g11_lifecycle.py -v
 
 benchmark: build
 	@bench_args=(); \
@@ -95,3 +102,15 @@ analyze:
 	python3 analysis/validate.py "$$RESULTS"
 	python3 analysis/summarize.py "$$RESULTS"
 	python3 analysis/plot.py "$$RESULTS"
+
+.PHONY: capture decoder-deps gate-g11 tls-keylog-overlay
+capture:
+	@capture_out="$$CAPTURE_OUT"; \
+		if [[ -z $$capture_out ]]; then capture_out="$(CURDIR)/results/capture-$$(date -u +%Y%m%dT%H%M%S)-$$RANDOM"; fi; \
+		sudo bash scripts/capture.sh "$$CAPTURE_NS" "$$capture_out" "$$CAPTURE_SECONDS"
+
+decoder-deps:
+	python3 scripts/prepare-decoder.py
+
+gate-g11: build
+	sudo bash tests/system/run.sh --gate G11

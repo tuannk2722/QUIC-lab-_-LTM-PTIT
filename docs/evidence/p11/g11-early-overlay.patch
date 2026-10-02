@@ -1,0 +1,26 @@
+--- go1.27.1/src/crypto/tls/handshake_client.go
++++ build-overlay/src/crypto/tls/handshake_client.go
+@@ -294,6 +294,10 @@
+ 			return err
+ 		}
+ 		earlyTrafficSecret := earlySecret.ClientEarlyTrafficSecret(transcript)
++		if err := c.config.writeKeyLog("CLIENT_EARLY_TRAFFIC_SECRET", transcriptHello.random, earlyTrafficSecret); err != nil {
++			c.sendAlert(alertInternalError)
++			return err
++		}
+ 		c.quicSetWriteSecret(QUICEncryptionLevelEarly, suite.id, earlyTrafficSecret)
+ 	}
+ 
+--- go1.27.1/src/crypto/tls/handshake_server_tls13.go
++++ build-overlay/src/crypto/tls/handshake_server_tls13.go
+@@ -416,6 +416,10 @@
+ 				return err
+ 			}
+ 			earlyTrafficSecret := hs.earlySecret.ClientEarlyTrafficSecret(transcript)
++			if err := c.config.writeKeyLog("CLIENT_EARLY_TRAFFIC_SECRET", hs.clientHello.random, earlyTrafficSecret); err != nil {
++				c.sendAlert(alertInternalError)
++				return err
++			}
+ 			if err := c.quicSetReadSecret(QUICEncryptionLevelEarly, hs.suite.id, earlyTrafficSecret); err != nil {
+ 				return err
+ 			}

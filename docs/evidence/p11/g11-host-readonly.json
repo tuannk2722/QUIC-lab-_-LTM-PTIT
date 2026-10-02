@@ -1,0 +1,6 @@
+{
+  "namespaces": "",
+  "marker_present": false,
+  "managed_apps": [],
+  "scope": "read-only host check; G11 sudo attempt did not mutate topology"
+}

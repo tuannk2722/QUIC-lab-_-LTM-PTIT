@@ -1,0 +1,14 @@
+{
+  "status": "PASS",
+  "scope": "PATH/metadata/static/receipt only; no full G11",
+  "original_failed_files_unchanged": 14,
+  "build_receipt_sha256": "0c93c22cb7e0dee60a399f13cc8ebd466308ae436cc9b7d5552fb439944ba0a5",
+  "source_changed_since_failed_run": [
+    "scripts/capture.sh",
+    "scripts/run-in-netns.sh",
+    "tests/system/g11.sh",
+    "tests/system/test_g11_lifecycle.py"
+  ],
+  "go_code_pin_config_schema_changed": false,
+  "agent_sudo_attempt": "sudo: interactive authentication is required\nattempt_exit=1"
+}

@@ -46,6 +46,7 @@ func RunBatch(parent context.Context, addr string, cfg *tls.Config, expected *wo
 			return nil, err
 		}
 		out[i].ResourceID, out[i].BytesExpected = r.ID(), uint64(r.Size())
+		transport.PrepareProgress(&out[i], transport.ProgressEnabled(parent))
 	}
 	ctx, cancel := context.WithTimeout(parent, timeout)
 	defer cancel()
@@ -143,6 +144,9 @@ func RunBatch(parent context.Context, addr string, cfg *tls.Config, expected *wo
 		if err := receivers[i].Accept(f); err != nil {
 			out[i].Err = err
 			return out, err
+		}
+		if f.Type == protocol.Data {
+			transport.RecordProgress(&out[i], receivers[i].BytesReceived())
 		}
 		if receivers[i].BytesReceived() == out[i].BytesExpected && out[i].Timing.PayloadDone.IsZero() {
 			out[i].Timing.PayloadDone = time.Now()

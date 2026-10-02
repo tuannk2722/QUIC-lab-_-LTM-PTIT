@@ -9,6 +9,7 @@ type Timing struct {
 }
 
 type Result struct {
+	Progress     []PayloadPoint
 	Connection   *ConnectionInfo
 	Session      *SessionState
 	AttemptIndex int

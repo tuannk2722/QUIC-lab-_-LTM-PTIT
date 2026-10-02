@@ -12,16 +12,37 @@ import unittest
 REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO / 'scripts'))
 import build
+import tls_keylog_overlay
 
 
 class AuditTests(unittest.TestCase):
+    def test_tls_overlay_preserves_installed_sources_and_rejects_drift(self):
+        goroot = REPO / '.tools/go1.27.1'
+        if not goroot.exists(): self.skipTest('pinned toolchain not installed')
+        originals = {p: (goroot / p).read_bytes() for p in tls_keylog_overlay.PATCHES}
+        patched, receipt = tls_keylog_overlay.patched_sources(goroot)
+        for path, original in originals.items():
+            self.assertEqual((goroot / path).read_bytes(), original)
+            self.assertNotEqual(patched[path], original)
+            self.assertEqual(patched[path].count(b'writeKeyLog("CLIENT_EARLY_TRAFFIC_SECRET"'), 1)
+            self.assertEqual(receipt[path]['original_sha256'], build.digest(goroot / path))
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            for path, original in originals.items():
+                (root / path).parent.mkdir(parents=True, exist_ok=True)
+                (root / path).write_bytes(original)
+            first = next(iter(originals))
+            (root / first).write_bytes(originals[first] + b'\n// unexpected upstream change\n')
+            with self.assertRaisesRegex(ValueError, 'source hash differs'):
+                tls_keylog_overlay.patched_sources(root)
+
     def test_build_receipt_rejects_stale_source_and_binaries(self):
-        for mutation in ('none', 'source', 'added_source', 'server', 'bench'):
+        for mutation in ('none', 'source', 'added_source', 'tls_overlay', 'server', 'bench'):
             with self.subTest(mutation=mutation), tempfile.TemporaryDirectory() as temp:
                 root = Path(temp)
                 for name in ('cmd', 'internal', 'scripts', 'bin'):
                     (root / name).mkdir()
-                for name in ('go.mod', 'go.sum', 'Makefile', 'scripts/build.py', 'internal/code.go'):
+                for name in ('go.mod', 'go.sum', 'Makefile', 'scripts/build.py', 'scripts/tls_keylog_overlay.py', 'internal/code.go'):
                     (root / name).write_text('unit fixture')
                 for name in build.NAMES:
                     (root / 'bin' / name).write_text('unit ' + name)
@@ -29,6 +50,7 @@ class AuditTests(unittest.TestCase):
                                binaries={n: build.digest(root / 'bin' / n) for n in build.NAMES})
                 if mutation == 'source': (root / 'internal/code.go').write_text('changed')
                 elif mutation == 'added_source': (root / 'cmd/new.go').write_text('added')
+                elif mutation == 'tls_overlay': (root / 'scripts/tls_keylog_overlay.py').write_text('changed')
                 elif mutation in build.NAMES: (root / 'bin' / mutation).write_text('replaced')
                 if mutation == 'none': build.verify(receipt, root)
                 else:

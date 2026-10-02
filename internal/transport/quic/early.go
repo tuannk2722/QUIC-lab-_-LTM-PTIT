@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"time"
 
+	"quic-performance-lab/internal/observability"
 	"quic-performance-lab/internal/tlsconfig"
 	"quic-performance-lab/internal/transport"
 	"quic-performance-lab/internal/workload"
@@ -32,7 +33,7 @@ func RunSession(ctx context.Context, addr string, cfg *tls.Config, expected *wor
 	if opts.Mode != "cold" {
 		cache := tlsconfig.NewTicketCache()
 		client.ClientSessionCache = cache
-		o.Warmup, _, o.WarmupErr = runBatch(ctx, addr, client, expected, opts.Timeout, false, cache, opts.TicketTimeout)
+		o.Warmup, _, o.WarmupErr = runBatch(observability.Role(ctx, "ticket"), addr, client, expected, opts.Timeout, false, cache, opts.TicketTimeout)
 		o.TicketObserved = o.WarmupErr == nil
 		if o.WarmupErr != nil {
 			o.Err = fmt.Errorf("ticket warm-up failed: %w", o.WarmupErr)
@@ -42,6 +43,7 @@ func RunSession(ctx context.Context, addr string, cfg *tls.Config, expected *wor
 			end := time.Now()
 			for i := range o.Results {
 				o.Results[i].Timing.End = end
+				transport.PrepareProgress(&o.Results[i], transport.ProgressEnabled(ctx))
 			}
 			return o
 		}
@@ -52,6 +54,6 @@ func RunSession(ctx context.Context, addr string, cfg *tls.Config, expected *wor
 			}
 		}
 	}
-	o.Results, o.Attempts, o.Err = runBatch(ctx, addr, client, expected, opts.Timeout, opts.Mode == "early", nil, 0)
+	o.Results, o.Attempts, o.Err = runBatch(observability.Role(ctx, "target"), addr, client, expected, opts.Timeout, opts.Mode == "early", nil, 0)
 	return o
 }

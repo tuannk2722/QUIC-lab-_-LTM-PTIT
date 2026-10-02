@@ -84,5 +84,18 @@ func WriteOutcome(out string, meta metrics.TrialMeta, o transport.Outcome) (metr
 			return record, err
 		}
 	}
+	if err = metrics.WriteProgress(out, meta, o.Attempts, o.Results); err != nil {
+		return record, err
+	}
+	if len(o.Warmup) > 0 {
+		wm := meta
+		wm.RunID = meta.RunID + "_ticket"
+		if len(wm.RunID) > 128 {
+			wm.RunID = "ticket_warmup"
+		}
+		if err = metrics.WriteProgress(filepath.Join(out, "ticket-warmup"), wm, nil, o.Warmup); err != nil {
+			return record, err
+		}
+	}
 	return record, os.Remove(marker)
 }

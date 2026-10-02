@@ -24,6 +24,7 @@ import (
 	"quic-performance-lab/internal/bench"
 	"quic-performance-lab/internal/config"
 	"quic-performance-lab/internal/metrics"
+	"quic-performance-lab/internal/observability"
 	"quic-performance-lab/internal/tlsconfig"
 	"quic-performance-lab/internal/transport"
 	quictransport "quic-performance-lab/internal/transport/quic"
@@ -68,11 +69,11 @@ func endpoint(s string) bool {
 	return err == nil && n > 0 && n <= 65535
 }
 
-func Run(name string, args []string, out, errOut io.Writer) int {
+func Run(name string, args []string, out, errOut io.Writer) (code int) {
 	fs := flag.NewFlagSet(name, flag.ContinueOnError)
 	fs.SetOutput(errOut)
 	fs.Usage = func() {
-		fmt.Fprintf(errOut, "Usage: %s [flags]\nP10: cold TCP/QUIC, QUIC resumed/early handshake trials and bulk/handshake plan/entry/merge.\n", name)
+		fmt.Fprintf(errOut, "Usage: %s [flags]\nP11: TCP/QUIC trials, handshake, benchmark and optional local evidence.\n", name)
 		fs.PrintDefaults()
 	}
 	version := fs.Bool("version", false, "print build, commit and toolchain versions")
@@ -87,8 +88,10 @@ func Run(name string, args []string, out, errOut io.Writer) int {
 	var execution string
 	var seedDisabled bool
 	var allow0RTT bool
-	fs.String("qlog-dir", "", "qlog directory (future evidence mode)")
-	fs.String("keylog", "", "TLS secrets file (future evidence mode)")
+	var qlogDir, keylog string
+	var progress bool
+	fs.StringVar(&qlogDir, "qlog-dir", os.Getenv("QLOGDIR"), "local qlog JSON-SEQ directory (or QLOGDIR)")
+	fs.StringVar(&keylog, "keylog", "", "new local TLS secrets file, mode 0600")
 	if name == "server" {
 		fs.StringVar(&addr, "listen", "0.0.0.0:4433", "listen endpoint")
 		fs.StringVar(&transportName, "transport", "both", "tcp, quic or both")
@@ -107,7 +110,7 @@ func Run(name string, args []string, out, errOut io.Writer) int {
 		fs.StringVar(&experimentID, "experiment-id", "", "experiment identifier")
 		fs.StringVar(&runID, "run-id", "", "trial identifier")
 		fs.StringVar(&outDir, "out", "", "new result directory")
-		fs.Bool("progress", false, "collect progress in future evidence mode")
+		fs.BoolVar(&progress, "progress", false, "collect bounded in-memory payload progress")
 		fs.StringVar(&networkStatePath, "network-state", "", "recent ownership-checked network snapshot from inspect.sh")
 	} else {
 		fmt.Fprintln(errOut, "unknown binary")
@@ -235,7 +238,7 @@ func Run(name string, args []string, out, errOut io.Writer) int {
 			return bad("invalid plan network-profile")
 		}
 		if fs.Lookup("qlog-dir").Value.String() != "" || fs.Lookup("keylog").Value.String() != "" || fs.Lookup("progress").Value.String() == "true" {
-			return bad("P9 performance bench requires traces off; P11 implements evidence collection")
+			return bad("performance bench requires traces off; use client evidence or G11")
 		}
 		if suite == "handshake" {
 			if seen["profile"] && *profile != "handshake" {
@@ -256,6 +259,26 @@ func Run(name string, args []string, out, errOut io.Writer) int {
 			profiles: *profiles, scenarios: scenarios, scenario: scenario, runs: runs, warmups: warmups, seed: scheduleSeed, seedDisabled: seedDisabled,
 			execution: execution, addr: addr, ca: ca, serverName: serverName, timeout: timeout, network: networkStatePath, suite: suite, seen: seen, args: args}, w, s, out, errOut)
 	}
+	var evidence *observability.Manager
+	if qlogDir != "" || keylog != "" {
+		var sinkErr error
+		evidence, sinkErr = observability.New(qlogDir, keylog)
+		if sinkErr != nil {
+			fmt.Fprintln(errOut, "evidence setup:", sinkErr)
+			return 1
+		}
+		if qlogDir != "" {
+			_ = os.Setenv("QLOGDIR", qlogDir)
+		}
+		defer func() {
+			if evidence != nil {
+				if err := evidence.Close(); err != nil {
+					fmt.Fprintln(errOut, "evidence flush:", err)
+					code = 1
+				}
+			}
+		}()
+	}
 	if name == "server" {
 		store, err := workload.NewStore(w.Profiles[*profile], w.Limits)
 		if err != nil {
@@ -266,6 +289,9 @@ func Run(name string, args []string, out, errOut io.Writer) int {
 			fmt.Fprintln(errOut, err)
 			return 1
 		}
+		if evidence != nil {
+			evidence.TLS(cfg)
+		}
 		ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 		defer stop()
 		if err := serveCLI(ctx, addr, transportName, cfg, store, tcptransport.ServerOptions{
@@ -273,7 +299,7 @@ func Run(name string, args []string, out, errOut io.Writer) int {
 			BatchTimeout:     time.Duration(w.Timeouts.BatchSeconds) * time.Second,
 			TrialTimeout:     time.Duration(w.Timeouts.TrialSeconds) * time.Second,
 			MaxConnections:   int(w.Limits.MaxActiveConnections),
-		}, readyFile, *profile, allow0RTT, errOut); err != nil {
+		}, readyFile, *profile, allow0RTT, evidence, errOut); err != nil {
 			fmt.Fprintln(errOut, err)
 			return 1
 		}
@@ -322,11 +348,25 @@ func Run(name string, args []string, out, errOut io.Writer) int {
 		}
 		ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 		defer stop()
+		if evidence != nil {
+			evidence.TLS(cfg)
+			ctx = evidence.Context(ctx, runID, "target")
+		}
+		if progress {
+			ctx = transport.WithProgress(ctx)
+		}
 		o := bench.RunTrial(ctx, transportName, mode, addr, cfg, expected, timeout, time.Duration(w.Timeouts.TicketWaitSeconds)*time.Second)
+		if evidence != nil {
+			o.Err = errors.Join(o.Err, evidence.Close())
+			evidence = nil
+		}
 		results, err := o.Results, o.Err
 		meta := metrics.TrialMeta{ExperimentID: experimentID, RunID: runID, Phase: "measured", Scenario: "loopback-test",
 			Transport: transportName, Mode: mode, TraceMode: "performance", NetworkProfile: "loopback-test",
 			ResourceCount: expected.Count(), ResourceSizeBytes: uint64(expected.Profile().ResourceSizeBytes), ChunkBytes: uint32(expected.Profile().ChunkBytes)}
+		if qlogDir != "" || keylog != "" || progress {
+			meta.Phase, meta.TraceMode = "evidence", "evidence"
+		}
 		if network != nil {
 			meta.Phase, meta.TraceMode = "evidence", "evidence"
 			meta.Scenario, meta.NetworkProfile = network.Scenario, network.NetworkProfile
@@ -428,7 +468,7 @@ func boolValue(v *bool) any {
 	return *v
 }
 
-func serveCLI(parent context.Context, addr, transportName string, cfg *tls.Config, store *workload.Store, tcpOpts tcptransport.ServerOptions, readyFile, profile string, allow0RTT bool, errOut io.Writer) error {
+func serveCLI(parent context.Context, addr, transportName string, cfg *tls.Config, store *workload.Store, tcpOpts tcptransport.ServerOptions, readyFile, profile string, allow0RTT bool, evidence *observability.Manager, errOut io.Writer) error {
 	var tcpListener net.Listener
 	var packet net.PacketConn
 	var quicListener quictransport.Listener
@@ -442,6 +482,7 @@ func serveCLI(parent context.Context, addr, transportName string, cfg *tls.Confi
 	}
 	quicOpts := quictransport.ServerOptions{
 		Allow0RTT:        allow0RTT,
+		Evidence:         evidence,
 		HandshakeTimeout: tcpOpts.HandshakeTimeout,
 		BatchTimeout:     tcpOpts.BatchTimeout,
 		TrialTimeout:     tcpOpts.TrialTimeout,

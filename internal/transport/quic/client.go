@@ -10,6 +10,7 @@ import (
 	"sync"
 	"time"
 
+	"quic-performance-lab/internal/observability"
 	"quic-performance-lab/internal/protocol"
 	"quic-performance-lab/internal/tlsconfig"
 	"quic-performance-lab/internal/transport"
@@ -59,6 +60,12 @@ func runBatch(parent context.Context, addr string, cfg *tls.Config, expected *wo
 	handshakeTimeout := min(timeout, 10*time.Second)
 	qcfg := quicConfig(handshakeTimeout, timeout)
 	qcfg.MaxIncomingStreams = -1
+	if m := observability.From(parent); m != nil {
+		m.Configure(parent, qcfg)
+	}
+	for i := range out {
+		transport.PrepareProgress(&out[i], transport.ProgressEnabled(parent))
+	}
 	ctx, cancel := context.WithTimeout(parent, timeout)
 	defer cancel()
 	start := time.Now()
@@ -191,6 +198,9 @@ func runBatch(parent context.Context, addr string, cfg *tls.Config, expected *wo
 		if err != nil {
 			return out, attempts, err
 		}
+		for i := range out {
+			transport.PrepareProgress(&out[i], transport.ProgressEnabled(parent))
+		}
 		err = runAttempt(ctx, conn, expected, receivers, out, start, earlyReady, hs.at, 1)
 	}
 	annotate(out, time.Now())
@@ -307,6 +317,9 @@ func receiveResource(stream *quicgo.Stream, id, count, chunk uint32, receiver *p
 		}
 		if err := receiver.Accept(frame); err != nil {
 			return err
+		}
+		if frame.Type == protocol.Data {
+			transport.RecordProgress(result, receiver.BytesReceived())
 		}
 		if receiver.BytesReceived() == result.BytesExpected && result.Timing.PayloadDone.IsZero() {
 			result.Timing.PayloadDone = time.Now()

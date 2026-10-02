@@ -1,0 +1,9 @@
+test_build_receipt_rejects_stale_source_and_binaries (__main__.AuditTests.test_build_receipt_rejects_stale_source_and_binaries) ... ok
+test_experiment_lock_excludes_second_runner_and_releases (__main__.AuditTests.test_experiment_lock_excludes_second_runner_and_releases) ... ok
+test_signal_cleanup_with_closed_output_keeps_all_artifacts (__main__.AuditTests.test_signal_cleanup_with_closed_output_keeps_all_artifacts) ... ok
+test_tls_overlay_preserves_installed_sources_and_rejects_drift (__main__.AuditTests.test_tls_overlay_preserves_installed_sources_and_rejects_drift) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 1.762s
+
+OK

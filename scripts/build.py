@@ -8,6 +8,7 @@ from pathlib import Path
 import subprocess
 import sys
 import tempfile
+from tls_keylog_overlay import prepare
 
 REPO = Path(__file__).resolve().parents[1]
 NAMES = ('server', 'client', 'bench')
@@ -19,7 +20,7 @@ def digest(path):
 
 
 def inputs(repo):
-    paths = [repo / name for name in ('go.mod', 'go.sum', 'Makefile', 'scripts/build.py')]
+    paths = [repo / name for name in ('go.mod', 'go.sum', 'Makefile', 'scripts/build.py', 'scripts/tls_keylog_overlay.py')]
     for directory in ('cmd', 'internal'):
         paths.extend(p for p in (repo / directory).rglob('*.go') if not p.name.endswith('_test.go'))
     return {str(p.relative_to(repo)): digest(p) for p in sorted(paths)}
@@ -66,12 +67,14 @@ def build(go, revision):
         flags = ['-mod=readonly', '-trimpath', '-ldflags', f'-X quic-performance-lab/internal/cli.Build={revision}']
         with tempfile.TemporaryDirectory(prefix='.build-', dir=bindir) as temp:
             stage = Path(temp)
+            overlay, tls_receipt = prepare(go, stage / 'tls-overlay')
             for name in NAMES:
-                subprocess.run([go, 'build', *flags, '-o', str(stage / name), './cmd/' + name], cwd=REPO, check=True)
+                subprocess.run([go, 'build', '-overlay='+str(overlay), *flags, '-o', str(stage / name), './cmd/' + name], cwd=REPO, check=True)
             if inputs(REPO) != before:
                 raise ValueError('sources changed during build; no binaries published')
             receipt = dict(schema_version=1, inputs=before, binaries={n: digest(stage / n) for n in NAMES},
-                           go_version=subprocess.check_output([go, 'version'], text=True).strip(), build_flags=flags)
+                           go_version=subprocess.check_output([go, 'version'], text=True).strip(),
+                           build_flags=['-overlay=<temporary hash-checked TLS overlay>', *flags], tls_keylog_overlay=tls_receipt)
             (stage / 'build.json').write_text(json.dumps(receipt, indent=2, sort_keys=True) + '\n')
             # Receipt is last: any partial publication is rejected by verify.
             for name in (*NAMES, 'build.json'):

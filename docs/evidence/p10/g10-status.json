@@ -1,22 +1,22 @@
 {
   "phase": "P10",
   "gate": "G10",
-  "status": "BLOCKED",
+  "status": "PASS",
   "updated_client_date": "2026-10-02",
   "client_timezone": "Asia/Saigon",
-  "scope": "user-authorized P10 only; stop for human review; P11/P12 not run",
+  "scope": "actual P10 gate user-run PASS; P11 separately authorized 2026-10-02",
   "acceptance": {
     "G10-build/suite/race": "PASS",
     "G10-ticket/cold/resumed/accepted": "PASS (localhost)",
     "G10-rejected/one-replay/no-duplicate": "PASS (localhost)",
     "G10-missing-ticket/handshake-failure/cancel": "PASS (localhost)",
     "G10-default96/64tickets/cohort/stats/plots/failures": "PASS (localhost/software)",
-    "G10-actual90+6/IFB/RTT/kernel/UID/cleanup": "BLOCKED",
-    "G10-overall": "BLOCKED",
+    "G10-actual90+6/IFB/RTT/kernel/UID/cleanup": "PASS",
+    "G10-overall": "PASS",
     "G11-packet-proof": "NOT_RUN",
     "G12": "NOT_RUN"
   },
-  "blocker": "sudo interactive authentication required before runner; no actual P10 namespace/IFB dataset or topology mutation",
+  "blocker": null,
   "software_source_root": "/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p10-software-0dq12lsw",
   "software_counts": {
     "attempted": 96,
@@ -215,18 +215,15 @@
     "tests/system/test_handshake.py"
   ],
   "limitations": [
-    "localhost correctness only, no performance or HOL causation claim",
+    "historical software counts/qualification/archive above describe the localhost checkpoint; actual_source_root and actual_qualified_measured describe the passing network rerun",
     "API/REQUEST enqueue timing is not packet0RTT proof; P11 required",
-    "shared WSL2 CPU/scheduling and observer timing; one successful early target unachieved",
-    "P10 actual IFB orchestration still unverified; inherited fresh-boot IFB and terminal Ctrl+C limitations retained"
+    "shared WSL2 CPU/scheduling and observer timing; no performance superiority or HOL causation claim",
+    "inherited fresh-boot IFB and terminal Ctrl+C limitations retained; actual P10 IFB orchestration verified in the user-run"
   ],
   "next_action": [
-    "human review P10 patch/evidence",
-    "make build",
-    "set -o pipefail",
-    "sudo bash tests/system/run.sh --gate G10 2>&1 | tee docs/evidence/p10/g10-user-run.log",
-    "g10_status=${PIPESTATUS[0]}",
-    "printf 'g10_exit=%s\\n' \"$g10_status\" | tee -a docs/evidence/p10/g10-user-run.log"
+    "G10 closed PASS; no redundant rerun required",
+    "human review authorized P11 patch/evidence and follow docs/evidence/p11/README.md for the blocked actual G11 run",
+    "P12 requires separate user authorization"
   ],
   "test_counts": {
     "analysis": 10,
@@ -240,5 +237,34 @@
     "software_ready_file_exists": false,
     "namespace_paths_present": [],
     "scope": "read-only ordinary-user observation; not actual G10 namespace cleanup gate"
+  },
+  "previous_checkpoint": {
+    "status": "BLOCKED",
+    "blocker": "sudo interactive authentication required before runner; no actual P10 namespace/IFB dataset or topology mutation",
+    "actual_attempt_logs": [
+      "g10-system-attempt.log",
+      "g10-system-resume-attempt.log"
+    ],
+    "limitations": [
+      "localhost correctness only, no performance or HOL causation claim",
+      "API/REQUEST enqueue timing is not packet0RTT proof; P11 required",
+      "shared WSL2 CPU/scheduling and observer timing; one successful early target unachieved",
+      "P10 actual IFB orchestration still unverified; inherited fresh-boot IFB and terminal Ctrl+C limitations retained"
+    ],
+    "next_action": [
+      "human review P10 patch/evidence",
+      "make build",
+      "set -o pipefail",
+      "sudo bash tests/system/run.sh --gate G10 2>&1 | tee docs/evidence/p10/g10-user-run.log",
+      "g10_status=${PIPESTATUS[0]}",
+      "printf 'g10_exit=%s\\n' \"$g10_status\" | tee -a docs/evidence/p10/g10-user-run.log"
+    ]
+  },
+  "actual_source_root": "/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p10-g10-cR1oR9",
+  "actual_review": "g10-rerun-review.json",
+  "actual_qualified_measured": {
+    "cold": 30,
+    "resumed": 30,
+    "early": 30
   }
 }

@@ -1,0 +1,12 @@
+{
+  "status": "PASS",
+  "scope": "static/current receipt/original failed-run immutability; not actual network gate",
+  "bash_files": 21,
+  "python_files": 28,
+  "build_receipt_sha256": "805c3a2c70c83e527a1f62d78bf5dfea56e925d0cfe912186057b35b8a6d6cef",
+  "actual_original_files_unchanged": 161,
+  "task_current_lines": 49,
+  "task_history_lines": 279,
+  "task_history_sha256": "30059a7edae7af4188400ef7163879c49fbbe2bc314a3e42d57f479e9eb71307",
+  "go_pins_config_schema_originals_changed": false
+}

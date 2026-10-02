@@ -1,0 +1,4 @@
+bench support FAIL: [Errno 2] No such file or directory: 'sysctl'
+G11: gate_root=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p11-g11-1200e3df1cf2 original_exit=1 cleanup_exit=0
+g11_exit=1
+log=docs/evidence/p11/g11-user-run.Jbm1be.log

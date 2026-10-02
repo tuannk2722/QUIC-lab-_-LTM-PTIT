@@ -1,0 +1,7 @@
+capture_out="$CAPTURE_OUT"; \
+	if [[ -z $capture_out ]]; then capture_out="/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/capture-$(date -u +%Y%m%dT%H%M%S)-$RANDOM"; fi; \
+	sudo bash scripts/capture.sh "$CAPTURE_NS" "$capture_out" "$CAPTURE_SECONDS"
+python3 scripts/prepare-decoder.py
+test "$(/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/.tools/go1.27.1/bin/go version | awk '{print $3}')" = "go1.27.1" || { echo 'Expected Go 1.27.1; see README.md' >&2; exit 3; }
+python3 scripts/build.py "/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/.tools/go1.27.1/bin/go" "392f599"
+sudo bash tests/system/run.sh --gate G11
