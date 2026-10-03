@@ -1,10 +1,12 @@
 # Kịch bản live 5–7 phút
 
-Trạng thái: runbook theo hợp đồng; agent phải thay path/command cụ thể và gắn evidence thật sau P12. Không có kết quả đo sẵn trong bản này.
+P12 executable runbook, 2026-10-03 (Asia/Saigon). G00–G12 actual PASS; G12 results/p12-g12-51c13b94f99b live360.000794s và baseline preparation177.218539s riêng trước live, full checkerPASS/g12_exit0; không claim human oral delivery. Full command `bash scripts/run-g12-review.sh`; [P12 evidence](evidence/p12/README.md). Các demo-* tự start server/capture đúng profile, giữ artifacts và clear/teardown. Dependency/build/cert chuẩn bị trước theo README, không download trong live.
 
 ## Trước buổi trình bày
 
 Build/cert/dependencies xong offline; Ubuntu WSL2 có giới hạn tài nguyên được ghi và giữ ổn định; Ubuntu WSL2 và host Windows không chạy workload nền nặng. Doctor/network preflight pass. Chuẩn bị trước raw/plots/report từ 30 repeats, PCAP/qlog xem được, một trace HOL có giải thích, trace 0-RTT accepted và rejection test. Đóng hết trial trước đổi profile. Không trình diễn cài thư viện tại lớp.
+
+D31: gate chạy `make demo-baseline` trước khi bắt đầu đồng hồ live; đây vẫn là actual mandatory acceptance với TCP+QUIC/probes/captures/cleanup đầy đủ. `preparation.json` giữ duration/log/hash và được bind vào `rehearsal.json`; software và baseline preparation không nằm trong300–420s live. Live giữ đúng A→C→B→summary; tất cả transfer/decode/proof/cleanup của ba demos live vẫn tính giờ. D30 đã đưa baseline vào live khiến user-run423s FAIL; không sửa timing cũ hoặc nới giới hạn. Các mốc trong bảng là runbook cho người trình bày; driver đợi mốc tối thiểu, không cắt command còn chạy. Overrun vẫn FAIL nếu tổng>420s.
 
 | Thời gian | Thao tác | Giải thích / bằng chứng |
 |---|---|---|
@@ -35,3 +37,12 @@ Build/cert/dependencies xong offline; Ubuntu WSL2 có giới hạn tài nguyên 
 ## Gắn với thời lượng môn học
 
 Tài liệu môn ghi tổng 15–20 phút, đồng thời 10–12 phút technical +5–7 demo +3–5 Q&A có thể vượt tổng. Giữ nguyên nguồn, hỏi giảng viên cách tính Q&A khi chuẩn bị buổi thật; không tự sửa yêu cầu. Có thể rehearsal 10 technical +5 demo +3 Q&A =18 phút trong khung nếu Q&A nằm trong tổng. Đây là phân bổ đề xuất, không lịch được giảng viên xác nhận.
+
+## Assets thật để mở trước khi lên lớp
+
+- UDP/QUIC và accepted early: `results/p11-g11-6a8cc99602b7/viewers/handshake_early.html` hoặc PNG/SVG cùng basename; paired decrypted REQUEST frame14,PN0,native stream0,32-byte QB01 request ở `early-packet-check.json`. TLSResumed/Used0RTT=true,request_end1.945624ms<observed handshake56.605283ms.
+- HOL representative: cùng root `viewers/loss_0_tcp.html`/`loss_0_quic.html`, `g11-check.json` (representative pair và detailed run witnesses), `evidence-notes.md` và exact witness paths ở [REPORT](REPORT.md). TCP ACK237/retry248/advancingACK253; QUIC lostPN25/stream20/resource6, sibling resource5 progress trước recoveryPN50. Không suy cause từ completion bars.
+- Main bulk plots/report: `results/p9-g09-8dFdkj/main/plots/`, attempted240 measured+16warmup,256 success/0failure. Handshake: `results/p10-g10-cR1oR9/main/plots/`,90measured+6targetwarmup và64prior ticket riêng.
+- Public backup khi không có original local: P9/P10/P11 archives trong `docs/evidence/`, raw/config/provenance/PNG/SVG/offlineHTML có run_id thật. P11 archive không chứa secrets/PCAP/large PDML; để decode cần local original. Always label pre-recorded. [Slide outline/Q&A/ownership](THEORY_AND_DEFENSE.md).
+
+Actual G12 đã ghi commands và live360.000794s, đạt300–420s; [closure audit](evidence/p12/g12-rerun-review.json). Đây là timed terminal walkthrough, không chứng nhận spoken delivery. Người trình bày tự rehearsal lời nói và lựa chọn mở viewer/plot phù hợp. Browser rendering và video recording chưa được agent xác nhận; không tự ghi nhận đã nộp deck.

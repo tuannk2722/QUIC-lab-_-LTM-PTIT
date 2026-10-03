@@ -18,7 +18,10 @@ if [[ $# -gt 0 ]]; then
     if [[ $# == 2 && $1 == --gate && $2 == G11 ]]; then
         exec bash "$(dirname "$0")/g11.sh"
     fi
-    echo 'Usage: sudo bash tests/system/run.sh [--gate G08|G09|G10|G11]' >&2
+    if [[ $# == 2 && $1 == --gate && $2 == G12 ]]; then
+        exec bash "$(dirname "$0")/g12.sh"
+    fi
+    echo 'Usage: sudo bash tests/system/run.sh [--gate G08|G09|G10|G11|G12]' >&2
     exit 2
 fi
 

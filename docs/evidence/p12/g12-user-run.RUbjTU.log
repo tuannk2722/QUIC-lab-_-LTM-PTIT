@@ -1,0 +1,35 @@
+G12 software: modules exit=0 log=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p12-g12-51c13b94f99b/logs/modules.log
+G12 software: build exit=0 log=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p12-g12-51c13b94f99b/logs/build.log
+G12 software: certs exit=0 log=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p12-g12-51c13b94f99b/logs/certs.log
+G12 software: doctor exit=0 log=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p12-g12-51c13b94f99b/logs/doctor.log
+G12 software: go-tests exit=0 log=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p12-g12-51c13b94f99b/logs/go-tests.log
+G12 software: analysis-tests exit=0 log=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p12-g12-51c13b94f99b/logs/analysis-tests.log
+G12 software: network-tests exit=0 log=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p12-g12-51c13b94f99b/logs/network-tests.log
+G12 software: demo-tests exit=0 log=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p12-g12-51c13b94f99b/logs/demo-tests.log
+G12 software: g12-tests exit=0 log=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p12-g12-51c13b94f99b/logs/g12-tests.log
+G12 software: localhost exit=0 log=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p12-g12-51c13b94f99b/logs/localhost.log
+G12 software: localhost-check exit=0 log=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p12-g12-51c13b94f99b/logs/localhost-check.log
+G12 software: analyze exit=0 log=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p12-g12-51c13b94f99b/logs/analyze.log
+G12 software: public-targets exit=0 log=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p12-g12-51c13b94f99b/logs/public-targets.log
+G12 software: packaging-check exit=0 log=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p12-g12-51c13b94f99b/logs/packaging-check.log
+gate_root=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p12-g12-51c13b94f99b
+G12 preparation: mandatory baseline target runs before the live clock; artifacts and timing remain recorded.
+G12 preparation: baseline, elapsed=0.0s, log=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p12-g12-51c13b94f99b/logs/preparation-baseline.log
+0:00 topology: qclient 10.10.0.1 -> veth/receiver IFB -> qserver 10.10.0.2; same RAM bytes/certificate.
+Show docs/REPORT.md environment and workload. Each demo manages its server and retains real evidence.
+G12 rehearsal: basic, elapsed=25.0s, log=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p12-g12-51c13b94f99b/logs/rehearsal-basic.log
+UDP4433 and decoded QUIC: open demos/basic/demo-check.json and viewer. Encrypted payload needs local keylog.
+G12 rehearsal: loss, elapsed=95.0s, log=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p12-g12-51c13b94f99b/logs/rehearsal-loss.log
+One TCP connection/six resources; QUIC one connection/six streams. Read HOL status; if inconclusive use labeled saved G11 pair.
+G12 rehearsal: 0rtt, elapsed=255.6s, log=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p12-g12-51c13b94f99b/logs/rehearsal-0rtt.log
+Cold/resumed/early, ticket warmups separate. Check actual DidResume/Used0RTT AND packet REQUEST proof; fallback is not accepted early.
+G12 rehearsal: cleanup, elapsed=306.4s, log=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p12-g12-51c13b94f99b/logs/rehearsal-cleanup.log
+Open docs/REPORT.md and results/g12-analysis main plots: attempted/success/failure, median/p95; no pooling correlated streams.
+Limitations: shared WSL kernel/CPU, TCP CUBIC vs QUIC Reno, scheduler/packetization, configured downstream loss affects control packets too.
+This is a timed terminal walkthrough. The team still reviews code ownership, spoken delivery and slide submission.
+{"status": "PASS", "scope": "fresh source software and packaging", "source_files": 610}
+{"status": "PASS", "scope": "full G12", "source_files": 610}
+G12: gate_root=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p12-g12-51c13b94f99b status=PASS
+g12_exit=0
+gate_root=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p12-g12-51c13b94f99b
+log=docs/evidence/p12/g12-user-run.RUbjTU.log

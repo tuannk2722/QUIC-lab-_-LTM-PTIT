@@ -1,0 +1,21 @@
+{
+  "gate": "G11",
+  "status": "PASS",
+  "scope": "actual ingress IFB evidence",
+  "qlog": "PASS",
+  "progress": "PASS",
+  "udp_decode": "PASS",
+  "early_proof": "PASS",
+  "representative": [
+    "loss_0_tcp",
+    "loss_0_quic"
+  ],
+  "hol": "PASS",
+  "full_demo_complete": true,
+  "counts": {
+    "n_planned": 23,
+    "n_invoked": 23,
+    "n_success": 23,
+    "n_failed": 0
+  }
+}

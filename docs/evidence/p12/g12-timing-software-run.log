@@ -1,0 +1,15 @@
+G12 software: modules exit=0 log=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p12-g12-timing-20261002/logs/modules.log
+G12 software: build exit=0 log=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p12-g12-timing-20261002/logs/build.log
+G12 software: certs exit=0 log=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p12-g12-timing-20261002/logs/certs.log
+G12 software: doctor exit=0 log=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p12-g12-timing-20261002/logs/doctor.log
+G12 software: go-tests exit=0 log=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p12-g12-timing-20261002/logs/go-tests.log
+G12 software: analysis-tests exit=0 log=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p12-g12-timing-20261002/logs/analysis-tests.log
+G12 software: network-tests exit=0 log=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p12-g12-timing-20261002/logs/network-tests.log
+G12 software: demo-tests exit=0 log=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p12-g12-timing-20261002/logs/demo-tests.log
+G12 software: g12-tests exit=0 log=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p12-g12-timing-20261002/logs/g12-tests.log
+G12 software: localhost exit=0 log=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p12-g12-timing-20261002/logs/localhost.log
+G12 software: localhost-check exit=0 log=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p12-g12-timing-20261002/logs/localhost-check.log
+G12 software: analyze exit=0 log=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p12-g12-timing-20261002/logs/analyze.log
+G12 software: public-targets exit=0 log=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p12-g12-timing-20261002/logs/public-targets.log
+G12 software: packaging-check exit=0 log=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p12-g12-timing-20261002/logs/packaging-check.log
+gate_root=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p12-g12-timing-20261002

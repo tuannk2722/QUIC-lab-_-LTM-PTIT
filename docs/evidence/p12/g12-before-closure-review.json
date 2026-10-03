@@ -1,0 +1,276 @@
+{
+  "schema_version": 2,
+  "phase": "P12",
+  "gate": "G12",
+  "status": "BLOCKED",
+  "reviewed_utc": "2026-10-02T13:01:53.231709+00:00",
+  "implemented": [
+    "D31 baseline actual mandatory Make acceptance before live A\u2192C\u2192B",
+    "preparation receipt SHA/UID/offline/chronology binding and failure stops before live",
+    "live basic/loss/0rtt/cleanup; unchanged300\u2013420s; all four demos independently verified",
+    "public entry log now retains preparation/live timeline on failure",
+    "24 G12 regressions including observed-duration synthetic fixture, slow-live failure, preparation mutations; no live proof from synthetic tests",
+    "task/runbook/contracts/decision/ledger/report/traceability/AI updated; original FAIL retained"
+  ],
+  "software": {
+    "status": "PASS",
+    "exit": 0,
+    "root": "results/p12-g12-timing-20261002",
+    "uid": 1000,
+    "source_files": 605,
+    "checkout": {
+      "base_commit": "8721f6346bf62cdab9aa653c9105e1ad3ed9516e",
+      "local_origin": "/home/tuannk/projects/QUIC-lab-_-LTM-PTIT",
+      "candidate_overlay": true,
+      "new_commit": false
+    },
+    "steps": [
+      {
+        "name": "modules",
+        "argv": [
+          "/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p12-g12-timing-20261002/fresh/.tools/go1.27.1/bin/go",
+          "mod",
+          "verify"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 3.6323885589990823,
+        "log": "logs/modules.log",
+        "sha256": "b4537ed75f533f993f371954de47e42a793b8e5b0587577de7e27fb3e50696bd"
+      },
+      {
+        "name": "build",
+        "argv": [
+          "make",
+          "build",
+          "BUILD=source-export"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 55.59862395300297,
+        "log": "logs/build.log",
+        "sha256": "ae84b6dfd2f6d8a2f76f1835ed687cf758d61e3c75051e203ee373549c765c62"
+      },
+      {
+        "name": "certs",
+        "argv": [
+          "make",
+          "certs"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.11923088999901665,
+        "log": "logs/certs.log",
+        "sha256": "2b9faa6959cf996c925fe92e1c8211b0004f1f0f5fd00db64158b80f6f9422bc"
+      },
+      {
+        "name": "doctor",
+        "argv": [
+          "make",
+          "doctor",
+          "REPORT=results/g12-doctor.txt"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.7522928139987926,
+        "log": "logs/doctor.log",
+        "sha256": "40e41d49a02f3f7da00d636d1b1636086027eefa18bef96737ae71502daf5937"
+      },
+      {
+        "name": "go-tests",
+        "argv": [
+          "make",
+          "test"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 53.722579280998616,
+        "log": "logs/go-tests.log",
+        "sha256": "42754081a32df8b3647b223b5c415ee2ddd11ddb56a644552e8b9cd8ab309828"
+      },
+      {
+        "name": "analysis-tests",
+        "argv": [
+          "make",
+          "test-analysis"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 6.925373449001199,
+        "log": "logs/analysis-tests.log",
+        "sha256": "120be4a66455147bf7022a52f376acebd5f2536c4573959ed8886bca1e0d57a8"
+      },
+      {
+        "name": "network-tests",
+        "argv": [
+          "make",
+          "test-network"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.1924143920005008,
+        "log": "logs/network-tests.log",
+        "sha256": "1c111ca57cf1a888e102b2c1d2fea2b36a6f7d3d9b08a6aa79c953c315b104d1"
+      },
+      {
+        "name": "demo-tests",
+        "argv": [
+          "make",
+          "test-demo"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.417589090000547,
+        "log": "logs/demo-tests.log",
+        "sha256": "8aa24848eacf13cc18b2784b3bef35ed5706e57c23808bc365bd2a93c10f2c68"
+      },
+      {
+        "name": "g12-tests",
+        "argv": [
+          "python3",
+          "tests/system/test_g12.py",
+          "-v"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 2.126284633002797,
+        "log": "logs/g12-tests.log",
+        "sha256": "0b1ea13dcfce5f560adb891e9f0db2e8fe1761831987e78e5847494c1abb59eb"
+      },
+      {
+        "name": "localhost",
+        "argv": [
+          "python3",
+          "tests/system/run_g11_software.py"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 1.8553132569977606,
+        "log": "logs/localhost.log",
+        "sha256": "7ff47d64ba759c92488ae5eafd8788a390d274c532241db8a2eb1557cbfeaf3d"
+      },
+      {
+        "name": "localhost-check",
+        "argv": [
+          "python3",
+          "tests/system/check_g11.py",
+          "/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p12-g12-timing-20261002/fresh/results/p11-software-w15sqhkk",
+          "--software"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 7.01429422900037,
+        "log": "logs/localhost-check.log",
+        "sha256": "d0eaff65f1cd9180b25cb90ee9622ef66339484b18382c61fc7b82fb4a6eb45b"
+      },
+      {
+        "name": "analyze",
+        "argv": [
+          "make",
+          "analyze",
+          "RESULTS=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p12-g12-timing-20261002/fresh/results/g12-analysis/p9-g09-8dFdkj/main"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 6.8118485449995205,
+        "log": "logs/analyze.log",
+        "sha256": "695832485ae7ce00475956f027e5791f2aeff0d3991319b7e354caf9ba6e767d"
+      },
+      {
+        "name": "public-targets",
+        "argv": [
+          "make",
+          "-n",
+          "benchmark",
+          "benchmark-handshake",
+          "cleanup"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.0111408169977949,
+        "log": "logs/public-targets.log",
+        "sha256": "b87e1f4f12d81f75ad5f4b436128e6540de50282bbbd17ff0d2404dd3fa22045"
+      },
+      {
+        "name": "packaging-check",
+        "argv": [
+          "python3",
+          "tests/system/check_g12.py",
+          "/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p12-g12-timing-20261002",
+          "--software"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.6250992759996734,
+        "log": "logs/packaging-check.log",
+        "sha256": "bdf26686f0e6ffa08811e26541e95ead8884b4de90d99d8b660243639f2c9962"
+      }
+    ],
+    "analysis_raw_files_unchanged": 1028,
+    "localhost": {
+      "root": "/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p12-g12-timing-20261002/fresh/results/p11-software-w15sqhkk",
+      "n_planned": 6,
+      "n_invoked": 6,
+      "n_success": 5,
+      "n_failed": 1,
+      "expected_failure": "wrong hostname TLS",
+      "scope": "correctness only, no IFB/PCAP/HOL proof"
+    },
+    "demo_regressions": 12,
+    "g12_regressions": 24,
+    "source_receipt": "docs/evidence/p12/g12-timing-source-software.json",
+    "packaging_receipt": "docs/evidence/p12/g12-timing-packaging-check.json"
+  },
+  "latest_actual_user_run": {
+    "root": "/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p12-g12-7807db3f7c56",
+    "status": "FAIL",
+    "rehearsal_seconds": 423.01996558999963,
+    "software_status": "PASS",
+    "demos_status": "PASS",
+    "n_planned": 8,
+    "n_invoked": 8,
+    "n_success": 8,
+    "n_failed": 0,
+    "early": "PASS",
+    "live_hol": "PASS",
+    "cleanup": "PASS",
+    "independent_review": "docs/evidence/p12/g12-user-fail-review.json",
+    "artifacts_rewritten": false
+  },
+  "patched_system": {
+    "status": "BLOCKED",
+    "actual_demos": "NOT_RUN",
+    "actual_preparation": "NOT_RUN",
+    "actual_rehearsal": "NOT_RUN",
+    "final_checker": "NOT_RUN",
+    "attempt": {
+      "command": "sudo -n env G12_ROOT=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p12-g12-timing-20261002 bash tests/system/run.sh --gate G12",
+      "exit": 1,
+      "log": "docs/evidence/p12/g12-timing-system-attempt.log",
+      "reason": "sudo: interactive authentication is required",
+      "automatic_approval_rejected": false
+    }
+  },
+  "archive": {
+    "path": "docs/evidence/p12/g12-timing-software-artifacts.tar.gz",
+    "members": 130,
+    "bytes": 1926760,
+    "sha256": "7aedfb696634388d011061a5d8fc6f06db8ead9449b371a1dd775a3dafa43738",
+    "byte_verified": true,
+    "excludes": "local TLS secrets; canonical G09 inputs available from original accepted P9 archive"
+  },
+  "user_fail_archive": {
+    "path": "docs/evidence/p12/g12-user-fail-artifacts.tar.gz",
+    "members": 349,
+    "bytes": 2054594,
+    "sha256": "05a238f0cc9983fa5b22edd457970779fb6425c3407c86c615aca4602e7aad92",
+    "byte_verified": true,
+    "exclusions": "private keys/keylogs/PCAP/PDML/packets.json/large decoder data; local originals required for full replay"
+  },
+  "prior_review": "docs/evidence/p12/g12-before-timing-fix-review.json",
+  "next_command": "bash scripts/run-g12-review.sh",
+  "limitations": [
+    "full current-source G12 needs NEW actual run with terminal sudo",
+    "prepared pinned offline caches, no clean OS bootstrap",
+    "fresh local checkout with exact candidate overlay is not a newly committed revision",
+    "human code ownership/oral delivery/browser/video/slides remain pending; no commit/upload or next phase"
+  ],
+  "final_verification": {
+    "verified_utc": "2026-10-02T13:04:52.927050+00:00",
+    "git_diff_check_exit": 0,
+    "bash_syntax_exit": 0,
+    "python_ast": "PASS for three changed Python files",
+    "local_markdown_links": 287,
+    "current_implementation_matches_fresh_export": true,
+    "software_log_hashes_verified": 14,
+    "user_fail_receipts_unchanged": true,
+    "public_archive_digests_verified": 2,
+    "original_artifacts_rewritten": false
+  }
+}

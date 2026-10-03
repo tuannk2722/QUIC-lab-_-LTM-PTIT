@@ -1,0 +1,85 @@
+{
+  "schema_version": 1,
+  "scope": "fresh source software and packaging",
+  "status": "PASS",
+  "mandatory_prior_gate_evidence": {
+    "G00": [
+      "evidence/p0/doctor-host.txt",
+      "evidence/p0/g00-commands.log",
+      "evidence/p0/modules-verify.txt",
+      "evidence/p0/modules.txt",
+      "evidence/p0/network-probe-provenance.json",
+      "evidence/p0/network-probe.log",
+      "evidence/p0/tests.log",
+      "evidence/p0/toolchain.json"
+    ],
+    "G01": [
+      "evidence/p1/g01-race.log",
+      "evidence/p1/g01-suite.log",
+      "evidence/p1/g01-workload-tests.log",
+      "evidence/p1/workload-manifest.json"
+    ],
+    "G02": [
+      "evidence/p2/g02-build.log",
+      "evidence/p2/g02-cli-transfer.log",
+      "evidence/p2/g02-detailed-tests.log",
+      "evidence/p2/g02-race.log",
+      "evidence/p2/g02-suite.log"
+    ],
+    "G03": [
+      "evidence/p3/g03-build.log",
+      "evidence/p3/g03-cli-transfer.log",
+      "evidence/p3/g03-detailed-tests.log",
+      "evidence/p3/g03-race.log",
+      "evidence/p3/g03-suite.log"
+    ],
+    "G04": [
+      "evidence/p4/g04-build.log",
+      "evidence/p4/g04-cli-transfer.log",
+      "evidence/p4/g04-detailed-tests.log",
+      "evidence/p4/g04-race.log",
+      "evidence/p4/g04-suite.log",
+      "evidence/p4/quic-transfer.json",
+      "evidence/p4/tcp-transfer.json"
+    ],
+    "G05": [
+      "evidence/p5/g05-build.log",
+      "evidence/p5/g05-detailed-tests.log",
+      "evidence/p5/g05-race.log",
+      "evidence/p5/g05-suite.log"
+    ],
+    "G06": [
+      "evidence/p5/g05-detailed-tests.log",
+      "evidence/p6/actual/",
+      "evidence/p6/g06-actual-trials.log",
+      "evidence/p6/g06-build.log",
+      "evidence/p6/g06-race.log",
+      "evidence/p6/g06-suite.log"
+    ],
+    "G07": [
+      "evidence/p7/g07-system-rerun.log"
+    ],
+    "G08": [
+      "evidence/p8/README.md"
+    ],
+    "G09": [
+      "evidence/p9/README.md"
+    ],
+    "G10": [
+      "evidence/p10/README.md"
+    ],
+    "G11": [
+      "evidence/p11/g11-rerun-check.log",
+      "evidence/p11/g11-rerun-review.json",
+      "evidence/p11/g11-status.json"
+    ]
+  },
+  "source_files": 605,
+  "originals_unchanged": true,
+  "current_source_export": true,
+  "fresh_local_checkout": true,
+  "committed_candidate": false,
+  "limitation": "prepared offline dependency caches reused; no inherited application binaries/certs/results",
+  "software_root": "/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p12-g12-timing-20261002",
+  "full_gate": false
+}

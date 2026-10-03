@@ -1,3 +1,43 @@
+# P11/G11 — actual PASS, hồ sơ đã đóng
+
+User chạy `bash scripts/run-g11-review.sh` trong Ubuntu WSL2 và xác nhận P11/G11 PASS; log [g11-user-run.AGayVd.log](g11-user-run.AGayVd.log) có `g11_exit=0`. Actual root: [results/p11-g11-6a8cc99602b7](../../../results/p11-g11-6a8cc99602b7/). Agent audit read-only/copy checker, không tự nhận chạy privileged rerun hoặc human code review. User authorize riêng P12/G12; [P12 runbook](../p12/README.md), entry `bash scripts/run-g12-review.sh`. Historical FAIL/BLOCKED giữ nguyên bên dưới.
+
+| Acceptance | Status | Actual evidence |
+|---|---|---|
+| G11-qlog/progress/viewer | PASS actual |30 exact quic-12 qlogs,7683 target payload points,23 HTML/PNG/SVG viewers; ODCID/endpoint/native stream/role correlation |
+| G11-actual23/bytes/FIN/hash | PASS |23 planned/invoked/success,0failed,123 resource rows/hash checks; all attempts retained |
+| G11-PCAP/UDP/lifecycle | PASS |46 paired capture dirs,282370 packet records,10..7241 per capture,complete/drop0/cleanup0; tshark4.6.4 decode |
+| G11-early REQUEST | PASS |handshake_early actual DidResume/Used0RTT=true,rejected=false,fallback0; both captures frame14/PN0/native stream0/resource1/exact32-byte QB01 REQUEST |
+| G11-HOL causal trace | PASS |First qualifying retained pair loss_0_tcp/loss_0_quic; ACK/SACK gap+retransmission+app stall and lostPN/ranges+sibling progress+recoveryPN |
+| G11-IFB/RTT/UID/idle/cleanup | PASS |Baseline medians0.2925/0.2495ms; rtt50-loss0 medians50.6/50.6ms; verified ingress IFB/seed/offload/counters/last quiet,UID1000,cleanup0/host unchanged |
+| G11 overall | PASS |Original [g11-check.json](../../../results/p11-g11-6a8cc99602b7/g11-check.json) qlog/progress/UDP/early/HOL PASS,full_demo_complete=true; [audit](g11-rerun-review.json), [copy checker log](g11-rerun-check.log) |
+| G12 | IN_PROGRESS |Authorized separately; software/docs do not pass actual Make demos and5–7min rehearsal |
+
+[Read-only closure audit](g11-rerun-review.json) records125 as-run source hashes,45 build inputs bound to archived sources and receipt/manifest equality. Later authorized P12 changes are disclosed; no source hash/raw/receipt rewrite. Independent [public archive](g11-user-run-artifacts.tar.gz) has662 byte-verified members and SHA256 `a237a68091d2122bd6648662293aed5f2ef4ec7949beff24ea71decdaca6bd65`. It contains raw/CSV/manifests/host/network/probes/receipts/qlog/capture status/notes/viewers; keylogs/PCAP/large decoded files remain in actual local root. This archive is a review bundle, not a complete decrypted-capture reproduction input.
+
+Original checker inventory797/798 public files matches. The sole exception is `logs/check.log`: the checker hashes its redirected log while still open, before printing summary, so original receipt records SHA256(empty). Completed log381 bytes has independently recorded SHA256 `98c154b39bd19eaecee71b5eab8b3852b4515c57be90eac313e3a5b830f06184`; audit/archive verify completed bytes. The exception is explicit; original files and receipt were not altered. Copy replay log PASS; the audit receipt may separately show replay progress until that independent audit finalization is recorded.
+
+Early packet and API: request_end1.945624ms, observed handshake56.605283ms; these timestamps support the decoded packet proof, not replace it. Exact [precheck](../../../results/p11-g11-6a8cc99602b7/early-packet-check.json) contains the32-byte REQUEST witness at source port34352→4433 in both captures. Qlog client-sent/server-received PN0/stream0/offset0/length32 matches target connection.
+
+Representative [annotated notes](../../../results/p11-g11-6a8cc99602b7/evidence-notes.md): TCP gap sequence3187438027, ACK237/SACK[3187439475,3187440923],original frame228,later229,retry248,advancing ACK253 and app stall. QUIC lostPN25 carries stream20/resource6 range1345+1257; later offset2602 arrives inPN30, sibling resource5 delivers16384 payload bytes before missing-range recovery inPN50. All ten random loss pairs are retained; selection is first qualifying pair, not a sample chosen because QUIC wins.
+
+Instrumentation is evidence mode and excluded from actual performance cohorts P9/P10. Eth0 capture tap can precede IFB drops; TCP kernel ACK/SACK and receiver qlog corroborate reception. HOL uses same-host wall alignment3ms and validated16KiB payload sampling; packets can contain multiple streams and shared congestion/flow control still affects siblings. HTML generated offline, browser rendering unverified; PNG/SVG rendering available. Windows11 is user-reported D13; WSL app version was not queried. Historical P9 interactive Ctrl+C through tee limitation is not closed by G11 cleanup success.
+
+For a new independent G11 reproduction from native Ubuntu WSL2 repo root with idle/absent topology and prepared dependencies:
+
+```bash
+bash scripts/run-g11-review.sh
+```
+
+This reruns full23 actual evidence trials and prints a new result/log path; it is not required merely to close this completed gate. Do not commit or upload keylogs/PCAP by default. P12 demos use accepted evidence as labelled pre-recorded backup when one live loss sample is inconclusive.
+
+## Checkpoints lịch sử trước closure — không là status hiện hành
+
+The following snapshot is preserved as historical explanation of D26–D29 fixes and prior runs. Its FAIL/BLOCKED/NOT_RUN, “rerun pending” and “P12 not authorized” statements apply only to those earlier checkpoints. Current status is the PASS table above.
+
+<details>
+<summary>Đọc snapshot P11 trước actual rerun PASS</summary>
+
 # P11/G11 — early keylog fix PASS; full actual rerun pending
 
 Latest D29: user-run `results/p11-g11-1200e3df1cf2` FAIL trước setup/trial vì reset-env PATH thiếu /usr/sbin, không resolve sysctl.23 planned/0 invoked,cleanup0 và host unchanged. **Đã sửa PATH** ở G11/capture/sinks/namespace entry, thêm owner-tool preflight;9 lifecycle/environment tests PASS và exact runtime metadata command đã chạy thật bằng UID1000/real sysctl. [Log user](g11-user-run.Jbm1be.log), [tests](g11-path-lifecycle.log), [audit/runtime/hashes](g11-path-review.json). Không cần cài package hoặc sửa PATH thủ công; chạy lại cùng một command bên dưới.14 failed-run artifacts giữ nguyên; không coi metadata-only check là full gate PASS.
@@ -111,3 +151,5 @@ python3 tests/system/check_g11.py results/p11-software-<printed-id> --software
 - Privilege/PID/capture readiness/EOF/deadline/INT/TERM, last quiet before reset, host ownership; actual branch remains unverified until manual gate.
 - Decoder coalesced headers và exact QB01/native stream mapping; causal TCP ACK/SACK/retransmission and QUIC missing range/sibling/recovery witnesses.3ms same-host correlation margin và16KiB sampling có thể bỏ sót trace; không dùng wall clocks làm latency metric.
 - Instrumentation overhead/shared WSL2 CPU, shared congestion/flow control và nhiều streams trong cùng lost packet. Qlog packet_lost là detection event, có thể spurious; localhost loss events/progress không prove configured loss/HOL. P12 demo/rehearsal/report packaging chưa làm.
+
+</details>

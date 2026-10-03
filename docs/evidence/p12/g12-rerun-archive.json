@@ -1,0 +1,8 @@
+{
+  "path": "docs/evidence/p12/g12-user-run-artifacts.tar.gz",
+  "members": 353,
+  "bytes": 2024367,
+  "sha256": "8d053bede0326a95977c20b2f3d730d936c4ff5028d82b2cbc196097e3379827",
+  "byte_verified": true,
+  "excludes": "private keys/keylogs/PCAP/large decoder data; local originals required for full replay"
+}

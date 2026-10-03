@@ -1,229 +1,280 @@
 {
   "phase": "P11",
   "gate": "G11",
-  "status": "FAIL",
+  "status": "PASS",
+  "phase_status": "PASS",
   "updated_client_date": "2026-10-02",
   "client_timezone": "Asia/Saigon",
-  "scope": "authorized P11 only; latest actual preflight FAIL0/23 due owner PATH/sysctl, repaired/metadata9 PASS; early export PASS, full gate pending sudo; no P12/commit",
+  "scope": "Actual user-run G11 closure with read-only artifact/copy checker/archive audit; user separately authorizes P12/G12; no human code review or agent privileged-run claim",
   "acceptance": {
     "G10-overall": "PASS (actual user-run + copy audit)",
     "G11-code/build/suite/race/regressions": "PASS",
-    "G11-qlog/parse/flush/correlation": "PASS (localhost)",
-    "G11-progress/attempts/failures": "PASS (localhost)",
-    "G11-viewer": "PASS (local PNG/SVG rendered/opened); HTML browser NOT_RUN",
-    "G11-API/0RTT-qlog-corroboration": "PASS (partial; qlog lacks payload)",
-    "G11-PCAP/UDP-decode/early-REQUEST": "historical partial UDP PASS; fresh early REQUEST pending actual capture",
-    "G11-actual23/IFB/RTT/capture/cleanup": "FAIL latest actual0/23; patched rerun pending",
-    "G11-HOL": "NOT_RUN full checker; no validated representative",
-    "G11-overall": "FAIL latest actual preflight; patched full gate pending",
-    "G12": "NOT_RUN",
-    "G11-PCAP/UDP-decode": "PASS (partial historical actual decoder only)",
-    "G11-early-REQUEST": "BLOCKED (fresh actual capture requires sudo; export fixed)",
-    "G11-fix-regressions": "PASS (full Go/race, early6, provenance4, lifecycle8, detectors6)",
+    "G11-qlog/parse/flush/correlation": "PASS (actual30 qlogs)",
+    "G11-progress/attempts/failures": "PASS (actual7683 payload points;23 all retained attempts)",
+    "G11-viewer": "PASS (23 offline HTML/PNG/SVG viewers; HTML browser rendering unverified)",
+    "G11-API/0RTT-qlog-corroboration": "PASS (actual qualified API + matched PN/native stream)",
+    "G11-PCAP/UDP-decode": "PASS (actual46 complete paired capture dirs)",
+    "G11-early-REQUEST": "PASS (both captures exact32-byte QB01 REQUEST PN0/stream0/resource1)",
     "G11-early-secret-export": "PASS (actual localhost client/server match; six accepted/rejected/error/mode subcases)",
-    "G11-owner-PATH/runtime": "PASS (9 lifecycle/environment tests + exact real metadata collector/7 sysctls/8 utilities)"
+    "G11-actual23/IFB/RTT/capture/cleanup": "PASS (23/23 successes,123 hashes,cleanup0/host unchanged)",
+    "G11-HOL": "PASS (first qualifying loss_0_tcp/loss_0_quic among ten retained pairs)",
+    "G11-overall": "PASS (full_demo_complete=true)",
+    "G12": "IN_PROGRESS (separate authorization; actual fresh-tree Make demos/rehearsal not passed by this P11 receipt)"
   },
-  "blocker": "latest actual sysctl lookup failure repaired; full current network gate requires user terminal interactive sudo",
-  "real_source_root": "/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p11-software-qpkpmo80",
-  "software_counts": {
-    "n_planned": 6,
-    "n_invoked": 6,
-    "n_success": 5,
-    "n_failed": 1
+  "blocker": null,
+  "actual_source_root": "results/p11-g11-6a8cc99602b7",
+  "actual_review": "g11-rerun-review.json",
+  "actual_user_log": "g11-user-run.AGayVd.log",
+  "actual_counts": {
+    "planned": 23,
+    "invoked": 23,
+    "successful": 23,
+    "failed": 0,
+    "raw_records": 23,
+    "resource_rows": 123,
+    "resources_bytes_fin_hash_success": 123,
+    "progress_points": 7683,
+    "qlog_files": 30,
+    "paired_capture_directories": 46,
+    "capture_packets": 282370,
+    "capture_min_packets": 10,
+    "capture_max_packets": 7241,
+    "capture_drop0_cleanup0_complete": 46,
+    "html_viewers": 23,
+    "png_viewers": 23,
+    "svg_viewers": 23,
+    "source_hashes": 125
   },
-  "qlog_connections": 12,
-  "target_progress_points": 771,
+  "cleanup": {
+    "original_exit": 0,
+    "cleanup_exit": 0,
+    "finished_utc": "2026-10-02T09:16:49.278088+00:00"
+  },
+  "host_byte_identical": {
+    "link": true,
+    "address": true,
+    "route": true
+  },
+  "early": {
+    "proof": {
+      "status": "PASS",
+      "scope": "handshake early packet precheck only; full23 G11 pending",
+      "run_id": "handshake_early",
+      "proofs": {
+        "qclient": {
+          "status": "PASS",
+          "requests": [
+            {
+              "frame_number": 14,
+              "packet_number": 0,
+              "stream_id": 0,
+              "resource_id": 1,
+              "qb01_request_hex": "5142303101000000000000010000000000000000000000080000000100000400",
+              "source_port": 34352,
+              "destination_port": 4433
+            }
+          ],
+          "criterion": "decrypted client 0RTT packet contains QB01 REQUEST; PN/native stream mapped to server-received qlog and actual API state"
+        },
+        "qserver": {
+          "status": "PASS",
+          "requests": [
+            {
+              "frame_number": 14,
+              "packet_number": 0,
+              "stream_id": 0,
+              "resource_id": 1,
+              "qb01_request_hex": "5142303101000000000000010000000000000000000000080000000100000400",
+              "source_port": 34352,
+              "destination_port": 4433
+            }
+          ],
+          "criterion": "decrypted client 0RTT packet contains QB01 REQUEST; PN/native stream mapped to server-received qlog and actual API state"
+        }
+      }
+    },
+    "api_run": {
+      "run_id": "handshake_early",
+      "tls_resumed": true,
+      "used_0rtt": true,
+      "attempted_0rtt": true,
+      "early_rejected": false,
+      "fallback_count": 0,
+      "handshake_ms": 56.605283
+    },
+    "request_end_ms": 1.945624
+  },
+  "hol": {
+    "status": "PASS",
+    "representative": [
+      "loss_0_tcp",
+      "loss_0_quic"
+    ],
+    "selection": "First qualifying pair among ten retained random loss pairs; no success-only omission or targeted drop",
+    "witnesses": {
+      "loss_0_tcp": {
+        "status": "PASS",
+        "gap_seq_raw": 3187438027,
+        "sack_edges": [
+          [
+            3187439475,
+            3187440923
+          ]
+        ],
+        "ack_frame": 237,
+        "advancing_ack_frame": 253,
+        "original_frame": 228,
+        "retry_frame": 248,
+        "later_byte_frames": [
+          229
+        ],
+        "stall_epoch": [
+          1790931897.29896,
+          1790931897.3457239
+        ],
+        "resolution": "16KiB validated DATA; 3ms margin; no claim about which resource lost its encrypted TLS bytes"
+      },
+      "loss_0_quic": {
+        "status": "PASS",
+        "lost_packet_number": 25,
+        "lost_packet_stream_ranges": [
+          {
+            "frame_type": "stream",
+            "stream_id": 20,
+            "offset": 1345,
+            "length": 1257
+          }
+        ],
+        "stream_id": 20,
+        "resource_id": 6,
+        "gap_offset": 1345,
+        "later_offset": 2602,
+        "later_packet_number": 30,
+        "recovery_packet_number": 50,
+        "gap_epoch": [
+          1790931946.1804833,
+          1790931946.2233853
+        ],
+        "sibling_progress": [
+          [
+            1790931946.2112777,
+            5,
+            16384
+          ]
+        ],
+        "criterion": "server lost packet; client stream gap/out-of-order later bytes; distinct sibling delivers payload before gap recovery in a new PN; affected stream resumes",
+        "caveat": "packet may contain several streams; flow/congestion remain shared; wall-clock alignment same host, 3ms margin"
+      }
+    },
+    "all_bulk_candidates": {
+      "PASS": 20
+    }
+  },
+  "provenance": {
+    "receipt_matches_manifest": true,
+    "build_input_count": 45,
+    "build_inputs_bound_to_as_run_sources": true,
+    "initial_read_only_source_audit_matches_all125": true,
+    "current_source_differences": [
+      "tests/system/run.sh",
+      "Makefile"
+    ],
+    "current_differences_note": "Concurrent authorized P12 work may change files after the initial G11 source audit; as-run receipts remain immutable.",
+    "original_evidence_preserved": true
+  },
+  "original_public_hash_audit": {
+    "recorded_count": 798,
+    "matching": 797,
+    "exceptions": [
+      {
+        "path": "logs/check.log",
+        "recorded_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "actual_sha256": "98c154b39bd19eaecee71b5eab8b3852b4515c57be90eac313e3a5b830f06184",
+        "bytes": 381,
+        "reason": "Checker hashes its still-open redirected log before printing the final summary; recorded hash is SHA256(empty). Completed log is retained and independently inventoried here. No original file or receipt was rewritten."
+      }
+    ]
+  },
   "archive": {
-    "path": "software-artifacts.tar.gz",
-    "sha256": "377511cb1f2869b58be809f0f0cf9e0dbb73126a02d62e5e1d34abc3d982c555",
-    "files": 94,
+    "path": "docs/evidence/p11/g11-user-run-artifacts.tar.gz",
+    "sha256": "a237a68091d2122bd6648662293aed5f2ef4ec7949beff24ea71decdaca6bd65",
+    "bytes": 13175089,
+    "members": 662,
     "byte_verified": true,
-    "keylogs_excluded": true
+    "excluded": [
+      "*.keylog",
+      "*.pcap",
+      "*.pdml",
+      "packets.json"
+    ],
+    "reason": "Public review bundle: raw/canonical results, manifests/config/host/network/probes, as-run receipts, qlog/mappings, capture receipts/logs, proof summaries and standalone viewers. PCAP and TLS secrets stay in local actual root; bulky decoded packet files stay local."
   },
-  "as_run_source_differences": [
-    "scripts/capture.sh",
-    "scripts/evidence-support.py",
-    "scripts/run-in-netns.sh",
-    "tests/system/g11.sh",
-    "tests/system/check_g11.py",
-    "Makefile"
-  ],
   "commands": [
     {
-      "command": "make build",
+      "command": "bash scripts/run-g11-review.sh",
+      "gate_command": "sudo bash tests/system/run.sh --gate G11",
       "exit_code": 0,
-      "evidence": "g11-build-final.log"
+      "evidence": "g11-user-run.AGayVd.log",
+      "executed_by": "user ordinary terminal;sudo privileged wrapper"
     },
     {
-      "command": "make test",
+      "command": "read-only actual G11 artifact/proof/source/hash/archive audit",
       "exit_code": 0,
-      "evidence": "g11-suite-current.log"
+      "evidence": "g11-rerun-review.json",
+      "executed_by": "AI agent"
     },
     {
-      "command": "make test-race",
-      "exit_code": 0,
-      "evidence": "g11-race.log"
-    },
-    {
-      "command": "P11 targeted sink/collector/progress/integration race",
-      "exit_code": 0,
-      "evidence": "g11-detail-integration.log"
-    },
-    {
-      "command": "make test-analysis",
-      "exit_code": 0,
-      "evidence": "g11-analysis-final.log"
-    },
-    {
-      "command": "make test-network",
-      "exit_code": 0,
-      "evidence": "g11-network-regression.log"
-    },
-    {
-      "command": "python3 -m unittest discover -s analysis -p test_evidence.py -v",
-      "exit_code": 0,
-      "evidence": "g11-evidence-tests.log"
-    },
-    {
-      "command": "python3 tests/system/run_g11_software.py",
-      "exit_code": 0,
-      "evidence": "g11-software-final.log"
-    },
-    {
-      "command": "python3 tests/system/check_g11.py results/p11-software-qpkpmo80 --software",
-      "exit_code": 0,
-      "evidence": "g11-software-check-final.log"
-    },
-    {
-      "command": "sudo -n bash tests/system/run.sh --gate G11",
-      "exit_code": 1,
-      "evidence": "g11-system-attempt.log"
-    },
-    {
-      "command": "bash tests/system/run.sh --gate G11 (nonroot)",
-      "exit_code": 3,
-      "evidence": "g11-nonroot.log"
-    },
-    {
-      "command": "bash scripts/capture.sh qclient /tmp/g11-nonroot-capture 1 (nonroot)",
-      "exit_code": 3,
-      "evidence": "g11-capture-nonroot.log"
-    },
-    {
-      "command": "python3 scripts/prepare-decoder.py",
-      "exit_code": 0,
-      "evidence": "g11-decoder-reproduce.log"
-    },
-    {
-      "command": "make build (bugfix receipt)",
-      "exit_code": 0,
-      "evidence": "g11-fix-build.log"
-    },
-    {
-      "command": "make test-analysis (includes 7 P11 lifecycle tests)",
-      "exit_code": 0,
-      "evidence": "g11-fix-analysis.log"
-    },
-    {
-      "command": "make test-network",
-      "exit_code": 0,
-      "evidence": "g11-fix-network.log"
-    },
-    {
-      "command": "read-only actual failed user-run audit",
-      "exit_code": 0,
-      "evidence": "g11-fix-user-review.log"
-    },
-    {
-      "command": "actual historical early-server PCAP offline decoder audit",
-      "exit_code": 0,
-      "evidence": "g11-fix-decoder-actual.log"
-    },
-    {
-      "command": "sudo -n bash tests/system/run.sh --gate G11 (patched runner)",
-      "exit_code": 1,
-      "evidence": "g11-fix-system-attempt.log"
-    },
-    {
-      "command": "python3 tests/system/test_g11_lifecycle.py -v (final,8)",
-      "exit_code": 0,
-      "evidence": "g11-fix-lifecycle-final.log"
-    },
-    {
-      "command": "make build (final receipt)",
-      "exit_code": 0,
-      "evidence": "g11-fix-build-final.log"
-    },
-    {
-      "command": "static/current receipt/original artifacts immutability",
-      "exit_code": 0,
-      "evidence": "g11-fix-static.json"
+      "command": "python3 tests/system/check_g11.py results/p11-g11-audit-bm08kryy > docs/evidence/p11/g11-rerun-check.log 2>&1",
+      "status": "PASS in replay log; receipt finalization recorded separately",
+      "evidence": "g11-rerun-check.log",
+      "executed_by": "AI agent on audit copy; original untouched"
     }
   ],
   "limitations": [
-    "no complete23-trial evidence or causal HOL representative",
-    "patched privileged capture/lifecycle not actual tested yet",
-    "historical three empty handshake PCAP cannot be recovered",
-    "instrumentation, WSL2/shared scheduling, clock/progress resolution and prior limitations retained",
-    "original artifacts/receipts/hashes preserved; current fixes not claimed as as-run sources",
-    "Go1.27.1 binaries now use a disclosed local build-only TLS keylog overlay; installed GOROOT/module cache/pins unchanged"
+    "Instrumented evidence cohort is excluded from main performance comparison.",
+    "Capture eth0 tap may precede ingress IFB; reception corroboration uses kernel ACK/SACK and receiver qlog.",
+    "HOL correlation uses same-host wall labels with3ms margin and16KiB validated-payload sampling; shared congestion/flow control and packets containing several streams remain.",
+    "HTML files generated offline; browser rendering not verified by this audit.",
+    "Windows11 is user-reported D13; Windows CLI/WSL version unknown.",
+    "Original checker self-hashed redirected log has one explained inventory exception; complete independent archive inventory byte-verified."
   ],
-  "files_changed": [
-    " M .codex/TASK.md",
-    " M Makefile",
-    " M README.md",
-    " M START_HERE.md",
-    " M docs/00-INDEX.md",
-    " M docs/ACCEPTANCE_RESULTS.md",
-    " M docs/AI_USAGE.md",
-    " M docs/CLI_CONTRACT.md",
-    " M docs/CONTEXT_AND_DECISIONS.md",
-    " M docs/IMPLEMENTATION_PLAN.md",
-    " M docs/METRICS_AND_RESULTS.md",
-    " M docs/NETWORK_AND_BENCHMARK.md",
-    " M docs/TRACEABILITY.md",
-    " M docs/VERSIONS.md",
-    " M docs/evidence/p10/README.md",
-    " M docs/evidence/p10/g10-status.json",
-    " M internal/bench/session.go",
-    " M internal/cli/cli.go",
-    " M internal/transport/quic/client.go",
-    " M internal/transport/quic/early.go",
-    " M internal/transport/quic/server.go",
-    " M internal/transport/tcp/client.go",
-    " M internal/transport/types.go",
-    " M tests/system/run.sh",
-    "?? analysis/decoder-packages.json",
-    "?? analysis/evidence.py",
-    "?? analysis/hol.py",
-    "?? analysis/packet_evidence.py",
-    "?? analysis/test_evidence.py",
-    "?? docs/evidence/p10/g10-rerun-review.json",
-    "?? docs/evidence/p10/g10-user-run-artifacts.tar.gz",
-    "?? docs/evidence/p11/",
-    "?? internal/metrics/progress.go",
-    "?? internal/metrics/progress_test.go",
-    "?? internal/observability/trace.go",
-    "?? internal/observability/trace_test.go",
-    "?? internal/transport/progress.go",
-    "?? internal/transport/progress_test.go",
-    "?? scripts/capture.sh",
-    "?? scripts/evidence-support.py",
-    "?? scripts/prepare-decoder.py",
-    "?? scripts/tshark.sh",
-    "?? tests/integration/evidence_test.go",
-    "?? tests/system/check_g11.py",
-    "?? tests/system/g11.sh",
-    "?? tests/system/run_g11_software.py"
+  "next_exact_action": "Complete authorized P12/G12 via bash scripts/run-g12-review.sh; update actual G12 exits/evidence and stop for human review. Do not rerun completed G11 without a new reason.",
+  "previous_actual_runs": [
+    {
+      "root": "results/p11-g11-3344e60b5868",
+      "review": "g11-fix-user-review.json",
+      "counts": {
+        "n_planned": 23,
+        "n_invoked": 5,
+        "n_success": 5,
+        "runner_exit": 1,
+        "cleanup_exit": 0,
+        "n_failed_invoked": 0,
+        "n_not_invoked": 18
+      }
+    },
+    {
+      "root": "results/p11-g11-1200e3df1cf2",
+      "review": "g11-path-review.json",
+      "counts": {
+        "n_planned": 23,
+        "n_invoked": 0,
+        "n_success": 0,
+        "n_failed_invoked": 0,
+        "n_not_invoked": 23,
+        "runner_exit": 1,
+        "cleanup_exit": 0
+      },
+      "status": "FAIL historical D29; fixed and superseded by actual full G11 PASS"
+    }
   ],
-  "next_exact_action": "user terminal: bash scripts/run-g11-review.sh; audit new actual early-packet-check/g11-check/cleanup, fix any failures, then P11 review; no P12",
-  "previous_checkpoint": {
+  "historical_checkpoint": {
     "phase": "P11",
     "gate": "G11",
-    "status": "BLOCKED",
+    "status": "FAIL",
     "updated_client_date": "2026-10-02",
     "client_timezone": "Asia/Saigon",
-    "scope": "authorized P11 only; human review stop; no P12 or commit",
+    "scope": "authorized P11 only; latest actual preflight FAIL0/23 due owner PATH/sysctl, repaired/metadata9 PASS; early export PASS, full gate pending sudo; no P12/commit",
     "acceptance": {
       "G10-overall": "PASS (actual user-run + copy audit)",
       "G11-code/build/suite/race/regressions": "PASS",
@@ -231,13 +282,18 @@
       "G11-progress/attempts/failures": "PASS (localhost)",
       "G11-viewer": "PASS (local PNG/SVG rendered/opened); HTML browser NOT_RUN",
       "G11-API/0RTT-qlog-corroboration": "PASS (partial; qlog lacks payload)",
-      "G11-PCAP/UDP-decode/early-REQUEST": "BLOCKED",
-      "G11-actual23/IFB/RTT/capture/cleanup": "BLOCKED",
-      "G11-HOL": "BLOCKED / NOT_RUN, no representative",
-      "G11-overall": "BLOCKED",
-      "G12": "NOT_RUN"
+      "G11-PCAP/UDP-decode/early-REQUEST": "historical partial UDP PASS; fresh early REQUEST pending actual capture",
+      "G11-actual23/IFB/RTT/capture/cleanup": "FAIL latest actual0/23; patched rerun pending",
+      "G11-HOL": "NOT_RUN full checker; no validated representative",
+      "G11-overall": "FAIL latest actual preflight; patched full gate pending",
+      "G12": "NOT_RUN",
+      "G11-PCAP/UDP-decode": "PASS (partial historical actual decoder only)",
+      "G11-early-REQUEST": "BLOCKED (fresh actual capture requires sudo; export fixed)",
+      "G11-fix-regressions": "PASS (full Go/race, early6, provenance4, lifecycle8, detectors6)",
+      "G11-early-secret-export": "PASS (actual localhost client/server match; six accepted/rejected/error/mode subcases)",
+      "G11-owner-PATH/runtime": "PASS (9 lifecycle/environment tests + exact real metadata collector/7 sysctls/8 utilities)"
     },
-    "blocker": "sudo interactive authentication required before full runner; no automatic approval rejection or topology mutation",
+    "blocker": "latest actual sysctl lookup failure repaired; full current network gate requires user terminal interactive sudo",
     "real_source_root": "/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p11-software-qpkpmo80",
     "software_counts": {
       "n_planned": 6,
@@ -255,11 +311,12 @@
       "keylogs_excluded": true
     },
     "as_run_source_differences": [
-      "internal/metrics/progress.go",
       "scripts/capture.sh",
       "scripts/evidence-support.py",
+      "scripts/run-in-netns.sh",
       "tests/system/g11.sh",
-      "tests/system/check_g11.py"
+      "tests/system/check_g11.py",
+      "Makefile"
     ],
     "commands": [
       {
@@ -326,16 +383,60 @@
         "command": "python3 scripts/prepare-decoder.py",
         "exit_code": 0,
         "evidence": "g11-decoder-reproduce.log"
+      },
+      {
+        "command": "make build (bugfix receipt)",
+        "exit_code": 0,
+        "evidence": "g11-fix-build.log"
+      },
+      {
+        "command": "make test-analysis (includes 7 P11 lifecycle tests)",
+        "exit_code": 0,
+        "evidence": "g11-fix-analysis.log"
+      },
+      {
+        "command": "make test-network",
+        "exit_code": 0,
+        "evidence": "g11-fix-network.log"
+      },
+      {
+        "command": "read-only actual failed user-run audit",
+        "exit_code": 0,
+        "evidence": "g11-fix-user-review.log"
+      },
+      {
+        "command": "actual historical early-server PCAP offline decoder audit",
+        "exit_code": 0,
+        "evidence": "g11-fix-decoder-actual.log"
+      },
+      {
+        "command": "sudo -n bash tests/system/run.sh --gate G11 (patched runner)",
+        "exit_code": 1,
+        "evidence": "g11-fix-system-attempt.log"
+      },
+      {
+        "command": "python3 tests/system/test_g11_lifecycle.py -v (final,8)",
+        "exit_code": 0,
+        "evidence": "g11-fix-lifecycle-final.log"
+      },
+      {
+        "command": "make build (final receipt)",
+        "exit_code": 0,
+        "evidence": "g11-fix-build-final.log"
+      },
+      {
+        "command": "static/current receipt/original artifacts immutability",
+        "exit_code": 0,
+        "evidence": "g11-fix-static.json"
       }
     ],
     "limitations": [
-      "localhost only; no actual PCAP/IFB/loss/packet0RTT/HOL proof",
-      "current privileged capture/decoder branch not actual tested; conservative coalesced PDML handling",
-      "16KiB validated-DATA resolution and3ms correlation margin can make HOL inconclusive",
-      "HTML/qvis/browser render unverified; PNG actual opened",
-      "keylogs kept local0600/excluded archive; same-host WSL CPU and shared congestion/flow",
-      "as-run receipt preserved; later progress guard checked separately; source diff disclosed",
-      "prior P9 terminal Ctrl+C pipeline and P7 fresh-boot limitations retained"
+      "no complete23-trial evidence or causal HOL representative",
+      "patched privileged capture/lifecycle not actual tested yet",
+      "historical three empty handshake PCAP cannot be recovered",
+      "instrumentation, WSL2/shared scheduling, clock/progress resolution and prior limitations retained",
+      "original artifacts/receipts/hashes preserved; current fixes not claimed as as-run sources",
+      "Go1.27.1 binaries now use a disclosed local build-only TLS keylog overlay; installed GOROOT/module cache/pins unchanged"
     ],
     "files_changed": [
       " M .codex/TASK.md",
@@ -385,184 +486,354 @@
       "?? tests/system/g11.sh",
       "?? tests/system/run_g11_software.py"
     ],
-    "next_exact_action": "human review P11 patch/evidence; terminal Ubuntu: make build; sudo bash tests/system/run.sh --gate G11 with tee+PIPESTATUS per README; review23 attempts/46 captures/0RTT witness/last idle/host cleanup and HOL status; no P12"
-  },
-  "actual_source_root": "results/p11-g11-1200e3df1cf2",
-  "actual_review": "g11-path-review.json",
-  "actual_counts": {
-    "n_planned": 23,
-    "n_invoked": 0,
-    "n_success": 0,
-    "n_failed_invoked": 0,
-    "n_not_invoked": 23,
-    "runner_exit": 1,
-    "cleanup_exit": 0
-  },
-  "fix_status": "PASS (software); actual patched gate BLOCKED",
-  "files_changed_in_fix": [
-    ".codex/TASK.md",
-    ".codex/history/TASK-2026-10-02-before-p11-fixes.md",
-    "scripts/process-lifecycle.sh",
-    "scripts/capture.sh",
-    "scripts/run-in-netns.sh",
-    "scripts/evidence-support.py",
-    "tests/system/g11.sh",
-    "tests/system/check_g11.py",
-    "tests/system/test_g11_lifecycle.py",
-    "Makefile",
-    "docs/evidence/p11/",
-    "README.md",
-    "START_HERE.md",
-    "docs/00-INDEX.md",
-    "docs/ACCEPTANCE_RESULTS.md",
-    "docs/AI_USAGE.md",
-    "docs/CLI_CONTRACT.md",
-    "docs/CONTEXT_AND_DECISIONS.md",
-    "docs/IMPLEMENTATION_PLAN.md",
-    "docs/NETWORK_AND_BENCHMARK.md",
-    "docs/TRACEABILITY.md"
-  ],
-  "as_run_source_added": [
-    "scripts/process-lifecycle.sh",
-    "tests/system/test_g11_lifecycle.py"
-  ],
-  "as_run_source_differences_scope": "preserved D27 inventory for results/p11-g11-3344e60b5868; D29 latest-root inventory in path_fix",
-  "phase_status": "IN_PROGRESS; D29 owner-PATH fix PASS, full actual rerun pending",
-  "early_export_fix": {
-    "status": "PASS software/actual localhost; full actual gate BLOCKED",
-    "decision": "D28",
-    "result_root": "results/p11-software-xzfxm1sf",
-    "review": "g11-early-secret-review.json",
-    "patch": "g11-early-overlay.patch",
-    "commands": [
-      {
-        "command": "make build",
-        "exit_code": 0,
-        "evidence": "g11-early-build-final.log"
+    "next_exact_action": "user terminal: bash scripts/run-g11-review.sh; audit new actual early-packet-check/g11-check/cleanup, fix any failures, then P11 review; no P12",
+    "previous_checkpoint": {
+      "phase": "P11",
+      "gate": "G11",
+      "status": "BLOCKED",
+      "updated_client_date": "2026-10-02",
+      "client_timezone": "Asia/Saigon",
+      "scope": "authorized P11 only; human review stop; no P12 or commit",
+      "acceptance": {
+        "G10-overall": "PASS (actual user-run + copy audit)",
+        "G11-code/build/suite/race/regressions": "PASS",
+        "G11-qlog/parse/flush/correlation": "PASS (localhost)",
+        "G11-progress/attempts/failures": "PASS (localhost)",
+        "G11-viewer": "PASS (local PNG/SVG rendered/opened); HTML browser NOT_RUN",
+        "G11-API/0RTT-qlog-corroboration": "PASS (partial; qlog lacks payload)",
+        "G11-PCAP/UDP-decode/early-REQUEST": "BLOCKED",
+        "G11-actual23/IFB/RTT/capture/cleanup": "BLOCKED",
+        "G11-HOL": "BLOCKED / NOT_RUN, no representative",
+        "G11-overall": "BLOCKED",
+        "G12": "NOT_RUN"
       },
-      {
-        "command": "make test",
-        "exit_code": 0,
-        "evidence": "g11-early-suite.log"
+      "blocker": "sudo interactive authentication required before full runner; no automatic approval rejection or topology mutation",
+      "real_source_root": "/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p11-software-qpkpmo80",
+      "software_counts": {
+        "n_planned": 6,
+        "n_invoked": 6,
+        "n_success": 5,
+        "n_failed": 1
       },
-      {
-        "command": "make test-race",
-        "exit_code": 0,
-        "evidence": "g11-early-race.log"
+      "qlog_connections": 12,
+      "target_progress_points": 771,
+      "archive": {
+        "path": "software-artifacts.tar.gz",
+        "sha256": "377511cb1f2869b58be809f0f0cf9e0dbb73126a02d62e5e1d34abc3d982c555",
+        "files": 94,
+        "byte_verified": true,
+        "keylogs_excluded": true
       },
-      {
-        "command": "TestEvidenceEarlyKeylog -v",
-        "exit_code": 0,
-        "evidence": "g11-early-detail.log"
-      },
-      {
-        "command": "python3 tests/system/test_audit_p7_p9.py -v",
-        "exit_code": 0,
-        "evidence": "g11-early-provenance.log"
-      },
-      {
-        "command": "python3 tests/system/test_g11_lifecycle.py -v",
-        "exit_code": 0,
-        "evidence": "g11-early-lifecycle.log"
-      },
-      {
-        "command": "analysis.test_evidence",
-        "exit_code": 0,
-        "evidence": "g11-early-detectors.log"
-      },
-      {
-        "command": "python3 tests/system/run_g11_software.py",
-        "exit_code": 0,
-        "evidence": "g11-early-software.log"
-      },
-      {
-        "command": "check_g11.py results/p11-software-xzfxm1sf --software",
-        "exit_code": 0,
-        "evidence": "g11-early-software-check.log"
-      },
-      {
-        "command": "sudo -n bash tests/system/run.sh --gate G11",
-        "exit_code": 1,
-        "evidence": "g11-early-system-attempt.log"
-      }
-    ],
-    "source_changed_since_software_run": [
-      "tests/system/g11.sh",
-      "tests/system/check_g11.py",
-      "tests/system/test_audit_p7_p9.py"
-    ],
-    "build_receipt": "bin/build.json",
-    "terminal_entry": "bash scripts/run-g11-review.sh",
-    "new_files": [
-      "scripts/tls_keylog_overlay.py",
-      "scripts/run-g11-review.sh",
-      "tests/integration/early_keylog_test.go"
-    ],
-    "files_changed": [
-      "scripts/tls_keylog_overlay.py",
-      "scripts/build.py",
-      "scripts/run-g11-review.sh",
-      "Makefile",
-      "tests/integration/early_keylog_test.go",
-      "tests/system/test_audit_p7_p9.py",
-      "tests/system/g11.sh",
-      "tests/system/check_g11.py",
+      "as_run_source_differences": [
+        "internal/metrics/progress.go",
+        "scripts/capture.sh",
+        "scripts/evidence-support.py",
+        "tests/system/g11.sh",
+        "tests/system/check_g11.py"
+      ],
+      "commands": [
+        {
+          "command": "make build",
+          "exit_code": 0,
+          "evidence": "g11-build-final.log"
+        },
+        {
+          "command": "make test",
+          "exit_code": 0,
+          "evidence": "g11-suite-current.log"
+        },
+        {
+          "command": "make test-race",
+          "exit_code": 0,
+          "evidence": "g11-race.log"
+        },
+        {
+          "command": "P11 targeted sink/collector/progress/integration race",
+          "exit_code": 0,
+          "evidence": "g11-detail-integration.log"
+        },
+        {
+          "command": "make test-analysis",
+          "exit_code": 0,
+          "evidence": "g11-analysis-final.log"
+        },
+        {
+          "command": "make test-network",
+          "exit_code": 0,
+          "evidence": "g11-network-regression.log"
+        },
+        {
+          "command": "python3 -m unittest discover -s analysis -p test_evidence.py -v",
+          "exit_code": 0,
+          "evidence": "g11-evidence-tests.log"
+        },
+        {
+          "command": "python3 tests/system/run_g11_software.py",
+          "exit_code": 0,
+          "evidence": "g11-software-final.log"
+        },
+        {
+          "command": "python3 tests/system/check_g11.py results/p11-software-qpkpmo80 --software",
+          "exit_code": 0,
+          "evidence": "g11-software-check-final.log"
+        },
+        {
+          "command": "sudo -n bash tests/system/run.sh --gate G11",
+          "exit_code": 1,
+          "evidence": "g11-system-attempt.log"
+        },
+        {
+          "command": "bash tests/system/run.sh --gate G11 (nonroot)",
+          "exit_code": 3,
+          "evidence": "g11-nonroot.log"
+        },
+        {
+          "command": "bash scripts/capture.sh qclient /tmp/g11-nonroot-capture 1 (nonroot)",
+          "exit_code": 3,
+          "evidence": "g11-capture-nonroot.log"
+        },
+        {
+          "command": "python3 scripts/prepare-decoder.py",
+          "exit_code": 0,
+          "evidence": "g11-decoder-reproduce.log"
+        }
+      ],
+      "limitations": [
+        "localhost only; no actual PCAP/IFB/loss/packet0RTT/HOL proof",
+        "current privileged capture/decoder branch not actual tested; conservative coalesced PDML handling",
+        "16KiB validated-DATA resolution and3ms correlation margin can make HOL inconclusive",
+        "HTML/qvis/browser render unverified; PNG actual opened",
+        "keylogs kept local0600/excluded archive; same-host WSL CPU and shared congestion/flow",
+        "as-run receipt preserved; later progress guard checked separately; source diff disclosed",
+        "prior P9 terminal Ctrl+C pipeline and P7 fresh-boot limitations retained"
+      ],
+      "files_changed": [
+        " M .codex/TASK.md",
+        " M Makefile",
+        " M README.md",
+        " M START_HERE.md",
+        " M docs/00-INDEX.md",
+        " M docs/ACCEPTANCE_RESULTS.md",
+        " M docs/AI_USAGE.md",
+        " M docs/CLI_CONTRACT.md",
+        " M docs/CONTEXT_AND_DECISIONS.md",
+        " M docs/IMPLEMENTATION_PLAN.md",
+        " M docs/METRICS_AND_RESULTS.md",
+        " M docs/NETWORK_AND_BENCHMARK.md",
+        " M docs/TRACEABILITY.md",
+        " M docs/VERSIONS.md",
+        " M docs/evidence/p10/README.md",
+        " M docs/evidence/p10/g10-status.json",
+        " M internal/bench/session.go",
+        " M internal/cli/cli.go",
+        " M internal/transport/quic/client.go",
+        " M internal/transport/quic/early.go",
+        " M internal/transport/quic/server.go",
+        " M internal/transport/tcp/client.go",
+        " M internal/transport/types.go",
+        " M tests/system/run.sh",
+        "?? analysis/decoder-packages.json",
+        "?? analysis/evidence.py",
+        "?? analysis/hol.py",
+        "?? analysis/packet_evidence.py",
+        "?? analysis/test_evidence.py",
+        "?? docs/evidence/p10/g10-rerun-review.json",
+        "?? docs/evidence/p10/g10-user-run-artifacts.tar.gz",
+        "?? docs/evidence/p11/",
+        "?? internal/metrics/progress.go",
+        "?? internal/metrics/progress_test.go",
+        "?? internal/observability/trace.go",
+        "?? internal/observability/trace_test.go",
+        "?? internal/transport/progress.go",
+        "?? internal/transport/progress_test.go",
+        "?? scripts/capture.sh",
+        "?? scripts/evidence-support.py",
+        "?? scripts/prepare-decoder.py",
+        "?? scripts/tshark.sh",
+        "?? tests/integration/evidence_test.go",
+        "?? tests/system/check_g11.py",
+        "?? tests/system/g11.sh",
+        "?? tests/system/run_g11_software.py"
+      ],
+      "next_exact_action": "human review P11 patch/evidence; terminal Ubuntu: make build; sudo bash tests/system/run.sh --gate G11 with tee+PIPESTATUS per README; review23 attempts/46 captures/0RTT witness/last idle/host cleanup and HOL status; no P12"
+    },
+    "actual_source_root": "results/p11-g11-1200e3df1cf2",
+    "actual_review": "g11-path-review.json",
+    "actual_counts": {
+      "n_planned": 23,
+      "n_invoked": 0,
+      "n_success": 0,
+      "n_failed_invoked": 0,
+      "n_not_invoked": 23,
+      "runner_exit": 1,
+      "cleanup_exit": 0
+    },
+    "fix_status": "PASS (software); actual patched gate BLOCKED",
+    "files_changed_in_fix": [
       ".codex/TASK.md",
+      ".codex/history/TASK-2026-10-02-before-p11-fixes.md",
+      "scripts/process-lifecycle.sh",
+      "scripts/capture.sh",
+      "scripts/run-in-netns.sh",
+      "scripts/evidence-support.py",
+      "tests/system/g11.sh",
+      "tests/system/check_g11.py",
+      "tests/system/test_g11_lifecycle.py",
+      "Makefile",
+      "docs/evidence/p11/",
       "README.md",
       "START_HERE.md",
       "docs/00-INDEX.md",
-      "docs/CONTEXT_AND_DECISIONS.md",
-      "docs/CLI_CONTRACT.md",
-      "docs/IMPLEMENTATION_PLAN.md",
-      "docs/VERSIONS.md",
-      "docs/NETWORK_AND_BENCHMARK.md",
       "docs/ACCEPTANCE_RESULTS.md",
       "docs/AI_USAGE.md",
-      "docs/TRACEABILITY.md",
-      "docs/evidence/p11/"
-    ],
-    "static_review": "g11-early-static.json"
-  },
-  "previous_actual_runs": [
-    {
-      "root": "results/p11-g11-3344e60b5868",
-      "review": "g11-fix-user-review.json",
-      "counts": {
-        "n_planned": 23,
-        "n_invoked": 5,
-        "n_success": 5,
-        "runner_exit": 1,
-        "cleanup_exit": 0,
-        "n_failed_invoked": 0,
-        "n_not_invoked": 18
-      }
-    }
-  ],
-  "path_fix": {
-    "decision": "D29",
-    "status": "PASS metadata/software only; full actual pending",
-    "review": "g11-path-review.json",
-    "test_log": "g11-path-lifecycle.log",
-    "tests": 9,
-    "build_log": "g11-path-build.log",
-    "sudo_attempt": "g11-path-system-attempt.log",
-    "failed_user_log": "g11-user-run.Jbm1be.log",
-    "source_changed_since_failed_run": [
-      "scripts/capture.sh",
-      "scripts/run-in-netns.sh",
-      "tests/system/g11.sh",
-      "tests/system/test_g11_lifecycle.py"
-    ],
-    "files_changed": [
-      "tests/system/g11.sh",
-      "scripts/capture.sh",
-      "scripts/run-in-netns.sh",
-      "tests/system/test_g11_lifecycle.py",
       "docs/CLI_CONTRACT.md",
       "docs/CONTEXT_AND_DECISIONS.md",
-      "docs/AI_USAGE.md",
-      ".codex/TASK.md",
-      "docs/evidence/p11/"
-    ]
+      "docs/IMPLEMENTATION_PLAN.md",
+      "docs/NETWORK_AND_BENCHMARK.md",
+      "docs/TRACEABILITY.md"
+    ],
+    "as_run_source_added": [
+      "scripts/process-lifecycle.sh",
+      "tests/system/test_g11_lifecycle.py"
+    ],
+    "as_run_source_differences_scope": "preserved D27 inventory for results/p11-g11-3344e60b5868; D29 latest-root inventory in path_fix",
+    "phase_status": "IN_PROGRESS; D29 owner-PATH fix PASS, full actual rerun pending",
+    "early_export_fix": {
+      "status": "PASS software/actual localhost; full actual gate BLOCKED",
+      "decision": "D28",
+      "result_root": "results/p11-software-xzfxm1sf",
+      "review": "g11-early-secret-review.json",
+      "patch": "g11-early-overlay.patch",
+      "commands": [
+        {
+          "command": "make build",
+          "exit_code": 0,
+          "evidence": "g11-early-build-final.log"
+        },
+        {
+          "command": "make test",
+          "exit_code": 0,
+          "evidence": "g11-early-suite.log"
+        },
+        {
+          "command": "make test-race",
+          "exit_code": 0,
+          "evidence": "g11-early-race.log"
+        },
+        {
+          "command": "TestEvidenceEarlyKeylog -v",
+          "exit_code": 0,
+          "evidence": "g11-early-detail.log"
+        },
+        {
+          "command": "python3 tests/system/test_audit_p7_p9.py -v",
+          "exit_code": 0,
+          "evidence": "g11-early-provenance.log"
+        },
+        {
+          "command": "python3 tests/system/test_g11_lifecycle.py -v",
+          "exit_code": 0,
+          "evidence": "g11-early-lifecycle.log"
+        },
+        {
+          "command": "analysis.test_evidence",
+          "exit_code": 0,
+          "evidence": "g11-early-detectors.log"
+        },
+        {
+          "command": "python3 tests/system/run_g11_software.py",
+          "exit_code": 0,
+          "evidence": "g11-early-software.log"
+        },
+        {
+          "command": "check_g11.py results/p11-software-xzfxm1sf --software",
+          "exit_code": 0,
+          "evidence": "g11-early-software-check.log"
+        },
+        {
+          "command": "sudo -n bash tests/system/run.sh --gate G11",
+          "exit_code": 1,
+          "evidence": "g11-early-system-attempt.log"
+        }
+      ],
+      "source_changed_since_software_run": [
+        "tests/system/g11.sh",
+        "tests/system/check_g11.py",
+        "tests/system/test_audit_p7_p9.py"
+      ],
+      "build_receipt": "bin/build.json",
+      "terminal_entry": "bash scripts/run-g11-review.sh",
+      "new_files": [
+        "scripts/tls_keylog_overlay.py",
+        "scripts/run-g11-review.sh",
+        "tests/integration/early_keylog_test.go"
+      ],
+      "files_changed": [
+        "scripts/tls_keylog_overlay.py",
+        "scripts/build.py",
+        "scripts/run-g11-review.sh",
+        "Makefile",
+        "tests/integration/early_keylog_test.go",
+        "tests/system/test_audit_p7_p9.py",
+        "tests/system/g11.sh",
+        "tests/system/check_g11.py",
+        ".codex/TASK.md",
+        "README.md",
+        "START_HERE.md",
+        "docs/00-INDEX.md",
+        "docs/CONTEXT_AND_DECISIONS.md",
+        "docs/CLI_CONTRACT.md",
+        "docs/IMPLEMENTATION_PLAN.md",
+        "docs/VERSIONS.md",
+        "docs/NETWORK_AND_BENCHMARK.md",
+        "docs/ACCEPTANCE_RESULTS.md",
+        "docs/AI_USAGE.md",
+        "docs/TRACEABILITY.md",
+        "docs/evidence/p11/"
+      ],
+      "static_review": "g11-early-static.json"
+    },
+    "previous_actual_runs": [
+      {
+        "root": "results/p11-g11-3344e60b5868",
+        "review": "g11-fix-user-review.json",
+        "counts": {
+          "n_planned": 23,
+          "n_invoked": 5,
+          "n_success": 5,
+          "runner_exit": 1,
+          "cleanup_exit": 0,
+          "n_failed_invoked": 0,
+          "n_not_invoked": 18
+        }
+      }
+    ],
+    "path_fix": {
+      "decision": "D29",
+      "status": "PASS metadata/software only; full actual pending",
+      "review": "g11-path-review.json",
+      "test_log": "g11-path-lifecycle.log",
+      "tests": 9,
+      "build_log": "g11-path-build.log",
+      "sudo_attempt": "g11-path-system-attempt.log",
+      "failed_user_log": "g11-user-run.Jbm1be.log",
+      "source_changed_since_failed_run": [
+        "scripts/capture.sh",
+        "scripts/run-in-netns.sh",
+        "tests/system/g11.sh",
+        "tests/system/test_g11_lifecycle.py"
+      ],
+      "files_changed": [
+        "tests/system/g11.sh",
+        "scripts/capture.sh",
+        "scripts/run-in-netns.sh",
+        "tests/system/test_g11_lifecycle.py",
+        "docs/CLI_CONTRACT.md",
+        "docs/CONTEXT_AND_DECISIONS.md",
+        "docs/AI_USAGE.md",
+        ".codex/TASK.md",
+        "docs/evidence/p11/"
+      ]
+    }
   }
 }

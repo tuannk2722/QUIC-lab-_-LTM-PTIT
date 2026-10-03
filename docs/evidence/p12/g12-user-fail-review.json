@@ -1,0 +1,215 @@
+{
+  "schema_version": 1,
+  "gate": "G12",
+  "status": "FAIL",
+  "software_status": "PASS",
+  "software_steps": 14,
+  "actual_root": "/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p12-g12-7807db3f7c56",
+  "read_only_replay": true,
+  "reviewed_utc": "2026-10-02T12:54:44.683204+00:00",
+  "rehearsal": {
+    "schema_version": 1,
+    "status": "FAIL",
+    "uid": 1000,
+    "steps": [
+      {
+        "name": "basic",
+        "argv": [
+          "make",
+          "demo-quic-basic",
+          "DEMO_OUT=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p12-g12-7807db3f7c56/demos/basic",
+          "DEMO_BACKUP=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p11-g11-6a8cc99602b7"
+        ],
+        "exit": 0,
+        "start_seconds": 25.00236556500022,
+        "end_seconds": 82.03950203500062,
+        "log": "logs/rehearsal-basic.log",
+        "sha256": "489ed839a6b36ee9b7ddbd288d3b922836414957b1747fb7843ff0ee4caa4bca"
+      },
+      {
+        "name": "baseline",
+        "argv": [
+          "make",
+          "demo-baseline",
+          "DEMO_OUT=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p12-g12-7807db3f7c56/demos/baseline",
+          "DEMO_BACKUP=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p11-g11-6a8cc99602b7"
+        ],
+        "exit": 0,
+        "start_seconds": 82.04458561199863,
+        "end_seconds": 179.26530992500193,
+        "log": "logs/rehearsal-baseline.log",
+        "sha256": "46fda3e1c83199bd4038c7ff77de561d2344862d7a4b2e335143b82a2c7e7d04"
+      },
+      {
+        "name": "loss",
+        "argv": [
+          "make",
+          "demo-loss",
+          "DEMO_OUT=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p12-g12-7807db3f7c56/demos/loss",
+          "DEMO_BACKUP=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p11-g11-6a8cc99602b7"
+        ],
+        "exit": 0,
+        "start_seconds": 179.28685054900052,
+        "end_seconds": 370.1494847260001,
+        "log": "logs/rehearsal-loss.log",
+        "sha256": "7c0fb30acdcbc00be7f9e6e63f5dc89b8245ebd5c2a076a83d59ecb25a78133b"
+      },
+      {
+        "name": "0rtt",
+        "argv": [
+          "make",
+          "demo-0rtt",
+          "DEMO_OUT=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p12-g12-7807db3f7c56/demos/0rtt",
+          "DEMO_BACKUP=/home/tuannk/projects/QUIC-lab-_-LTM-PTIT/results/p11-g11-6a8cc99602b7"
+        ],
+        "exit": 0,
+        "start_seconds": 370.166357271999,
+        "end_seconds": 422.9245487090011,
+        "log": "logs/rehearsal-0rtt.log",
+        "sha256": "85082c9fdb4a92bb12ac974153dc790373dcc9f9cdaf6ce55cc9a2473d6dc600"
+      },
+      {
+        "name": "cleanup",
+        "argv": [
+          "make",
+          "cleanup"
+        ],
+        "exit": 0,
+        "start_seconds": 422.94386078499883,
+        "end_seconds": 423.0176226799995,
+        "log": "logs/rehearsal-cleanup.log",
+        "sha256": "ffb6d1622c7dfaf3dd0b35e19ab65721864135f4f9efe56a40d76c676863abe7"
+      }
+    ],
+    "started_utc": "2026-10-02T12:34:36.078505+00:00",
+    "offline": true,
+    "presentation_policy": "timed terminal walkthrough; human oral delivery not certified",
+    "elapsed_seconds": 423.01996558999963,
+    "error": "walkthrough outside5\u20137min: 423.019s"
+  },
+  "demos": {
+    "basic": {
+      "status": "PASS",
+      "demo": "basic",
+      "counts": {
+        "n_planned": 1,
+        "n_invoked": 1,
+        "n_success": 1,
+        "n_failed": 0,
+        "n_missing": 0
+      },
+      "proof": {
+        "udp_decode": "PASS",
+        "early": "NOT_APPLICABLE",
+        "hol": "NOT_APPLICABLE"
+      },
+      "readonly": true,
+      "check_sha256": "d025f4cb93dcd05e6be4ac179672e0898453b939adff2205d1ee5e6923684f18",
+      "cleanup": {
+        "original_exit": 0,
+        "cleanup_exit": 0,
+        "host_unchanged": {
+          "link": true,
+          "address": true,
+          "route": true
+        },
+        "finished_utc": "2026-10-02T12:35:26.401437Z"
+      }
+    },
+    "baseline": {
+      "status": "PASS",
+      "demo": "baseline",
+      "counts": {
+        "n_planned": 2,
+        "n_invoked": 2,
+        "n_success": 2,
+        "n_failed": 0,
+        "n_missing": 0
+      },
+      "proof": {
+        "udp_decode": "PASS",
+        "early": "NOT_APPLICABLE",
+        "hol": "NOT_APPLICABLE"
+      },
+      "readonly": true,
+      "check_sha256": "713438d39e7cfd56ce9d4e8a57ff41d6634047fb59e155c29e6381e5b7845141",
+      "cleanup": {
+        "original_exit": 0,
+        "cleanup_exit": 0,
+        "host_unchanged": {
+          "link": true,
+          "address": true,
+          "route": true
+        },
+        "finished_utc": "2026-10-02T12:36:29.466678Z"
+      }
+    },
+    "loss": {
+      "status": "PASS",
+      "demo": "loss",
+      "counts": {
+        "n_planned": 2,
+        "n_invoked": 2,
+        "n_success": 2,
+        "n_failed": 0,
+        "n_missing": 0
+      },
+      "proof": {
+        "udp_decode": "PASS",
+        "early": "NOT_APPLICABLE",
+        "hol": "PASS"
+      },
+      "readonly": true,
+      "check_sha256": "194cbdc68e179820cdad9fa1f1897763db004128c2a9cd25cd4b7d3d95ee75bd",
+      "cleanup": {
+        "original_exit": 0,
+        "cleanup_exit": 0,
+        "host_unchanged": {
+          "link": true,
+          "address": true,
+          "route": true
+        },
+        "finished_utc": "2026-10-02T12:39:13.700139Z"
+      }
+    },
+    "0rtt": {
+      "status": "PASS",
+      "demo": "0rtt",
+      "counts": {
+        "n_planned": 3,
+        "n_invoked": 3,
+        "n_success": 3,
+        "n_failed": 0,
+        "n_missing": 0
+      },
+      "proof": {
+        "udp_decode": "PASS",
+        "early": "PASS",
+        "hol": "NOT_APPLICABLE"
+      },
+      "readonly": true,
+      "check_sha256": "d36000ddf4fcf8f3faa1df2ba3c85ef7115f1249028241d93ad74434b4c7f838",
+      "cleanup": {
+        "original_exit": 0,
+        "cleanup_exit": 0,
+        "host_unchanged": {
+          "link": true,
+          "address": true,
+          "route": true
+        },
+        "finished_utc": "2026-10-02T12:41:14.851008Z"
+      }
+    }
+  },
+  "cause": "423.01996559s exceeds420s; baseline97.220724s incorrectly included in A\u2192C\u2192B live timeline",
+  "final_system_checker": "NOT_RUN because rehearsal failed",
+  "historical_artifacts_rewritten": false,
+  "archive": {
+    "path": "docs/evidence/p12/g12-user-fail-artifacts.tar.gz",
+    "members": 349,
+    "bytes": 2054594,
+    "sha256": "05a238f0cc9983fa5b22edd457970779fb6425c3407c86c615aca4602e7aad92",
+    "byte_verified": true,
+    "exclusions": "private keys/keylogs/PCAP/PDML/packets.json/large decoder data; local originals required for full replay"
+  }
+}

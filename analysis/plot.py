@@ -70,7 +70,7 @@ def plot(directory, main=False, handshake=False):
         ax.set_ylabel(f'{metric} ({unit})')
         if handshake_suite:
             ax.set_title(f"{plan['experiment_id']} — requested mode achieved\n"
-                         f"Early API qualification; P11 packet proof pending\n{plan['execution']}; warmups excluded", fontsize=10)
+                         f"Early API qualification; packet proof in separate evidence\n{plan['execution']}; warmups excluded", fontsize=10)
         else:
             ax.set_title(f"{plan['experiment_id']} — successful measured trials\n{plan['execution']}; warmups excluded")
         ax.grid(axis='y', alpha=.2)
@@ -109,7 +109,7 @@ def plot(directory, main=False, handshake=False):
     record = {'source': ['runs.csv', 'streams.csv'], 'files': files, 'matplotlib': matplotlib.__version__,
               'scope': 'successful measured trials with failures labeled; no HOL causal claim; progress evidence belongs to P11'}
     if handshake_suite:
-        record.update(scope='requested mode achieved; transfer failures/fallback counted; early API-qualified only, P11 packet corroboration pending',
+        record.update(scope='requested mode achieved; transfer failures/fallback counted; early API-qualified only, packet corroboration belongs to separate evidence',
                       groups=[{'scenario': scenario, 'transport': transport, 'mode': mode,
                                'n_attempted': len(group), 'n_success': sum(r['success'] for r in group),
                                'n_failed': sum(not r['success'] for r in group),

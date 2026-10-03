@@ -80,7 +80,7 @@ def summarize(directory, main=False, handshake=False):
     if handshake_suite:
         notes.update(handshake_checked=handshake,
                      latency_policy='successful measured targets achieving requested mode; fallback/unachieved targets excluded and counted',
-                     early_evidence='client API state and REQUEST enqueue before observed handshake only; P11 packet corroboration pending',
+                     early_evidence='client API state and REQUEST enqueue before observed handshake only; packet corroboration belongs to a separate evidence cohort; see docs/REPORT.md',
                      mode_policy='n_success/n_failed report transfer outcome; n_mode_achieved/n_unachieved/n_fallback report demonstration separately',
                      ticket_warmups='separate shards/<run_id>/ticket-warmup; outside aggregate and all target denominators')
     (directory / 'summary.json').write_text(json.dumps(notes, indent=2) + '\n')
@@ -98,7 +98,7 @@ def summarize(directory, main=False, handshake=False):
             'Rejected fallback and unachieved modes remain in transfer counts and are excluded from mode latency distributions. '
             'Ticket warm-ups are logged separately outside target denominators. p95 is nearest-rank; no outliers removed.', '',
             'Early qualification uses actual TLS resumption/Used0RTT and REQUEST enqueue before the client observed handshake completion. '
-            'P11 packet corroboration remains pending; API qualification does not establish full accepted-early evidence.', '',
+            'Packet corroboration belongs to the separate evidence cohort; API qualification of this performance dataset alone does not establish full accepted-early evidence.', '',
             '| Scenario | Mode | Metric | Attempted | Transfer success | Failed | Mode achieved | Fallback | Unachieved success | Median | p95 |',
             '|---|---|---|---:|---:|---:|---:|---:|---:|---:|---:|']
     for r in result:
@@ -114,8 +114,8 @@ def summarize(directory, main=False, handshake=False):
              'Limitations: shared WSL2 host/kernel/CPU, different kernel/userspace transport and scheduling, differing packetization/congestion control; '
              'paired seed does not imply identical lost application bytes. Configured loss affects downstream control/ACK traffic too; '
              'qdisc drops can include overflow. Small cohorts/p95 describe this testbed and workload. Performance plots do not establish HOL causation. ' +
-             ('P11 qlog/PCAP/progress and packet corroboration remain pending.' if handshake_suite else
-              'P10 resumption/early and P11 qlog/PCAP/progress evidence remain pending.'), '']
+             ('Qlog/PCAP/progress and packet corroboration are separate evidence; see docs/REPORT.md.' if handshake_suite else
+              'Resumption/early and qlog/PCAP/progress are separate cohorts; see docs/REPORT.md.'), '']
     (directory / 'report.md').write_text('\n'.join(body))
     return notes
 

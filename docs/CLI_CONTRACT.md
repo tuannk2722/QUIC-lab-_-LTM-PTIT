@@ -1,6 +1,6 @@
 # CLI và Make contract
 
-Các lệnh dưới đây là hợp đồng lab. User xác nhận P10/G10 actual PASS và authorize riêng P11/G11. Traces client/server đã triển khai; performance bench yêu cầu traces off. Latest actual G11 FAIL sau5 trials; fix regressions PASS, actual rerun BLOCKED ở sudo và early key export còn pending. Defaults dùng chung config loader; subprocess argument arrays, không eval.
+Các lệnh dưới đây là hợp đồng lab. P0–P11/G00–G11 PASS; user authorize riêng P12/G12 và dừng để review sau gate. Traces client/server và actual early/HOL evidence đã kiểm chứng; performance bench yêu cầu traces off. Managed demos/G12 entry hiện đang kiểm định, chưa claim G12 PASS. Defaults dùng chung config loader; subprocess argument arrays, không eval.
 
 ## 1. Binaries
 
@@ -88,7 +88,7 @@ Refinement D24 (audit P7–P9): chạy `make build` bằng user tạo `bin/build
 
 Client/bench dùng chung RunTrial/RunSession. Cold clone TLS config/empty cache; resumed/early mở một prior cold connection, chờ cache Put với ticket deadline rồi đóng, target có own t0. Resumed dùng Dial thường, early dùng DialEarly; không reuse target giữa trials. Warm-up failure vẫn có failed target rows và `target_invoked=false`. `ticket-warmup/` chứa canonical prior record; `attempts/<run_id>.json` chứa target attempts tối đa2, original t0 và actual state; `INCOMPLETE` chỉ xóa khi sidecars đủ. Stdout JSON giữ transfer/metrics shape, stderr in mode/TLSResumed/Used0RTT/rejection/fallback và result path; không gọi fallback là0RTT success.
 
-`--suite=handshake` tự chọn handshake profile/rtt50-loss0, từ chối incompatible explicit profile/scenario/mode override. Schedule96 targets,64 prior ticket connections ngoài aggregate, six-permutation order/seed triples. Wrapper managed server với Allow0RTT=true, giữ network condition qua prior+target, watchdog2×timeout+15s. `make benchmark-handshake` nhận optional RUNS/WARMUPS/SEED như bulk; changed counts chỉ exploratory. `python3 analysis/summarize.py DIR --handshake` và `python3 analysis/plot.py DIR --handshake` yêu cầu full actual ingress cohort; generic analyze nhận diện suite và giữ denominator/mode qualification. Full gate: `sudo bash tests/system/run.sh --gate G10`, không repeat-count overrides; exact runbook/evidence tại [P10](evidence/p10/README.md). Actual G10 user-run PASS; API qualification chưa là G11 packet proof. P11 authorize riêng, actual capture gate BLOCKED.
+`--suite=handshake` tự chọn handshake profile/rtt50-loss0, từ chối incompatible explicit profile/scenario/mode override. Schedule96 targets,64 prior ticket connections ngoài aggregate, six-permutation order/seed triples. Wrapper managed server với Allow0RTT=true, giữ network condition qua prior+target, watchdog2×timeout+15s. `make benchmark-handshake` nhận optional RUNS/WARMUPS/SEED như bulk; changed counts chỉ exploratory. `python3 analysis/summarize.py DIR --handshake` và `python3 analysis/plot.py DIR --handshake` yêu cầu full actual ingress cohort; generic analyze nhận diện suite và giữ denominator/mode qualification. Full gate: `sudo bash tests/system/run.sh --gate G10`, không repeat-count overrides; exact runbook/evidence tại [P10](evidence/p10/README.md). Actual G10 user-run PASS; API qualification riêng chưa là packet proof. G11 actual packet proof đã PASS theo §P11 và evidence/p11.
 
 - 0: thao tác yêu cầu thành công; client full data + hash pass. Early demo yêu cầu “prove accepted early” thêm gate riêng, không coi fallback success là proof.
 - 1: runtime/transfer/checksum/result write failure, hoặc benchmark có trial failed (vẫn hoàn thành những entry còn lại nếu testbed còn hợp lệ).
@@ -106,7 +106,7 @@ Bench summary có attempted/success/failed; có failures thì CSV vẫn giữ đ
 
 Client/server `--qlog-dir=PATH` hoặc QLOGDIR bật exact quic-12 JSON-SEQ; flags override environment. New qlog files/mapping không overwrite, flush bounded5s sau connection/listener shutdown, error làm command nonzero. `--keylog=NEW_FILE` bật local TLS secrets0600/thread-safe, không in secrets hoặc commit mặc định. Client `--progress` ghi private bounded16KiB/final DATA thresholds, flush progress.csv sau timing; any trace flag tự phase/trace_mode=evidence. Trace error sau transport vẫn giữ canonical failure rows. Resumed/early prior có own ticket-qlog/progress; fallback attempts không gộp payload.
 
-`make decoder-deps` download/extract pinned Ubuntu tshark4.6.4 packages/hash vào `.tools/tshark`, unprivileged; không cài hệ thống. `scripts/tshark.sh` ưu tiên system decoder nếu có, actual version ghi manifest. `make capture CAPTURE_NS=qclient|qserver CAPTURE_SECONDS=1..300 CAPTURE_OUT=NEW_DIR` cần owned topology đã có; tạo capture.pcap/tcpdump.log/ready/status.json bằng UID thường, bounded PID cleanup. Gate driver quản server, paired capture và network: `make gate-g11` hoặc full `sudo bash tests/system/run.sh --gate G11` sau user build. Không count overrides. [Exact runbook](evidence/p11/README.md); demo/rehearsal wrappers còn P12.
+`make decoder-deps` download/extract pinned Ubuntu tshark4.6.4 packages/hash vào `.tools/tshark`, unprivileged; không cài hệ thống. `scripts/tshark.sh` ưu tiên system decoder nếu có, actual version ghi manifest. `make capture CAPTURE_NS=qclient|qserver CAPTURE_SECONDS=1..300 CAPTURE_OUT=NEW_DIR` cần owned topology đã có; tạo capture.pcap/tcpdump.log/ready/status.json bằng UID thường, bounded PID cleanup. Gate driver quản server, paired capture và network: `make gate-g11` hoặc full `sudo bash tests/system/run.sh --gate G11` sau user build. Không count overrides. Actual G11 PASS tại `results/p11-g11-6a8cc99602b7`; [exact runbook/provenance](evidence/p11/README.md).
 
 D27: UID entry/sinks reset environment về passwd owner, không đọc root HOME/XDG config. Capture immediate-mode, graceful flush/drain/EOF trước status; status thêm capture_packets/capture_complete/capture_error và reject empty/truncated/count mismatch. Failed capture cleanup trả nonzero kể cả wrapper được TERM có chủ đích.
 
@@ -125,13 +125,15 @@ D28: make build/test/test-race dùng hash-checked Go1.27.1 build-only TLS overla
 | `make certs` | Local certificate SAN đúng; không overwrite key đang dùng trừ explicit flag |
 | `make setup-network` | Tạo namespace/veth/IFB và ownership, idempotent |
 | `make server` | Run foreground trong qserver, UID thường; Ctrl+C shutdown |
-| `make demo-quic-basic` | Wrapper tự start/stop server nếu chưa có server do lab quản lý; capture evidence A |
-| `make demo-baseline` | Một TCP + một QUIC bulk no-loss có verify mạng |
-| `make demo-loss` | Một paired bulk rtt50-loss3 evidence; in bảng và lưu trace |
-| `make demo-0rtt` | Handshake profile; warm-up/cold/resumed/early, show proof status |
+| `make demo-quic-basic` | Một QUIC handshake sample trên baseline, managed server/capture/UID/cleanup, UDP decode |
+| `make demo-baseline` | Một TCP + một QUIC bulk no-loss, verified ingress IFB, hashes và progress |
+| `make demo-loss` | Một paired bulk rtt50-loss3, giữ all attempts; causal HOL PASS hoặc INCONCLUSIVE và labelled backup |
+| `make demo-0rtt` | Handshake cold/resumed/early, prior tickets riêng; actual state + decrypted REQUEST proof |
 | `make capture` | P11 managed capture lab port4433/owned namespace, duration<=300s |
 | `make decoder-deps` | Pinned tshark local packages/hash, user preparation |
 | `make gate-g11` | User build rồi actual23-trial evidence gate qua sudo |
+| `make gate-g12` | Fresh current-source offline reproduction, actual bốn Make demos và timed rehearsal/cleanup |
+| `make test-demo` | Unprivileged meaningful plan/network/proof/ownership negative regressions; không thay live gate |
 | `make benchmark` | Main 240 measured +16 warm-up, ingress-ifb, performance mode |
 | `make benchmark-handshake` | QUIC 3 modes ×30 measured; ticket warm-ups riêng |
 | `make analyze RESULTS=...` | Validate → summary/charts/report, không sửa raw |
@@ -141,9 +143,13 @@ D28: make build/test/test-race dùng hash-checked Go1.27.1 build-only TLS overla
 | `make analysis-deps` | Cài pinned plotting packages vào .tools/analysis bằng user, trước benchmark/live |
 | `make test-analysis` | Unit formulas/failure denominator/warmup/outliers; không tạo main benchmark |
 | `make clear-netem` | Gỡ qdisc/filter trong lab; giữ namespace và offload OFF |
-| `make clean-network` | Stop owned processes rồi teardown tài nguyên lab |
+| `make clean-network`, `make cleanup` | Teardown owned idle topology; từ chối namespace còn PID, giữ artifacts |
 
-`SCENARIO`, `RUNS`, `RESULTS`, `PROFILE` nếu hỗ trợ phải document/validate, không eval. P7 hỗ trợ `PROFILE` cho `make server`; P8 hỗ trợ `SCENARIO`, `NETWORK_PROFILE`, `NETEM_SEED` cho apply, truyền qua environment thành arguments, parser kiểm input; không eval. `NETEM_SEED=none` là explicit limitation. Không target `clean` xóa source hoặc raw results. Live wrappers hoàn thành phải clear-netem, nhưng giữ artifacts. Nếu server foreground do người dùng chạy với profile khác, wrapper báo conflict hoặc hướng dẫn stop; không kill không rõ ownership.
+`SCENARIO`, `RUNS`, `RESULTS`, `PROFILE` nếu hỗ trợ phải document/validate, không eval. P7 hỗ trợ `PROFILE` cho `make server`; P8 hỗ trợ `SCENARIO`, `NETWORK_PROFILE`, `NETEM_SEED` cho apply, truyền qua environment thành arguments, parser kiểm input; không eval. `NETEM_SEED=none` là explicit limitation. Không target `clean` xóa source hoặc raw results. Live wrappers clear-netem và teardown owned topology sau khi dừng đúng PID do chính wrapper tạo, giữ artifacts. Từ chối mọi namespace có process sẵn, kể cả foreground server của lab; người dùng dừng foreground server trước demo.
+
+P12 `DEMO_OUT=NEW_DIR` optional: directory mới, parent có sẵn; không append hoặc overwrite. `DEMO_BACKUP=ACCEPTED_G11_ROOT` optional: kiểm receipt/inventory accepted early/HOL evidence, hiện `pre-recorded` và actual run IDs. `NETEM_SEED=default|none` truyền qua sudo thành explicit arguments; không dùng arbitrary fixed seed hoặc profile override trong demos. Default output `results/p12-demo-<kind>-<id>`; `manifest.json`, configs/build/source hashes, raw/CSV/progress, qlog/keylog/captures, network/probes/host, viewers, `demo-check.json` và cleanup receipts được giữ. All demo runs phase/trace_mode=evidence, excluded performance. `demo-loss` transfer PASS không nâng live HOL INCONCLUSIVE thành proof; fallback early không là accepted0RTT demo success.
+
+Demos cần pinned binaries/cert/analysis/decoder đã chuẩn bị; targets không build/download trong live. Wrapper giữ experiment lock, chỉ reuse complete owned idle topology và teardown sau demo; collision/active PID bị từ chối. Apps/helpers/files UID thường; root chỉ network/capture/namespace entry/lifecycle. `bash scripts/run-g12-review.sh` chạy fresh source software reproduction trước interactive sudo, actual baseline preparation rồi timed basic→loss→0rtt→cleanup theo DEMO_SPEC A→C→B. Baseline vẫn mandatory; preparation/log hashes riêng được bind vào rehearsal, final checker kiểm đủ bốn demos. Live duration300–420s giữ nguyên; software PASS/dry-run không thay G12. [G12 runbook](evidence/p12/README.md), D31.
 
 P9 `make benchmark` nhận optional RUNS/WARMUPS/SEED (mặc định trống, Go đọc configs); thay counts là exploratory, không G09 default. Main luôn bulk/ingress-ifb/mọi main scenario; dùng scripts/bench.sh --scenario=NAME cho subset. NETEM_SEED=none là explicit limitation, không dùng một fixed seed thay seed schedule. `make analyze RESULTS=DIR` validate → summary → plots/report, không sửa raw. Các biến thành argument arrays, không eval.
 
@@ -154,7 +160,6 @@ make doctor
 make build
 make test
 make certs
-make setup-network
 make demo-quic-basic
 make demo-baseline
 make demo-loss
@@ -163,9 +168,11 @@ make benchmark
 make benchmark-handshake
 make analyze RESULTS=results/<experiment-id>
 make clean-network
+# Full fresh-source reproduction + actual demos + timed rehearsal:
+bash scripts/run-g12-review.sh
 ```
 
-Góc nhìn ngày demo chỉ cần demo-*; build/tests và full benchmark thực hiện trước buổi trình bày. Không cài dependency/download module trong live demo.
+Góc nhìn ngày demo chỉ cần demo-* với dependencies/binaries đã chuẩn bị; mỗi wrapper quản topology của lượt đó. Build/tests và full benchmark thực hiện trước buổi trình bày. Không cài dependency/download module trong live demo. D30 reproduction là fresh local detached checkout của HEAD + exact working-tree candidate overlay/hashes, chưa là new committed candidate; pinned offline caches được disclose.
 
 ## 5. Bổ sung P0 — giới hạn cấu hình và preflight
 

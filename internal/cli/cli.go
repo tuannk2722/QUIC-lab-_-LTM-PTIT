@@ -1,4 +1,4 @@
-// Package cli dispatches phase-supported commands; later-phase modes stay nonzero.
+// Package cli dispatches server, client and benchmark commands.
 package cli
 
 import (
@@ -395,8 +395,8 @@ func Run(name string, args []string, out, errOut io.Writer) (code int) {
 		}
 		return 0
 	}
-	fmt.Fprintln(errOut, "not implemented: selected transport/mode or benchmark belongs to a later phase")
-	return 1
+	fmt.Fprintln(errOut, "unsupported command:", name)
+	return 2
 }
 
 func newID(prefix string) (string, error) {

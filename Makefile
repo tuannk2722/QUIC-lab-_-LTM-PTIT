@@ -22,7 +22,9 @@ RESULTS ?=
 CAPTURE_NS ?= qclient
 CAPTURE_SECONDS ?= 30
 CAPTURE_OUT ?=
-export PROFILE SCENARIO NETWORK_PROFILE NETEM_SEED RUNS WARMUPS SEED RESULTS CAPTURE_NS CAPTURE_SECONDS CAPTURE_OUT
+DEMO_OUT ?=
+DEMO_BACKUP ?=
+export PROFILE SCENARIO NETWORK_PROFILE NETEM_SEED RUNS WARMUPS SEED RESULTS CAPTURE_NS CAPTURE_SECONDS CAPTURE_OUT DEMO_OUT DEMO_BACKUP
 
 .PHONY: check-go build test test-race certs doctor setup-network server clean-network netem clear-netem inspect-network test-network benchmark benchmark-handshake analyze analysis-deps test-analysis
 check-go:
@@ -114,3 +116,21 @@ decoder-deps:
 
 gate-g11: build
 	sudo bash tests/system/run.sh --gate G11
+
+.PHONY: demo-quic-basic demo-baseline demo-loss demo-0rtt cleanup gate-g12 test-demo
+# Live commands use prepared binaries/dependencies; no build or download here.
+demo-quic-basic demo-baseline demo-loss demo-0rtt:
+	@demo_kind="$@"; demo_kind="$${demo_kind#demo-}"; \
+		[[ $$demo_kind != quic-basic ]] || demo_kind=basic; \
+		demo_args=("$$demo_kind"); \
+		[[ -z $$DEMO_OUT ]] || demo_args+=(--out="$$DEMO_OUT"); \
+		[[ -z $$DEMO_BACKUP ]] || demo_args+=(--backup="$$DEMO_BACKUP"); \
+		sudo env NETEM_SEED="$$NETEM_SEED" bash scripts/demo.sh "$${demo_args[@]}"
+
+cleanup: clean-network
+
+test-demo:
+	python3 tests/system/test_demo.py -v
+
+gate-g12:
+	bash scripts/run-g12-review.sh

@@ -1,55 +1,40 @@
 # TASK — checkpoint hiện hành
 
-Cập nhật: 2026-10-02 (Asia/Saigon).
+Cập nhật: 2026-10-03 (Asia/Saigon; artifact timestamps UTC). Chỉ P12/G12 được authorize; implementation human-gated, dừng review. Không commit/upload/nộp bài hoặc mở phase khác.
 
-## Phạm vi và trạng thái
+## Trạng thái / actual result
 
-- User authorize tiếp tục hoàn thành P11/G11, gồm xử lý early-secret blocker; chỉ P11, không P12 hoặc commit.
-- G10: PASS, actual user-run đã audit tại [P10 evidence](../docs/evidence/p10/README.md).
-- G11: current user-run FAIL tại results/p11-g11-1200e3df1cf2,0/23 invoked,cleanup0/host unchanged. D29 PATH/sysctl đã sửa và metadata/lifecycle9 PASS; full rerun pending, lịch sử5/23 giữ nguyên.
-- Historical notes giữ nguyên tại [TASK trước khi format](history/TASK-2026-10-02-before-p11-fixes.md); đây là lịch sử, không phải instructions hiện hành.
+- **P0–P12/G00–G12 PASS**. Latest actual user G12 `results/p12-g12-51c13b94f99b`, `g12_exit=0`, as-run fullchecker scope=fullG12/PASS. [User log](../docs/evidence/p12/g12-user-run.RUbjTU.log), [current review](../docs/evidence/p12/g12-review.json), [independent audit](../docs/evidence/p12/g12-rerun-review.json).
+- Fresh current candidate610sourcehashes,14softwaresteps exit0,UID1000,own.git/base8721f6346bf62cdab9aa653c9105e1ad3ed9516e;empty inherited bin/cert/results/buildcache,prepared pinned caches disclosed. Go/analysis/network/demo12/G1224 PASS;localhost6attempts/5success+1expectedwrong-hostnameTLSfailure;1028canonicalhashes unchanged,three originals unchanged.
+- Actual baseline preparation177.218538684s riêng trước live;hash/UID/offline/chronology bound into schema2 live360.000793725s within300–420s. All Make exits0. Fourdemos8planned/invoked/success,0failed/missing;UDP/acceptedearlyREQUEST/liveTCP+QUICHOL/probes/IFB/UID/idle/cleanup PASS. All original/cleanup exits0,host link/address/route before/active/final byte-identical;as-run privileged final wrapper verified namespace/marker absence.
+- No outstanding gate failure/blocker for accepted G12. Historical user7807 FAIL423.01996559s and earlier sudoBLOCKED/softwarepackagingFAIL retained without rewrite. Human code/oral/browser/video/deck review remains unclaimed.
 
-## Đã thực hiện
+## Scope / files changed
 
-- P11 qlog/keylog/progress/viewer và software checks đã PASS; chi tiết ở [P11 evidence](../docs/evidence/p11/README.md).
-- Đối chiếu user-run `results/p11-g11-3344e60b5868`: 5/23 trials thành công, actual early Used0RTT=true; shutdown runner exit1, cleanup0, host link/address/route unchanged. Checker chưa chạy; ba handshake PCAP rỗng.
-- Lưu lịch sử TASK nguyên văn và chuyển file này thành checkpoint ngắn.
-- Sửa shared child wait/signal race, owner environment bằng setpriv reset-env, immediate-mode/flush/EOF capture và reject empty/truncated/count/drop PCAP. Normative refinement ở D27.
-- Decode actual early-server PCAP trên derived root riêng: UDP/1RTT đọc được, early REQUEST INCONCLUSIVE vì keylog thiếu CLIENT_EARLY_TRAFFIC_SECRET. Original artifacts/hash/receipts giữ nguyên.
-- D28: hash-checked Go1.27.1 build-only TLS overlay thêm hai optional early keylog calls; source/module cache/pins không đổi, không custom crypto. Build receipt lưu generator và original/overlay hashes.
-- Actual localhost `results/p11-software-xzfxm1sf`: client/server early secrets matches, qlog PN0/stream0/32 bytes/API qualified;6 trials=5success+1 expected TLS failure. Early6 subcases/full Go/race PASS; chưa PCAP proof.
-- G11 precheck actual early PCAP ở cả phía sau3 handshake, trước20 bulk; entry một lệnh `bash scripts/run-g11-review.sh`. Đã yêu cầu user chạy và trả log/exit; agent sudo exit1 trước runner.
-- D29 owner PATH gồm trusted sbin/bin ở G11/capture/sink/namespace entry; preflight kiểm owner tools. Exact runtime collector qua production helper/real sysctl đọc7 fields bằng UID1000 và resolve8 tools; [audit](../docs/evidence/p11/g11-path-review.json).14 failed-run files giữ nguyên.
+Previous P12: managed offline fourMake demos/ownership/PID/capture/RTT/idle/proof/cleanup and labeled acceptedG11backup;fresh local exactcandidate reproduction/emptybuildcache/offline dependencies;report/Q&A/traceability/disclosure. D31 baseline mandatory preparation outside live A→C→B with receipt SHA/chronology;300–420s unchanged,all4targets stillverified;24G12 regressions,entry public timeline logs evenonFAIL.
 
-## Đã đọc / inspect
+This closure changes **documentation/evidence only**: task/README/INDEX/ACCEPTANCE_RESULTS/DEMO_SCRIPT/PLAN/NETWORK/CONTEXTD31/REPORT/TRACEABILITY/AI_USAGE/P12runbook+review/audit/archive. Implementation/pins/schema/workloads/netem/performance/originals/raw/as-run source/receipts unchanged;no redundant test/network run,new subagents,commit/upload. Current user deletion of older .codex/history files preserved. Current previous task archived [before closure](history/TASK-2026-10-03-before-g12-closure.md);older phase details remain in evidence documents.
 
-- AGENTS, INDEX, TASK; PLAN P11 và continuity, ACCEPTANCE, NETWORK §7–8/§12, CLI P11, CONTEXT D26.
-- Current G11/capture/namespace-entry/common/lifecycle/support/checker, tests audit và qlog shutdown; actual user log/manifest/raw/capture status/host/cleanup.
-- Installed setpriv/tcpdump help/manual: reset-env, immediate-mode, packet flush. Read thêm các contracts/code liên quan trước mỗi refinement.
-- Pinned Go1.27.1 early handshake/QUIC source/writeKeyLog và quic-go v0.63.0 key events; actual PDML/keylog labels, D28 overlay refinement.
-- Resume: PLAN P11/continuity, ACCEPTANCE full, NETWORK§5–8, CLI evidence, PROTOCOL§1–4, METRICS§1–2, DEMO_SPEC§6, CONTEXT D26/D27; inspect build receipt/Makefile, TLS early paths/writeKeyLog, evidence integration/software/checker. Official cmd/go overlay và TLS keylog format.
-- Sysctl fix: đọc lại NETWORK§6, CLI P11, PLAN P11, CONTEXT D27/D28; inspect bench-support runtime, G11/capture/sink/namespace reset-env, lifecycle tests và actual root/log/cleanup/host snapshots. Next: explicit trusted PATH gồm sbin ở các owner entries; chạy actual metadata qua production helper trước full rerun.
+## Read set / independent verification
 
-## Files và kiểm chứng
+Read AGENTS/INDEX/TASK,ACCEPTANCE full,PLANP12/continuity,CONTEXTD31/D30,DEMO_SPEC§1,DEMO_SCRIPT,CLIP12/NETWORK§13 and TRACEABILITY31-row/source mapping;inspect current check_g12/demo-support and actual51c13 software/preparation/live/fullchecker/fourdemo/cleanup/raw/proof/log receipts. Recorded readset/next before changes and preserved previous checkpoint.
 
-- Current files: scripts/tls_keylog_overlay.py,build.py,run-g11-review.sh; tests/integration/early_keylog_test.go; system/g11,check_g11,test_audit_p7_p9; Makefile/TASK và docs/evidence. D27 inventory/historical evidence giữ ở [status](../docs/evidence/p11/g11-status.json).
+Read-only checks use as-run fresh verifier,not rewriting original checker output:
 
-| Lệnh / kiểm | Kết quả | Evidence |
-|---|---|---|
-| make build; full test/test-race | PASS, exit0 | [build](../docs/evidence/p11/g11-early-build-final.log), [suite](../docs/evidence/p11/g11-early-suite.log), [race](../docs/evidence/p11/g11-early-race.log) |
-| early6; provenance4; lifecycle8; detectors6 | PASS, exit0 | [detail](../docs/evidence/p11/g11-early-detail.log), [provenance](../docs/evidence/p11/g11-early-provenance.log), [lifecycle](../docs/evidence/p11/g11-early-lifecycle.log), [detectors](../docs/evidence/p11/g11-early-detectors.log) |
-| actual localhost + software checker | PASS software, exit0; full gate remains BLOCKED | [review](../docs/evidence/p11/g11-early-secret-review.json), [checker](../docs/evidence/p11/g11-early-software-check.log) |
-| sudo -n full G11 current | BLOCKED, exit1 before runner | [attempt](../docs/evidence/p11/g11-early-system-attempt.log) |
-| D29 lifecycle/environment/runtime | PASS, exit0,9 tests; exact collector PASS | [tests](../docs/evidence/p11/g11-path-lifecycle.log), [audit](../docs/evidence/p11/g11-path-review.json) |
+| Command/check | Result/evidence |
+|---|---|
+| User bash scripts/run-g12-review.sh |g12_exit0/fullG12PASS;root51c13b94f99b,userlogRUbjTU |
+| check_source/check_prior_gates/check_rehearsal + ownGit/base/emptyartifacts/UID verification |PASS;all exported source hashes,current implementation,priorG00–G11 acceptance,preparationSHA/chronology and liveargv/logtimes verified |
+| 14softwarecommandlog SHA +1028canonicalhashes +three current/fresh originals |PASS unchanged;analysis realG09archival cohort,not fabricated measurements |
+| as-run fresh demo_support.verify() for allfour demos |PASS read-only;8success,UDP/early/liveHOL/RTT/IFB/idle/host/provenance/artifactinventories;completedchecklogs/fullchecker summary SHA matched |
+| Original rootpublicartifact hash before/after audit |PASS unchanged;no source/raw/viewer/decode/summary writes |
+| Public353member archive byteverify + SHA |PASS;[archive receipt](../docs/evidence/p12/g12-rerun-archive.json),[bundle](../docs/evidence/p12/g12-user-run-artifacts.tar.gz);keys/keylogs/PCAP/largePDML excluded |
+| gitdiffcheck/currentlinks/sourceandreceiptchecks |PASS;docs-only closure,not new actualgate execution |
 
-Historical D27 analysis/network/audit logs giữ trong P11 README; không rerun G10/network regressions không liên quan. Current build receipt và static audit riêng cho D28, không sửa provenance cũ.
+[Full checker](../results/p12-g12-51c13b94f99b/g12-check.json),[live](../results/p12-g12-51c13b94f99b/rehearsal.json),[preparation](../results/p12-g12-51c13b94f99b/preparation.json),[software](../results/p12-g12-51c13b94f99b/software.json). Actual localhostroot fresh/results/p11-software-ltrjdy0h;analysisroot fresh/results/g12-analysis/p9-g09-8dFdkj/main.
 
-## Vấn đề còn lại
+## Stop / next exact action
 
-- Actual immediate capture/drain/lifecycle bản sửa chưa chạy vì sudo cần xác thực tương tác.
-- Early export blocker đã sửa và verified. Full0RTT REQUEST/HOL proof vẫn cần fresh actual captures; historical missing secret/empty PCAP không thể phục hồi.
-- Partial actual run không thay full G11 hoặc packet0RTT/HOL proof; original evidence giữ nguyên.
+**Stop P12 for human review. No gate rerun needed merely to confirm PASS.** User reviews managedlifecycle/UID/capture/idle/cleanup/failure-retention,early/HOLcriteria/backup labeling,baselinepreparation/live300–420s separation,sourceoverlay/offline provenance,REPORT/THEORY10Q&A/codeownership. Then rehearse spoken delivery and prepare/review slides/assets;no automatic submission. If reproduction explicitly needed,ordinaryUbuntuWSL terminal: `bash scripts/run-g12-review.sh` creates NEW root;do not overwrite accepted records.
 
-## Bước tiếp theo
-
-User terminal chạy `bash scripts/run-g11-review.sh` (đã gửi), trả `g11_exit`/`log`. Agent đọc actual root/early-packet-check/g11-check/cleanup, sửa lỗi nếu có, cập nhật acceptance/evidence và dừng P11 review. Không P12/commit; không coi localhost hoặc early precheck riêng là full gate PASS.
+Limits retained: same-hostWSL2/kernel/CPU,TCP CUBIC vsQUIC Reno/scheduling,sharedcongestion and configured downstreamcontrolpacketloss;one instrumentedlive sample excludedperformancecohort;originalPCAP/keylog neededfullreplay;browser/video/humanoral/codeapproval/decksubmission not certified. HistoricalG09terminalCtrl+C141/cleanup1 andfreshbootIFB limitation not newly verified. Candidateoverlay not a newlycommitted revision.

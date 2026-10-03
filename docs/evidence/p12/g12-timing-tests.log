@@ -1,0 +1,29 @@
+test_actual_g11_denominator_and_archive_bound (__main__.G12AcceptanceTests.test_actual_g11_denominator_and_archive_bound) ... ok
+test_analysis_cannot_change_canonical_data (__main__.G12AcceptanceTests.test_analysis_cannot_change_canonical_data) ... ok
+test_baseline_preparation_required_and_hash_bound (__main__.G12AcceptanceTests.test_baseline_preparation_required_and_hash_bound) ... ok
+test_changed_command_log_rejected (__main__.G12AcceptanceTests.test_changed_command_log_rejected) ... ok
+test_complete_software_package (__main__.G12AcceptanceTests.test_complete_software_package) ... ok
+test_complete_terminal_walkthrough (__main__.G12AcceptanceTests.test_complete_terminal_walkthrough) ... ok
+test_failed_baseline_stops_before_live_clock (__main__.G12AcceptanceTests.test_failed_baseline_stops_before_live_clock) ... ok
+test_failed_overall_cannot_use_software_pass (__main__.G12AcceptanceTests.test_failed_overall_cannot_use_software_pass) ... ok
+test_live_clock_rejects_overlapping_or_unbounded_commands (__main__.G12AcceptanceTests.test_live_clock_rejects_overlapping_or_unbounded_commands) ... ok
+test_missing_overall_cannot_use_software_pass (__main__.G12AcceptanceTests.test_missing_overall_cannot_use_software_pass) ... ok
+test_missing_software_step_rejected (__main__.G12AcceptanceTests.test_missing_software_step_rejected) ... ok
+test_new_unexported_source_is_stale (__main__.G12AcceptanceTests.test_new_unexported_source_is_stale) ... ok
+test_observed_durations_exclude_baseline_from_live_clock (__main__.G12AcceptanceTests.test_observed_durations_exclude_baseline_from_live_clock) ... ok
+test_originals_are_independently_bound (__main__.G12AcceptanceTests.test_originals_are_independently_bound) ... ok
+test_rehearsal_duration_not_just_pass_label (__main__.G12AcceptanceTests.test_rehearsal_duration_not_just_pass_label) ... ok
+test_rehearsal_mandatory_order_command_and_logs (__main__.G12AcceptanceTests.test_rehearsal_mandatory_order_command_and_logs) ... ok
+test_runtime_task_update_does_not_stale_implementation (__main__.G12AcceptanceTests.test_runtime_task_update_does_not_stale_implementation) ... ok
+test_slow_live_still_fails_original_seven_minute_limit (__main__.G12AcceptanceTests.test_slow_live_still_fails_original_seven_minute_limit) ... ok
+test_source_pins_current_and_exported_changes (__main__.G12AcceptanceTests.test_source_pins_current_and_exported_changes) ... ok
+test_fresh_local_clone_reproduces_current_candidate_without_inherited_artifacts (__main__.G12OfflineEnvironmentTests.test_fresh_local_clone_reproduces_current_candidate_without_inherited_artifacts) ... ok
+test_inherited_paths_and_evidence_variables_are_removed (__main__.G12OfflineEnvironmentTests.test_inherited_paths_and_evidence_variables_are_removed) ... ok
+test_leader_exit143_still_waits_descendant_graceful_cleanup (__main__.G12OfflineEnvironmentTests.test_leader_exit143_still_waits_descendant_graceful_cleanup) ... ok
+test_nested_export_cannot_inherit_parent_git_metadata (__main__.G12OfflineEnvironmentTests.test_nested_export_cannot_inherit_parent_git_metadata) ... ok
+test_owned_rehearsal_session_stops_without_signaling_unrelated_process (__main__.G12OfflineEnvironmentTests.test_owned_rehearsal_session_stops_without_signaling_unrelated_process) ... ok
+
+----------------------------------------------------------------------
+Ran 24 tests in 12.589s
+
+OK
